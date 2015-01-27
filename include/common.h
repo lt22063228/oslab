@@ -5,6 +5,7 @@
 #include "const.h"
 
 void printk(const char *ctl, ...);
+volatile static int dummy;
 
 #include "assert.h"
 

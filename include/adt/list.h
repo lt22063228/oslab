@@ -14,6 +14,7 @@ typedef struct ListHead ListHead;
 static inline void
 list_add(ListHead *prev, ListHead *next, ListHead *data) {
 	assert(data != NULL);
+	assert( prev != NULL && next != NULL && prev->next == next && next->prev == prev );
 	data->prev = prev;
 	data->next = next;
 	if (prev != NULL) prev->next = data;
@@ -37,6 +38,8 @@ list_del(ListHead *data) {
 	assert(data != NULL);
 	ListHead *prev = data->prev;
 	ListHead *next = data->next;
+	assert(prev != NULL && prev->next == data );
+	assert(next != NULL && next->prev == data );
 	if (prev != NULL) prev->next = next;
 	if (next != NULL) next->prev = prev;
 }
@@ -44,6 +47,7 @@ list_del(ListHead *data) {
 static inline void
 list_init(ListHead *list) {
 	assert(list != NULL);
+	assert(list->prev == NULL && list->next == NULL);
 	list->prev = list->next = list;
 }
 

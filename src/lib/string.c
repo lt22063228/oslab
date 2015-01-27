@@ -31,3 +31,14 @@ size_t strlen(const char *str) {
 void strcpy(char *d, const char *s) {
 	memcpy(d, s, strlen(s) + 1);
 }
+
+int strcmp(const char *d, const char *s){
+	int i;
+	for( i=0; *(s+i) != '\0'; i++){
+		if( *(s+i) != *(d+i) ){
+			return 1;	
+		}
+	}
+	if( *(d+i) == '\0' ) return 0;
+	else return 1;
+}

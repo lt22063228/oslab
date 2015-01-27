@@ -29,7 +29,7 @@
 
 .globl asm_do_irq
 .extern irq_handle
-
+.extern lock
 asm_do_irq:
 	cli
 	pushl %ds
@@ -54,10 +54,13 @@ asm_do_irq:
 #     4. REGISTERS ARE REFERENCED BY "%", SUCH AS %esp
 
 ################### your work ###################
-
-
+	movl (current), %ebx
+	movl (%ebx), %eax 
+#	movl %esp, %ebx
+	movl %eax, %esp
 #################################################
-	addl $4, %esp # when you finish this task, this instruction should be removed
+#	movl %ebx, %esp
+#	addl $4, %esp # when you finish this task, this instruction should be removed
 
 	popal
 	popl %gs

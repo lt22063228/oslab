@@ -41,6 +41,7 @@ bootmain(void) {
 
 	/* Here we go! */
 	entry = (void(*)(void))(elf->entry - KOFFSET);
+//	printk("the entry.........%d\n",(int)entry);
 	entry(); /* never returns */
 }
 

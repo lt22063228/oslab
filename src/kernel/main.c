@@ -1,7 +1,7 @@
 #include "common.h"
 #include "x86/x86.h"
 #include "memory.h"
-
+#include "kernel.h"
 
 void init_page(void);
 void init_serial(void);
@@ -50,8 +50,19 @@ os_init_cont(void) {
 	/* Initialize processes. You should fill this. */
 	init_proc();
 
+	init_driver();
 	welcome();
+	#define PORT_TIME 0x40
+	#define FREQ_8253 1193182
+	#define HZ        100000
+	 
+	int count = FREQ_8253 / HZ;
+	assert(count < 65536);
+	out_byte(PORT_TIME + 3, 0x34);
+	out_byte(PORT_TIME    , count % 256);
+	out_byte(PORT_TIME    , count / 256);
 
+//	current->lock_count --;
 	sti();
 
 	/* This context now becomes the idle process. */

@@ -21,6 +21,7 @@ end
 
 echo + target remote localhost:1234\n
 target remote localhost:1234
+symbol-file kernel
 
 # If this fails, it's probably because your GDB doesn't support ELF.
 # Look at the tools page at
