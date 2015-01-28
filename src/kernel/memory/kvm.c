@@ -45,6 +45,8 @@ init_page(void) {
 
 	pframe_idx = 0;
 	for (pdir_idx = 0; pdir_idx < PHY_MEM / PD_SIZE; pdir_idx ++) {
+		/* 2 make_pde() makes the virtual address (vir) & (vir + KOFFSET)
+		 * mapped to the same physical address */
 		make_pde(&pdir[pdir_idx], ptable);
 		make_pde(&pdir[pdir_idx + KOFFSET / PD_SIZE], ptable);
 		for (ptable_idx = 0; ptable_idx < NR_PTE; ptable_idx ++) {

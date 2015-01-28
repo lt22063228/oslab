@@ -62,7 +62,6 @@ os_init_cont(void) {
 	out_byte(PORT_TIME    , count % 256);
 	out_byte(PORT_TIME    , count / 256);
 
-//	current->lock_count --;
 	sti();
 
 	/* This context now becomes the idle process. */

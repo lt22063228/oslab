@@ -63,6 +63,8 @@ void irq_handle(TrapFrame *tf) {
 			f = f->next;
 		}
 	}
+	/* tf is the updated trapFrame pointer, original data in current->tf is the pointer when
+	 * current process is awaken last time, it needs being updated to tf. */
 	current->tf = tf;
 	schedule();
 }

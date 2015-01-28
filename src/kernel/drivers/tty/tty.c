@@ -11,12 +11,11 @@ void init_getty(void);
 static void ttyd(void);
 
 void init_tty(void) {
+	/* 1st param is the irq number, the 2nd param is top half function */
 	add_irq_handle(1, send_keymsg);
 	PCB *p = create_kthread(ttyd);
 	TTY = p->pid;
-	NOINTR;
 	wakeup(p);
-	NOINTR;
 	init_console();
 	init_getty();
 }
@@ -24,7 +23,6 @@ void init_tty(void) {
 static void
 ttyd(void) {
 	Msg m;
-
 	while (1) {
 		receive(ANY, &m);
 		if (m.src == MSG_HARD_INTR) {

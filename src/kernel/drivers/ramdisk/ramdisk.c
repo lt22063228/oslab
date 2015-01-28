@@ -493,6 +493,8 @@ ramdisk_driver_thread(void){
 			uint32_t i;
 			uint8_t data;
 			case DEV_READ:
+				/* m.buf is the request thread's buffer, this server
+				 * write directly to that buffer */
 				for( i=0; i < m.len; i++){
 					if( m.offset + i >= NR_MAX_SIZE ) assert(0);
 					data = *(disk + m.offset + i);

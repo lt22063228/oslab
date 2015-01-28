@@ -11,6 +11,7 @@
 #define NEW_PCB 5
 #define MAP_KERNEL 6
 
+/* message from outside interruption, no pid */
 #define MSG_HARD_INTR -2
 
 void add_irq_handle(int, void (*)(void));

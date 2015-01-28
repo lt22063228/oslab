@@ -22,12 +22,12 @@ static void timer_driver_thread(void);
 void init_timer(void) {
 	init_i8253();
 	init_rt();
+	/* top half */
 	add_irq_handle(0, update_jiffy);
+	/* bottom half */
 	PCB *p = create_kthread(timer_driver_thread);
 	TIMER = p->pid;
-	NOINTR;
 	wakeup(p);
-	NOINTR;
 	hal_register("timer", TIMER, 0);
 }
 static Msg timer_buff[SIZE_OF_TIMER];	
@@ -113,12 +113,7 @@ update_jiffy(void) {
 		msg.src = MSG_HARD_INTR;
 		msg.type = MSG_TIMER_UPDATE;
 		msg.dest = TIMER;
-		NOINTR;		
-		lock();
-//		printk("send TIMER msg\n");
-		unlock();
 		send( TIMER, &msg );
-		NOINTR;
 	}
 }
 

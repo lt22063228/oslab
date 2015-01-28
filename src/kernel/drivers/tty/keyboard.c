@@ -5,14 +5,10 @@
 #include "hal.h"
 void
 send_keymsg(void) {
-//	current->lock_count++;
 	Msg m;
 	m.type = MSG_TTY_GETKEY;
 	m.src = MSG_HARD_INTR;
-	NOINTR;
 	send(TTY, &m);
-	NOINTR;
-//	current->lock_count--;
 }
 
 static int caps, ctrl, alt, shft;

@@ -16,25 +16,35 @@ void create_sem(Sem*, int);
 void test_setup(void);
 
 void A();void B();void C();void D();void E();
-//
-//end of 测试-----
+
 PCB* fetch_pcb(pid_t pid){
 	return &pcb_struct[pid];
 }
 PCB*
 create_kthread(void *fun) {
+	/* FOR LAB1 ---------------------------------------------------------------------- */
 		PCB* p=0;
 		assert(pcb_count != PCB_SIZE);
 		p = &pcb_struct[pcb_count++];
-		p->pid = pcb_count-1;//每个进程拥有一个pid，这里将PID设置为数组所谓，方便查找
+	//每个进程拥有一个pid，这里将PID设置为数组index，方便查找
+		p->pid = pcb_count-1;
+	// the first trapFrame will be in the bottom of the kstack.
 		TrapFrame *t = (TrapFrame*)(p->kstack+KSTACK_SIZE-sizeof(TrapFrame));
 		p->tf = t;
+		p->if_flag = true;
+	//	t->ss = (uint32_t)num;//将传给线程的参数存在ss中，调用栈中第一个参数是SS所在的位子。
+		t->cs = 8;
+		t->eip = (uint32_t)fun;
+		t->eflags = 0x206;
+		
+		list_init(&p->list);
+		list_add_before( &ready, &(p->list));
+	/* END OF LAB1 -------------------------------------------------------------------- */
 		list_init( &(p->msg) );
 		create_sem( &(p->msg_mutex), 1 );
 		create_sem( &(p->msg_full), 0 );
 		//消息机制中用于缓冲消息的缓冲区
 		p->lock_count = 0;
-		p->if_flag = true;
 		p->cr3 = get_kcr3();
 		list_init( &p->msg_free );
 		int i;
@@ -42,13 +52,6 @@ create_kthread(void *fun) {
 			list_add_before( &p->msg_free, &p->msg_buff[i].list);
 		}
 
-//		t->ss = (uint32_t)num;//将传给线程的参数存在ss中，调用栈中第一个参数是SS所在的位子。
-		t->cs = 8;
-		t->eip = (uint32_t)fun;
-		t->eflags = 0x206;
-		
-		list_init(&p->list);
-		list_add_before( &ready, &(p->list));
 		return  p;
 }	
 
@@ -67,11 +70,14 @@ init_proc() {
 //	create_kthread(A,1);
 //	create_kthread(A,2);
 }
+
+/* FOR LOCK & SEMAPHORE --------------------------------------------------------------------------
+			--------------------------------------------------------------------------
+			--------------------------------------------------------------------------*/
 void sleep(ListHead *block){
 	lock();
 	list_del( &current->list );
 	list_add_before(block, &current->list);
-//	asm volatile("hlt");
 	asm volatile("int $0x80");//这里触发来个trap，在中断处理函数中对这个trap不做任何处理，直接跳过
 	unlock();
 }
@@ -85,11 +91,10 @@ void wakeup(PCB *p){
 //2，不要在lock之后sleep
 //3,不要在中断处理函数中使用PV操作，PV操作中的unlock会使中断嵌套.
 void lock(){
-//	if( current->tf == 0 ) printk("--------------");
-//	printk("before   lock, pid:%d,lock_count:%d,if_flag:%d.\n",current->pid,current->lock_count,current->if_flag);
-//	printk("has been exe\n");
 	if( current->lock_count == 0 && ( ~read_eflags()&IF_MASK ) ){
-		NOINTR;
+		/* here is why if_flag is for, it is to denote whether a critical
+		   section is in a irq_handle code, if so, it's not permitted to 
+		   sti() in unlock function, just increse and decrease the lock count */
 		current->if_flag = false;
 	}else{
 		cli();
@@ -98,64 +103,51 @@ void lock(){
 }
 
 void unlock(){
-	
-//	if( current->tf == 0 ) printk("--------------");
-//	printk("before unlock, pid:%d,lock_count:%d,if_flag:%d.\n",current->pid,current->lock_count,current->if_flag);
 	if( current->lock_count == 1 ){
 		if( current->if_flag == true ){
 			current->lock_count --;
 			sti();
 		}else{
+		/* it is when the process is in irq_handle, which means you cannot
+		   sti() */
 			current->lock_count--;
 			current->if_flag = true;
 		}
 	}else{
 		current->lock_count --;
 	}
-//	if( current->lock_count != 0 ){
-//		current->lock_count--;
-//	}
-//	if( current->lock_count == 0 && current->if_flag == true ){
-//		NOINTR;
-//		sti();
-//	}else if(current->lock_count == 0 && current->if_flag == false ){
-//		NOINTR;
-//		current->if_flag = true;
-//	}
-
 }
-//PV 操作系列。。。。
+
 void P(Sem *s){
 	lock();
-	NOINTR;
 	if( s->token != 0 ){
 		s->token--;
 	}else{
-		//已知当前current的PCB指针,将当前线程放入Sem的阻塞队列
-//		printk("i will sleep now\n");	
+		/* counter per thread, so it will not affect other threads.
+		   inside sleep(), soft interruption make thread switch happen 
+		   when switching happens, irq_handle will recover the right
+		   lock state of the thread switched to. */
 		sleep( &s->block );
-//		printk("i am awake now\n");
 	}
-	NOINTR;
 	unlock();
 }
 void V(Sem *s){
-	//将Sem中阻塞的进程释放
 	lock();
-	NOINTR;
 	ListHead *p = (s->block.next);
 	if( p == &(s->block) ){
 		s->token ++;
 	}else{
 		wakeup(list_entry(s->block.next, PCB, list));
 	}
-	NOINTR;
 	unlock();
 }
 void create_sem( Sem* s, int count ){
 	list_init( &s->block );
 	s->token = count; 
 }
+/* END OF LOCK--------------------------------------------------------------------------
+			--------------------------------------------------------------------------
+			--------------------------------------------------------------------------*/
 void test_producer(void){
 	while(1){
 		
@@ -197,12 +189,16 @@ void test_setup(void){
 }
 //消息机制的send和receive
 void send(pid_t dest, Msg *m){
-	PCB *pcb = &pcb_struct[dest];
+	/* different thread share the same address space, so can easily get the PCB */
+	PCB *pcb = fetch_pcb(dest); 
 //	Sem *msg_mutex = &pcb->msg_mutex;
-	Sem *msg_full = &pcb->msg_full; 
+	Sem *msg_full = &(pcb->msg_full); 
 //	P( msg_mutex );
 	lock();
+	/* Access resource in a critical region : the other PCB can access too */
+	/* ------------------------------------------------------------------- */
 	if(list_empty (&pcb->msg_free) ){
+		/* this is when the target thread has no free message buffer */
 		if ( m->src == -2 ) printk("yes!\n");
 		printk("the requested pid---%d\n, the requesting pid --- %d \n,type---%d\n",dest, m->src,m->type);
 		assert(0);
@@ -210,7 +206,7 @@ void send(pid_t dest, Msg *m){
 	ListHead *free = pcb->msg_free.next;
 	list_del( free );
 	list_add_before( &pcb->msg, free );
-	volatile Msg *free_msg = 	list_entry( free, Msg, list);	
+	volatile Msg *free_msg = list_entry( free, Msg, list);	
 	free_msg->src = m->src;
 	free_msg->dest = m->dest;
 	free_msg->type = m->type;
@@ -219,10 +215,6 @@ void send(pid_t dest, Msg *m){
 	free_msg->buf = m->buf;
 	free_msg->offset = m->offset;
 	free_msg->len = m->len;
-//	memcpy( (void*)free_msg, m, sizeof(Msg)-sizeof(ListHead) );
-//	free_msg->src = current->pid;
-//	list_add_before( msg, &(m->list) );	
-
 //	V( msg_mutex );
 	unlock();
 	V( msg_full ); 

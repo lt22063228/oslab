@@ -270,16 +270,12 @@ init_consl(int tty_index) {
 
 static void
 send_updatemsg(void) {
-//	current->lock_count ++;
 	if (get_jiffy() % (HZ / 10) == 0) {
 		Msg m;
 		m.src = MSG_HARD_INTR;
 		m.type = MSG_TTY_UPDATE;
-		NOINTR;
 		send(TTY, &m);
-		NOINTR;
 	}
-//	current->lock_count --;
 }
 
 void init_console(void) {
@@ -291,6 +287,7 @@ void init_console(void) {
 		hal_register(ttys[i].name, TTY, i);
 	}
 	current_consl = ttys;
+	/* top half for tty update, updating periodically */
 	add_irq_handle(0, send_updatemsg);
 }
 
