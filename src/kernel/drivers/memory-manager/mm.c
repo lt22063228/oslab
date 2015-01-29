@@ -3,24 +3,25 @@
 #include "memory.h"
 #include "x86/memory.h"
 
-#define NR_PROC 22
+#define NR_PROC 1
 #define NR_KERNEL_THREAD 10
 #define NR_PAGE_PER_PROC 1024
+#define NR_PTABLE 128
 
 pid_t MM;
 /* 128M memory, 4M for each user process, support 22 user process from [40M,128M) */
 static CR3 cr3[NR_PROC];
 static PDE pdir[NR_PROC][NR_PDE] align_to_page;
 /* total PHY_MEM / PAGE_SIZE PTE, one for each */
-static PTE ptable[PHY_MEM / PAGE_SIZE][NR_PTE] align_to_page;
+static PTE ptable[NR_PTABLE][NR_PTE] align_to_page;
 
 typedef struct PTABLES{
 	PTE *pt;
 	ListHead list; 
 } Ptable;
-Ptable pts[PHY_MEM / PAGE_SIZE];
+Ptable pts[NR_PTABLE];
 
-static bool pframe[NR_PROC] = {0};
+static int pframe[NR_PROC] = {0};
 static void mmd(void);
 /* every PDE should point to the same page table
  * this is due to the 4M space restriction,
@@ -38,7 +39,7 @@ void init_mm(void) {
 	int pt_idx, pte_idx;
 	list_init(&pt_free);
 	list_init(&pt_used);
-	for(pt_idx = 0; pt_idx < PHY_MEM / PAGE_SIZE; pt_idx++){
+	for(pt_idx = 0; pt_idx < NR_PTABLE; pt_idx++){
 		pts[pt_idx].pt = ptable[pt_idx];
 		list_init(&pts[pt_idx].list);
 		list_add_before(&pt_free, &pts[pt_idx].list);
@@ -47,7 +48,8 @@ void init_mm(void) {
 		}
 	}
 	PCB *p = create_kthread( mmd );
-	MM = p->pid; wakeup(p);
+	MM = p->pid;
+	wakeup(p);
 }
 static void
 mmd(void){
@@ -91,7 +93,7 @@ mmd(void){
 				int num;
 				/* store the start of the allocated physical address,
 				   assuming allocated address are sequantial */
-				int pa = (4*req_pid << 22) + (pframe[puser_idx] << 12);
+				int pa = (req_pid << 22) + (pframe[puser_idx] << 12);
 				for(num = 0; num < num_page; num++){
 					va = m.offset + (num << 12);
 				
@@ -122,7 +124,7 @@ mmd(void){
 						}
 						/*pa is page_frame's physical address */
 						make_pte(&pte, 
-							(void*)(4*req_pid << 22) + (pframe[puser_idx] << 12));
+							(void*)(req_pid << 22) + (pframe[puser_idx] << 12));
 						pframe[puser_idx] ++;
 					}
 				}

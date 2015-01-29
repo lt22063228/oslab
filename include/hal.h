@@ -12,7 +12,7 @@
 #define MAP_KERNEL 6
 
 /* message from outside interruption, no pid */
-#define MSG_HARD_INTR -2
+#define MSG_HARD_INTR 100
 
 void add_irq_handle(int, void (*)(void));
 

@@ -37,9 +37,11 @@ getty(void) {
 //	lock();
 //	printk("pid:%d----%s",current->pid,buf);
 //	unlock();
+/*
 	if(tty_idx == 4){
 		create_process();
 	}
+	*/
 	while(1) {
 		/* Insert code here to do these:
 		 * 1. read key input from ttyd to buf (use dev_read())

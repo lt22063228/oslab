@@ -493,6 +493,9 @@ ramdisk_driver_thread(void){
 			uint32_t i;
 			uint8_t data;
 			case DEV_READ:
+				lock();
+				printk("ramdisk read!\n");
+				unlock();
 				/* m.buf is the request thread's buffer, this server
 				 * write directly to that buffer */
 				for( i=0; i < m.len; i++){
@@ -504,6 +507,9 @@ ramdisk_driver_thread(void){
 				m.dest = m.src;
 				m.src = RAMDISK;
 				send( m.dest, &m );
+				lock();
+				printk("ramdisk read finished\n");
+				unlock();
 				break;
 			default:	assert(0);
 		}

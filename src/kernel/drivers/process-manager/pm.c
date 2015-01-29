@@ -11,11 +11,24 @@ uint8_t header[512];
 void create_process(void);
 PCB* new_pcb(void);
 void create_sem( Sem* s, int count );
+static void pmd(void);
 void init_pm(void){
+	PCB *p = create_kthread(pmd);
+	PM = p->pid;
+	wakeup(p);
 //	create_process();	
 }
+static void pmd(void){
+	create_process();
+	while(1){
+		volatile int x = 0;
+		x ++;
+
+	}
+}
+
 void create_process(void){
-	//获取CR3以及一下pcb的初始化
+	/* get CR3 and initialize PCB */	
 	PCB *p = new_pcb();			
 	Msg m;
 	m.src = current->pid;
@@ -23,9 +36,10 @@ void create_process(void){
 	m.type = NEW_PCB;
 	send( MM, &m);
 	receive( MM, &m );
+	/* the only one which is physical address */
 	p->cr3 = (CR3*)m.ret;
 	
-	//映射内核地址空间
+	/* map the kernel address */
 	m.src = current->pid;
 	m.dest = MM;
 	m.req_pid = p->pid;
@@ -33,7 +47,7 @@ void create_process(void){
 	send( MM, &m );
 	receive( MM, &m );
 
-	//获取0号文件的前512字节，这里面包含来ELF HEADER 以及 PROGRAM HEADER
+	/*get top 512 bytes from file-0, including ELF HEADER and PROGRAM HEADER */
 	m.src = current->pid;
 	m.type = FILE_READ;
 	struct ELFHeader *elf = (struct ELFHeader *)header;
