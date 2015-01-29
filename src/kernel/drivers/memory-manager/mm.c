@@ -97,10 +97,10 @@ mmd(void){
 				for(num = 0; num < num_page; num++){
 					va = m.offset + (num << 12);
 				
-					PDE pde = pdir[puser_idx][va >> 22];	
+					PDE *pde = &pdir[puser_idx][va >> 22];	
 
 					PTE *pt;	
-					if(pde.present == 0){
+					if(pde->present == 0){
 						/* allocate a ptable */
 						if(list_empty(&pt_free) == true){
 							assert(0);
@@ -111,19 +111,19 @@ mmd(void){
 						list_del(p);
 						list_add_before(&pt_used, p);
 						/* only accept physical address */
-						make_pde(&pde, va_to_pa(pt));
+						make_pde(pde, va_to_pa(pt));
 					}else{
-						pt = (PTE *)(pde.page_frame << 12);
+						pt = (PTE *)(pde->page_frame << 12);
 					}
-					PTE pte = pt[(va >> 12) & 0x3ff];
+					PTE *pte = &pt[(va >> 12) & 0x3ff];
 
-					if(pte.present == 0){
+					if(pte->present == 0){
 						/* allocate a pframe */
 						if(pframe[puser_idx] == NR_PAGE_PER_PROC){
 							assert(0);
 						}
 						/*pa is page_frame's physical address */
-						make_pte(&pte, 
+						make_pte(pte, 
 							(void*)(req_pid << 22) + (pframe[puser_idx] << 12));
 						pframe[puser_idx] ++;
 					}
