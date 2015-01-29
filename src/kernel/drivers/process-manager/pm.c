@@ -53,7 +53,7 @@ void create_process(void){
 
 		/* the program headers are already got from previous load of 512 bytes */
 		/* allocate pages starting from ph->vaddr with size ph->memsz */
-		/* what we get is ----------------- pa */
+		/* what we get is now----------------- va */
 		m.src = current->pid;
 		m.type = NEW_PAGE;
 		m.dest = MM;
@@ -62,9 +62,9 @@ void create_process(void){
 		m.len = ph->memsz;
 		send( MM, &m );
 		receive( MM, &m );
-		va = pa_to_va((void*)m.ret);
+		va = (void*)m.ret;
 
-		/* read ph->filesz bytes starting from offset ph->off from file "0" into pa */
+		/* read ph->filesz bytes starting from offset ph->off from file "0" into va */
 		/* first of all, load the segment. */	
 		m.src = current->pid;
 		m.type = FILE_READ;

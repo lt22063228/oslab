@@ -193,7 +193,6 @@ void send(pid_t dest, Msg *m){
 	PCB *pcb = fetch_pcb(dest); 
 //	Sem *msg_mutex = &pcb->msg_mutex;
 	Sem *msg_full = &(pcb->msg_full); 
-//	P( msg_mutex );
 	lock();
 	/* Access resource in a critical region : the other PCB can access too */
 	/* ------------------------------------------------------------------- */
@@ -215,7 +214,6 @@ void send(pid_t dest, Msg *m){
 	free_msg->buf = m->buf;
 	free_msg->offset = m->offset;
 	free_msg->len = m->len;
-//	V( msg_mutex );
 	unlock();
 	V( msg_full ); 
 }
