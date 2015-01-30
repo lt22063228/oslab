@@ -70,7 +70,6 @@ init_proc() {
 //	create_kthread(A,1);
 //	create_kthread(A,2);
 }
-
 /* FOR LOCK & SEMAPHORE --------------------------------------------------------------------------
 			--------------------------------------------------------------------------
 			--------------------------------------------------------------------------*/
@@ -191,8 +190,9 @@ void test_setup(void){
 void send(pid_t dest, Msg *m){
 	/* different thread share the same address space, so can easily get the PCB */
 	PCB *pcb = fetch_pcb(dest); 
-//	Sem *msg_mutex = &pcb->msg_mutex;
 	Sem *msg_full = &(pcb->msg_full); 
+	/* Don't use P(mutex), send will be used in irq_handle. Using P() will
+	   cause nested interruption. */
 	lock();
 	/* Access resource in a critical region : the other PCB can access too */
 	/* ------------------------------------------------------------------- */
@@ -215,22 +215,19 @@ void send(pid_t dest, Msg *m){
 	free_msg->offset = m->offset;
 	free_msg->len = m->len;
 	unlock();
+	/* Because V() don't sleep() itself, which can be used in irq_handle */
 	V( msg_full ); 
 }
 void receive(pid_t src, Msg *m){
 	ListHead *msg_list = &(current->msg);
-//	Sem *msg_mutex = &(current->msg_mutex);
 	Sem *msg_full = &(current->msg_full);
 	while(true){
-
 		P( msg_full );
-//		P( msg_mutex );
 		lock();
-		//将消息存储到m所在位置	
 		ListHead *index_list = msg_list->next;
 		while( index_list != msg_list ){
 			Msg* msg = list_entry(index_list, Msg, list);
-			if( src == ANY ||msg->src == src ){
+			if( src == ANY || msg->src == src ){
 				m->src = msg->src;
 				m->dest = msg->dest;
 				m->type = msg->type;
@@ -239,17 +236,13 @@ void receive(pid_t src, Msg *m){
 				m->buf = msg->buf;
 				m->offset = msg->offset;
 				m->len = msg->len;
-				
 				list_del( index_list );
 				list_add_before( &current->msg_free, index_list );
-//				V( msg_mutex );
 				unlock();
 				return;
 			}
 			index_list = index_list->next;
 		}
-		//--end of 将消息
-//		V( msg_mutex );
 		unlock();
 		V( msg_full );
 	}

@@ -2,6 +2,9 @@
 #include "hal.h"
 //duplicate define below
 #define PCB_SIZE 16
+#define KSTACK_SIZE
+#define NR_PDE 1024
+#define NR_PTE 1024
 pid_t PM;
 extern pid_t MM;
 extern pid_t FM;
@@ -20,7 +23,45 @@ void init_pm(void){
 }
 static void pmd(void){
 	create_process();
+	static Msg msg;
 	while(1){
+		receive(ANY, &msg);
+		switch(msg.type){
+		case FORK:
+			/*fork the process from source pid */	
+			PCB *parent = fetch_pcb(msg.src);
+			PCB *child = new_pcb();
+
+			/*update pointer field pointing to kernel stack, ie, tf & ebp*/
+			/*calculate offset */
+			uint32_t kstack_offset = (uint32_t)parent - (uint32_t)child;
+
+			/*update tf*/
+			child->tf = msg.buf + kstack_offset;
+			/*copy the kernel stack */
+			memcpy(child->kstack, parent->kstack, KSTACK_SIZE);
+			/*update ebp*/
+			TrapFrame *tf = child->tf;
+			TrapFrame *end = (TrapFrame*)(child->kstack+KSTACK_SIZE-sizeof(TrapFrame))
+			for(; tf < end; tf = tf->ebp){
+				tf->ebp = tf->ebp + kstack_offset;	
+			}
+
+			/*copy all the content of the parent's address space
+			  from cr3 register .*/
+			/*notice that parent's stack is not included, since 
+			  we use kernel stack, do it above ^.^ */
+
+
+			/*fork CR3's content, deep copy*/
+			msg.src = current->pid;	
+			msg.type = FORK;
+			msg.req_pid = child->pid;
+			msg.buf = parent->cr3;
+			send(MM, &msg);
+			receive(MM, &msg);
+
+		}
 		volatile int x = 0;
 		x ++;
 
@@ -99,16 +140,19 @@ void create_process(void){
 	wakeup(p);
 }
 PCB* new_pcb(void){
+	/* allocate PCB structure */
 	PCB *p = &pcb_struct[pcb_count];
 	p->pid = pcb_count;
 	pcb_count ++;
+
+	/* create initial TrapFrame, it points to kernel stack*/
 	TrapFrame *t = (TrapFrame*)(p->kstack+KSTACK_SIZE-sizeof(TrapFrame));
 	p->tf = t;
+
+	/* message and semaphor related data structure */	
 	list_init( &(p->msg) );
 	create_sem( &(p->msg_mutex), 1 );
 	create_sem( &(p->msg_full), 0 );
-
-	//消息机制中用于缓冲消息的缓冲区
 	p->lock_count = 0;
 	p->if_flag = true;
 	list_init( &p->msg_free );
@@ -116,18 +160,14 @@ PCB* new_pcb(void){
 	for( i=0; i < MSG_BUFF_SIZE; i++){
 		list_add_before( &p->msg_free, &p->msg_buff[i].list);
 	}
+
+	/* 'cs' and 'eflags' cannot be recover from trapFrame 
+	   'eip' either, but cannot get it right now
+	   'cr3' is anther important one */	
 	t->cs = 8;
 	t->eflags = 0x206;
 	list_init(&p->list);
-	/*
-	lock();
-	list_add_before( &ready, &(p->list));
-	unlock();
-	*/
 
-//这两个域要通过MM和FM获取
-//	p->cr3 = get_kcr3();
-//	t->eip = (uint32_t)fun;
 	return p;
 }
 
