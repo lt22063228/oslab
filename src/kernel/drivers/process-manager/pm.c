@@ -2,7 +2,7 @@
 #include "hal.h"
 //duplicate define below
 #define PCB_SIZE 16
-#define KSTACK_SIZE
+#define KSTACK_SIZE 4096
 #define NR_PDE 1024
 #define NR_PTE 1024
 pid_t PM;
@@ -19,7 +19,6 @@ void init_pm(void){
 	PCB *p = create_kthread(pmd);
 	PM = p->pid;
 	wakeup(p);
-//	create_process();	
 }
 static void pmd(void){
 	create_process();
@@ -29,21 +28,25 @@ static void pmd(void){
 		switch(msg.type){
 		case FORK:
 			/*fork the process from source pid */	
+			// msg.src = 100;	
+			msg.dest = 100;
 			PCB *parent = fetch_pcb(msg.src);
 			PCB *child = new_pcb();
 
 			/*update pointer field pointing to kernel stack, ie, tf & ebp*/
 			/*calculate offset */
-			uint32_t kstack_offset = (uint32_t)parent - (uint32_t)child;
+			int kstack_offset = (int)child - (int)parent;
 
 			/*update tf*/
 			child->tf = msg.buf + kstack_offset;
 			/*copy the kernel stack */
 			memcpy(child->kstack, parent->kstack, KSTACK_SIZE);
+			/*after memcpy, we can set the return value */
+			((TrapFrame*)(child->tf))->eax = 0;
 			/*update ebp*/
 			TrapFrame *tf = child->tf;
-			TrapFrame *end = (TrapFrame*)(child->kstack+KSTACK_SIZE-sizeof(TrapFrame))
-			for(; tf < end; tf = tf->ebp){
+			TrapFrame *end = (TrapFrame*)(child->kstack+KSTACK_SIZE-sizeof(TrapFrame));
+			for(; tf < end; tf = (TrapFrame*)tf->ebp){
 				tf->ebp = tf->ebp + kstack_offset;	
 			}
 
@@ -52,15 +55,29 @@ static void pmd(void){
 			/*notice that parent's stack is not included, since 
 			  we use kernel stack, do it above ^.^ */
 
+			/*allocate the CR3 */
+			msg.src = current->pid;
+			msg.req_pid = child->pid;
+			msg.type = NEW_PCB;
+			send(MM, &msg);	
+			receive(MM, &msg);
+			child->cr3 = (CR3*)msg.ret;
 
 			/*fork CR3's content, deep copy*/
 			msg.src = current->pid;	
 			msg.type = FORK;
-			msg.req_pid = child->pid;
 			msg.buf = parent->cr3;
+			msg.req_pid = child->pid;
 			send(MM, &msg);
 			receive(MM, &msg);
-
+			wakeup(child);
+			msg.src = current->pid;
+			msg.ret = child->pid;
+			send(parent->pid, &msg);
+			break;
+		default: 
+			assert(0);
+			break;
 		}
 		volatile int x = 0;
 		x ++;

@@ -1,11 +1,17 @@
 #define SYS_puts 3
+#define SYS_fork 4
 volatile int x = 0;
 int syscall(int id,...);
 int main(){
+	volatile int t ;
+	t = syscall(SYS_fork);
+	if(t == 0){
+		t ++;
+	}else{
+		t ++;
+	}
 	while(1){
 		if(x % 10000000 == 0){
-			volatile int t = syscall(SYS_puts, 1, 2, 3);
-			t ++;
 		}
 		x ++;
 	}

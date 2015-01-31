@@ -18,7 +18,10 @@ schedule(void) {
 	}
 	current = list_entry( now, PCB, list ); 
 	if(current->pid == 10){
-		printk("haha\n");
+		printk("this is pid 10\n");
+	}
+	if(current->pid == 11){
+		printk("this is pid 11\n");
 	}
 	if(current != &idle){	
 		write_cr3( current->cr3 );

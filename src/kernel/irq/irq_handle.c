@@ -39,7 +39,9 @@ void schedule();
 void do_syscall(TrapFrame *tf);
 void irq_handle(TrapFrame *tf) {
 	int irq = tf->irq;
-
+	if(current->pid == 11){
+		printk("child proc irq : %d \n",irq);
+	}
 	if (irq < 0) {
 		panic("Unhandled exception!");
 	}

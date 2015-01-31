@@ -10,6 +10,7 @@
 #define NEW_PAGE 4
 #define NEW_PCB 5
 #define MAP_KERNEL 6
+#define FORK 7
 
 /* message from outside interruption, no pid */
 #define MSG_HARD_INTR 100

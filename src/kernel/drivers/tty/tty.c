@@ -25,7 +25,6 @@ ttyd(void) {
 	Msg m;
 	while (1) {
 		receive(ANY, &m);
-		printk("TTY is %d, ttyd is receiving\n",TTY);
 		if (m.src == MSG_HARD_INTR) {
 			switch (m.type) {
 				case MSG_TTY_GETKEY:

@@ -82,7 +82,7 @@ Dev	include/hal.h	/^} Dev;$/;"	t	typeref:struct:Device
 Device	include/hal.h	/^typedef struct Device {$/;"	s
 FILE_READ	include/hal.h	9;"	d
 MAP_KERNEL	include/hal.h	12;"	d
-MSG_HARD_INTR	include/hal.h	14;"	d
+MSG_HARD_INTR	include/hal.h	15;"	d
 NEW_PAGE	include/hal.h	10;"	d
 NEW_PCB	include/hal.h	11;"	d
 __HAL_H__	include/hal.h	2;"	d
@@ -341,7 +341,10 @@ FM	src/kernel/drivers/file-manager/fm.c	/^pid_t FM;$/;"	v
 do_read	src/kernel/drivers/file-manager/fm.c	/^void do_read( int file_name, uint8_t *buf, off_t offset, size_t len  ){$/;"	f
 fmd	src/kernel/drivers/file-manager/fm.c	/^fmd( void ){$/;"	f	file:
 init_fm	src/kernel/drivers/file-manager/fm.c	/^void init_fm(void) {$/;"	f
+SYS_puts	src/kernel/drivers/file-manager/test/proc1.c	1;"	d	file:
 main	src/kernel/drivers/file-manager/test/proc1.c	/^int main(){$/;"	f
+syscall	src/kernel/drivers/file-manager/test/proc1.c	/^syscall(int id, ...) {$/;"	f
+x	src/kernel/drivers/file-manager/test/proc1.c	/^volatile int x = 0;$/;"	v
 NR_DEV	src/kernel/drivers/hal.c	5;"	d	file:
 dev_pool	src/kernel/drivers/hal.c	/^static Dev dev_pool[NR_DEV];$/;"	v	file:
 dev_read	src/kernel/drivers/hal.c	/^dev_read(const char *dev_name, pid_t reqst_pid, void *buf, off_t offset, size_t len) {$/;"	f
@@ -385,24 +388,34 @@ __IDE_H__	src/kernel/drivers/ide/ide.h	2;"	d
 geide	src/kernel/drivers/ide/ideread.c	/^geide(void){$/;"	f	file:
 init_geide	src/kernel/drivers/ide/ideread.c	/^void init_geide(void) {$/;"	f
 MM	src/kernel/drivers/memory-manager/mm.c	/^pid_t MM;$/;"	v
-NR_KERNEL_THREAD	src/kernel/drivers/memory-manager/mm.c	11;"	d	file:
-NR_MEM_PAGE	src/kernel/drivers/memory-manager/mm.c	7;"	d	file:
-NR_MEM_SEG	src/kernel/drivers/memory-manager/mm.c	6;"	d	file:
-NR_SEG_PAGE	src/kernel/drivers/memory-manager/mm.c	9;"	d	file:
-NR_USER_PROC	src/kernel/drivers/memory-manager/mm.c	10;"	d	file:
-SEG_SIZE	src/kernel/drivers/memory-manager/mm.c	8;"	d	file:
-align_to_page	src/kernel/drivers/memory-manager/mm.c	/^static PDE updir[NR_USER_PROC][NR_PDE] align_to_page;$/;"	v	file:
-align_to_page	src/kernel/drivers/memory-manager/mm.c	/^static PTE uptable[NR_USER_PROC][NR_PDE][NR_PTE] align_to_page;$/;"	v	file:
-alloc_map	src/kernel/drivers/memory-manager/mm.c	/^uint8_t alloc_map[NR_MEM_PAGE] = {0};$/;"	v
+NR_KERNEL_THREAD	src/kernel/drivers/memory-manager/mm.c	7;"	d	file:
+NR_PAGE_PER_PROC	src/kernel/drivers/memory-manager/mm.c	8;"	d	file:
+NR_PROC	src/kernel/drivers/memory-manager/mm.c	6;"	d	file:
+NR_PTABLE	src/kernel/drivers/memory-manager/mm.c	9;"	d	file:
+PTABLES	src/kernel/drivers/memory-manager/mm.c	/^typedef struct PTABLES{$/;"	s	file:
+Ptable	src/kernel/drivers/memory-manager/mm.c	/^} Ptable;$/;"	t	typeref:struct:PTABLES	file:
+align_to_page	src/kernel/drivers/memory-manager/mm.c	/^static PDE pdir[NR_PROC][NR_PDE] align_to_page;$/;"	v	file:
+align_to_page	src/kernel/drivers/memory-manager/mm.c	/^static PTE ptable[NR_PTABLE][NR_PTE] align_to_page;$/;"	v	file:
+cr3	src/kernel/drivers/memory-manager/mm.c	/^static CR3 cr3[NR_PROC];$/;"	v	file:
 init_mm	src/kernel/drivers/memory-manager/mm.c	/^void init_mm(void) {$/;"	f
+list	src/kernel/drivers/memory-manager/mm.c	/^	ListHead list; $/;"	m	struct:PTABLES	file:
+map_kernel	src/kernel/drivers/memory-manager/mm.c	/^static void map_kernel(pid_t req_pid){$/;"	f	file:
 mmd	src/kernel/drivers/memory-manager/mm.c	/^mmd(void){$/;"	f	file:
-ucr3	src/kernel/drivers/memory-manager/mm.c	/^static CR3 ucr3[NR_USER_PROC];$/;"	v	file:
+pframe	src/kernel/drivers/memory-manager/mm.c	/^static int pframe[NR_PROC] = {0};$/;"	v	file:
+pt	src/kernel/drivers/memory-manager/mm.c	/^	PTE *pt;$/;"	m	struct:PTABLES	file:
+pt_free	src/kernel/drivers/memory-manager/mm.c	/^ListHead pt_free, pt_used;$/;"	v
+pt_used	src/kernel/drivers/memory-manager/mm.c	/^ListHead pt_free, pt_used;$/;"	v
+pts	src/kernel/drivers/memory-manager/mm.c	/^Ptable pts[NR_PTABLE];$/;"	v
+KSTACK_SIZE	src/kernel/drivers/process-manager/pm.c	5;"	d	file:
+NR_PDE	src/kernel/drivers/process-manager/pm.c	6;"	d	file:
+NR_PTE	src/kernel/drivers/process-manager/pm.c	7;"	d	file:
 PCB_SIZE	src/kernel/drivers/process-manager/pm.c	4;"	d	file:
 PM	src/kernel/drivers/process-manager/pm.c	/^pid_t PM;$/;"	v
 create_process	src/kernel/drivers/process-manager/pm.c	/^void create_process(void){$/;"	f
 header	src/kernel/drivers/process-manager/pm.c	/^uint8_t header[512];$/;"	v
 init_pm	src/kernel/drivers/process-manager/pm.c	/^void init_pm(void){$/;"	f
 new_pcb	src/kernel/drivers/process-manager/pm.c	/^PCB* new_pcb(void){$/;"	f
+pmd	src/kernel/drivers/process-manager/pm.c	/^static void pmd(void){$/;"	f	file:
 NR_MAX_FILE	src/kernel/drivers/ramdisk/ramdisk.c	6;"	d	file:
 NR_MAX_SIZE	src/kernel/drivers/ramdisk/ramdisk.c	7;"	d	file:
 RAMDISK	src/kernel/drivers/ramdisk/ramdisk.c	/^pid_t RAMDISK;$/;"	v
@@ -551,9 +564,6 @@ handles	src/kernel/irq/irq_handle.c	/^static struct IRQ_t *handles[NR_HARD_INTR]
 irq_handle	src/kernel/irq/irq_handle.c	/^void irq_handle(TrapFrame *tf) {$/;"	f
 next	src/kernel/irq/irq_handle.c	/^	struct IRQ_t *next;$/;"	m	struct:IRQ_t	typeref:struct:IRQ_t::IRQ_t	file:
 routine	src/kernel/irq/irq_handle.c	/^	void (*routine)(void);$/;"	m	struct:IRQ_t	file:
-FREQ_8253	src/kernel/main.c	56;"	d	file:
-HZ	src/kernel/main.c	57;"	d	file:
-PORT_TIME	src/kernel/main.c	55;"	d	file:
 os_init	src/kernel/main.c	/^os_init(void) {$/;"	f
 os_init_cont	src/kernel/main.c	/^os_init_cont(void) {$/;"	f
 welcome	src/kernel/main.c	/^welcome(void) {$/;"	f
@@ -577,6 +587,10 @@ make_pte	src/kernel/memory/util.c	/^make_pte(PTE *p, void *addr) {$/;"	f
 current	src/kernel/process/schedule.c	/^PCB idle, *current = &idle;$/;"	v
 idle	src/kernel/process/schedule.c	/^PCB idle, *current = &idle;$/;"	v
 schedule	src/kernel/process/schedule.c	/^schedule(void) {$/;"	f
+SYS_puts	src/kernel/process/syscall.c	5;"	d	file:
+SYS_read	src/kernel/process/syscall.c	3;"	d	file:
+SYS_write	src/kernel/process/syscall.c	4;"	d	file:
+do_syscall	src/kernel/process/syscall.c	/^void do_syscall(TrapFrame *tf) {$/;"	f
 A	src/kernel/process/util.c	/^void A(){$/;"	f
 B	src/kernel/process/util.c	/^void B(){$/;"	f
 C	src/kernel/process/util.c	/^void C(){$/;"	f

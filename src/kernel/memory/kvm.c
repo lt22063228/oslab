@@ -40,6 +40,7 @@ init_page(void) {
 
 
 	for (pdir_idx = 0; pdir_idx < NR_PDE; pdir_idx ++) {
+		/* haven't paging, need physical address */
 		make_invalid_pde(&pdir[pdir_idx]);
 	}
 

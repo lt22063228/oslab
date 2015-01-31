@@ -3,7 +3,7 @@
 #include "memory.h"
 #include "x86/memory.h"
 
-#define NR_PROC 1
+#define NR_PROC 10
 #define NR_KERNEL_THREAD 10
 #define NR_PAGE_PER_PROC 1024
 #define NR_PTABLE 128
@@ -51,28 +51,22 @@ void init_mm(void) {
 	MM = p->pid;
 	wakeup(p);
 }
+static void map_kernel(pid_t req_pid);
 static void
 mmd(void){
 	Msg m;
 	while(1){
 		receive( ANY, &m );
-		pid_t req_pid;
+		pid_t req_pid = m.req_pid;
 		uint32_t va;
-		uint32_t puser_idx, pdir_idx;
+		uint32_t puser_idx = req_pid - NR_KERNEL_THREAD;
 		size_t memsz;
 		int num_page;
 		switch( m.type ){
 			case MAP_KERNEL:
-				req_pid = m.req_pid;
-				puser_idx = req_pid - NR_KERNEL_THREAD;
-				PTE *ptable = (PTE *)va_to_pa(get_kptable());
-				for (pdir_idx = 0; pdir_idx < PHY_MEM / PD_SIZE; pdir_idx ++) {
-					/* store the address of kernel page table
-					 * because pte has been initialized in the
-					 * kernel, we are not bother to do so */
-					make_pde(&pdir[puser_idx][pdir_idx], ptable);
-					make_pde(&pdir[puser_idx][pdir_idx + KOFFSET / PD_SIZE], ptable);
-				}
+				/* argument : req_pid */
+				/* return : none */
+				map_kernel(req_pid);
 				m.dest = m.src;
 				m.src = MM;
 				send( m.dest, &m );
@@ -83,22 +77,16 @@ mmd(void){
 				va = m.offset;
 				memsz = m.len;
 				num_page = memsz % PAGE_SIZE == 0 ? memsz / PAGE_SIZE : memsz / PAGE_SIZE + 1;
-				puser_idx = req_pid - NR_KERNEL_THREAD;
 				
-				/* this step is duplicate right now */
-				/*
-				uint32_t pde = ((uint32_t *)(cr3[puser_idx].page_base_directory << 12))[va >> 22];
-				*/	
-				/* because pdirectory is mapped directly */
+				
 				int num;
 				/* store the start of the allocated physical address,
 				   assuming allocated address are sequantial */
 				int pa = (req_pid << 22) + (pframe[puser_idx] << 12);
 				for(num = 0; num < num_page; num++){
 					va = m.offset + (num << 12);
-				
-					PDE *pde = &pdir[puser_idx][va >> 22];	
-
+					/* follow the right track */
+					PDE *pde = pa_to_va(&((PDE*)(cr3[puser_idx].page_directory_base << 12))[va >> 22]);
 					PTE *pt;	
 					if(pde->present == 0){
 						/* allocate a ptable */
@@ -128,11 +116,6 @@ mmd(void){
 						pframe[puser_idx] ++;
 					}
 				}
-				/*	
-				uint32_t pde = ((uint32_t *)(cr3 & ~0xfff))[va >> 22];
-				uint32_t pte = ((uint32_t *)(pde & ~0xfff))[(va >> 12) & 0x3ff];
-				uint32_t pa = (pte & ~0xfff) | (va & 0xfff);
-				*/
 				/* must return virtual address w.r.t kernel,
 				   all thread other than memory manage recognize
 				   physical address */
@@ -142,13 +125,69 @@ mmd(void){
 				send( m.dest, &m );
 				break;
 			case NEW_PCB:
-				puser_idx = m.req_pid - NR_KERNEL_THREAD;
 				m.dest = m.src;
 				m.ret = (int)&cr3[puser_idx];
 				m.src = MM;
 				send( m.dest, &m );
 				break;
-			default: assert(0);
+			case FORK:
+				map_kernel(req_pid);
+				CR3 *pcr3 = (CR3*)m.buf;
+				CR3 *ccr3 = &cr3[puser_idx];
+				PDE *ppde = (PDE*) pa_to_va((pcr3->page_directory_base << 12));
+				PDE *cpde = (PDE*) pa_to_va((ccr3->page_directory_base << 12));
+				int i, j;
+
+				/* don't map kernel again */
+				for(i = 0; i < NR_PDE; i++){
+					if(ppde->present == 1 && cpde->present == 0){
+						/* allocate a ptable for child */
+						ListHead *p = pt_free.next;
+						PTE *pt = list_entry(p, Ptable, list)->pt;
+						list_del(p);
+						list_add_before(&pt_used, p);
+						/* only accept physical address */
+						make_pde(cpde, va_to_pa(pt));
+
+						PTE *cpte = (PTE*)pa_to_va(( cpde->page_frame << 12 ));
+						PTE *ppte = (PTE*)pa_to_va(( ppde->page_frame << 12 ));
+						for(j = 0; j < NR_PTE; j++){
+							if(ppte->present == 1 && cpte->present == 0){
+								void *cpa = (void*)(m.req_pid << 22) + (pframe[puser_idx] << 12);
+								void *ppa = (void*)(ppte->page_frame << 12);
+								make_pte(cpte, cpa);
+								pframe[puser_idx] ++;
+								/* copy the page_frame */
+								memcpy(pa_to_va(cpa), pa_to_va(ppa), PAGE_SIZE);
+							}
+							ppte ++;
+							cpte ++;
+						}
+					}
+					ppde ++;
+					cpde ++;
+				}
+				m.dest = m.src;
+				m.src = MM;
+				send( m.dest, &m );
+				break;
+			default:
+				assert(0);
+				break;
 		}
+	}
+}
+static void map_kernel(pid_t req_pid){
+	int puser_idx = req_pid - NR_KERNEL_THREAD;
+	int pdir_idx;
+	PTE *ptable = (PTE *)va_to_pa(get_kptable());
+	/* map only 40M space for kernel */
+	for (pdir_idx = 0; pdir_idx < NR_KERNEL_THREAD; pdir_idx ++) {
+		/* store the address of kernel page table
+		 * because pte has been initialized in the
+		 * kernel, we are not bother to do so */
+		make_pde(&pdir[puser_idx][pdir_idx], ptable);
+		make_pde(&pdir[puser_idx][pdir_idx + KOFFSET / PD_SIZE], ptable);
+		ptable += NR_PTE;
 	}
 }
