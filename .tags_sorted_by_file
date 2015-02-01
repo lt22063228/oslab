@@ -80,9 +80,11 @@ DEV_READ	include/hal.h	7;"	d
 DEV_WRITE	include/hal.h	8;"	d
 Dev	include/hal.h	/^} Dev;$/;"	t	typeref:struct:Device
 Device	include/hal.h	/^typedef struct Device {$/;"	s
+EXEC	include/hal.h	14;"	d
 FILE_READ	include/hal.h	9;"	d
+FORK	include/hal.h	13;"	d
 MAP_KERNEL	include/hal.h	12;"	d
-MSG_HARD_INTR	include/hal.h	15;"	d
+MSG_HARD_INTR	include/hal.h	17;"	d
 NEW_PAGE	include/hal.h	10;"	d
 NEW_PCB	include/hal.h	11;"	d
 __HAL_H__	include/hal.h	2;"	d
@@ -338,9 +340,11 @@ LDFLAGS	src/kernel/drivers/file-manager/Makefile	/^LDFLAGS = -melf_i386$/;"	m
 OBJS	src/kernel/drivers/file-manager/Makefile	/^OBJS    = $(CFILES:.c=.o) $/;"	m
 cc	src/kernel/drivers/file-manager/Makefile	/^cc = gcc$/;"	m
 FM	src/kernel/drivers/file-manager/fm.c	/^pid_t FM;$/;"	v
-do_read	src/kernel/drivers/file-manager/fm.c	/^void do_read( int file_name, uint8_t *buf, off_t offset, size_t len  ){$/;"	f
+do_read	src/kernel/drivers/file-manager/fm.c	/^void do_read( int file_name, pid_t req_pid, uint8_t *buf, off_t offset, size_t len  ){$/;"	f
 fmd	src/kernel/drivers/file-manager/fm.c	/^fmd( void ){$/;"	f	file:
 init_fm	src/kernel/drivers/file-manager/fm.c	/^void init_fm(void) {$/;"	f
+SYS_exec	src/kernel/drivers/file-manager/test/proc1.c	3;"	d	file:
+SYS_fork	src/kernel/drivers/file-manager/test/proc1.c	2;"	d	file:
 SYS_puts	src/kernel/drivers/file-manager/test/proc1.c	1;"	d	file:
 main	src/kernel/drivers/file-manager/test/proc1.c	/^int main(){$/;"	f
 syscall	src/kernel/drivers/file-manager/test/proc1.c	/^syscall(int id, ...) {$/;"	f
@@ -390,21 +394,29 @@ init_geide	src/kernel/drivers/ide/ideread.c	/^void init_geide(void) {$/;"	f
 MM	src/kernel/drivers/memory-manager/mm.c	/^pid_t MM;$/;"	v
 NR_KERNEL_THREAD	src/kernel/drivers/memory-manager/mm.c	7;"	d	file:
 NR_PAGE_PER_PROC	src/kernel/drivers/memory-manager/mm.c	8;"	d	file:
+NR_PFRAME	src/kernel/drivers/memory-manager/mm.c	10;"	d	file:
 NR_PROC	src/kernel/drivers/memory-manager/mm.c	6;"	d	file:
 NR_PTABLE	src/kernel/drivers/memory-manager/mm.c	9;"	d	file:
+PFRAME	src/kernel/drivers/memory-manager/mm.c	/^typedef struct PFRAME$/;"	s	file:
 PTABLES	src/kernel/drivers/memory-manager/mm.c	/^typedef struct PTABLES{$/;"	s	file:
+Pframe	src/kernel/drivers/memory-manager/mm.c	/^} Pframe;$/;"	t	typeref:struct:PFRAME	file:
 Ptable	src/kernel/drivers/memory-manager/mm.c	/^} Ptable;$/;"	t	typeref:struct:PTABLES	file:
 align_to_page	src/kernel/drivers/memory-manager/mm.c	/^static PDE pdir[NR_PROC][NR_PDE] align_to_page;$/;"	v	file:
 align_to_page	src/kernel/drivers/memory-manager/mm.c	/^static PTE ptable[NR_PTABLE][NR_PTE] align_to_page;$/;"	v	file:
 cr3	src/kernel/drivers/memory-manager/mm.c	/^static CR3 cr3[NR_PROC];$/;"	v	file:
+frame	src/kernel/drivers/memory-manager/mm.c	/^	void *frame;$/;"	m	struct:PFRAME	file:
 init_mm	src/kernel/drivers/memory-manager/mm.c	/^void init_mm(void) {$/;"	f
 list	src/kernel/drivers/memory-manager/mm.c	/^	ListHead list; $/;"	m	struct:PTABLES	file:
+list	src/kernel/drivers/memory-manager/mm.c	/^	ListHead list;$/;"	m	struct:PFRAME	file:
 map_kernel	src/kernel/drivers/memory-manager/mm.c	/^static void map_kernel(pid_t req_pid){$/;"	f	file:
 mmd	src/kernel/drivers/memory-manager/mm.c	/^mmd(void){$/;"	f	file:
+pf_free	src/kernel/drivers/memory-manager/mm.c	/^ListHead pf_free;$/;"	v
+pf_used	src/kernel/drivers/memory-manager/mm.c	/^ListHead pf_used[NR_PROC];$/;"	v
 pframe	src/kernel/drivers/memory-manager/mm.c	/^static int pframe[NR_PROC] = {0};$/;"	v	file:
+pfs	src/kernel/drivers/memory-manager/mm.c	/^Pframe pfs[NR_PFRAME];$/;"	v
 pt	src/kernel/drivers/memory-manager/mm.c	/^	PTE *pt;$/;"	m	struct:PTABLES	file:
-pt_free	src/kernel/drivers/memory-manager/mm.c	/^ListHead pt_free, pt_used;$/;"	v
-pt_used	src/kernel/drivers/memory-manager/mm.c	/^ListHead pt_free, pt_used;$/;"	v
+pt_free	src/kernel/drivers/memory-manager/mm.c	/^ListHead pt_free;$/;"	v
+pt_used	src/kernel/drivers/memory-manager/mm.c	/^ListHead pt_used[NR_PROC];$/;"	v
 pts	src/kernel/drivers/memory-manager/mm.c	/^Ptable pts[NR_PTABLE];$/;"	v
 KSTACK_SIZE	src/kernel/drivers/process-manager/pm.c	5;"	d	file:
 NR_PDE	src/kernel/drivers/process-manager/pm.c	6;"	d	file:
@@ -587,6 +599,8 @@ make_pte	src/kernel/memory/util.c	/^make_pte(PTE *p, void *addr) {$/;"	f
 current	src/kernel/process/schedule.c	/^PCB idle, *current = &idle;$/;"	v
 idle	src/kernel/process/schedule.c	/^PCB idle, *current = &idle;$/;"	v
 schedule	src/kernel/process/schedule.c	/^schedule(void) {$/;"	f
+SYS_exec	src/kernel/process/syscall.c	7;"	d	file:
+SYS_fork	src/kernel/process/syscall.c	6;"	d	file:
 SYS_puts	src/kernel/process/syscall.c	5;"	d	file:
 SYS_read	src/kernel/process/syscall.c	3;"	d	file:
 SYS_write	src/kernel/process/syscall.c	4;"	d	file:
@@ -629,7 +643,10 @@ test_setup	src/kernel/process/util.c	/^void test_setup(void){$/;"	f
 unlock	src/kernel/process/util.c	/^void unlock(){$/;"	f
 wakeup	src/kernel/process/util.c	/^void wakeup(PCB *p){$/;"	f
 copy_from_kernel	src/lib/kcpy.c	/^void copy_from_kernel(PCB* pcb, void* dest, void* src, int len){$/;"	f
+copy_from_kernel_mine	src/lib/kcpy.c	/^void copy_from_kernel_mine(PCB* pcb, void* dest, void* src, int len){$/;"	f
 copy_to_kernel	src/lib/kcpy.c	/^void copy_to_kernel(PCB* pcb, void* dest, void* src, int len){$/;"	f
+kernel_va	src/lib/kcpy.c	/^static void* kernel_va(PCB* pcb, void *src){$/;"	f	file:
+set_from_kernel_mine	src/lib/kcpy.c	/^void set_from_kernel_mine(PCB* pcb, void* dest, uint8_t data, int len){$/;"	f
 strcpy_from_kernel	src/lib/kcpy.c	/^void strcpy_from_kernel(PCB* pcb, char* dest, char* src){$/;"	f
 strcpy_to_kernel	src/lib/kcpy.c	/^void strcpy_to_kernel(PCB* pcb, char* dest, char* src){$/;"	f
 logo	src/lib/logo.c	/^unsigned char logo[] = {$/;"	v

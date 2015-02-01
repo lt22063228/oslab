@@ -346,8 +346,6 @@ static uint8_t file[NR_MAX_FILE][NR_FILE_SIZE] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x55, 0x89, 0xe5, 0x53, 0x83, 0xe4, 0xf0, 0x83,
   0xec, 0x20, 0xc7, 0x44, 0x24, 0x0c, 0x03, 0x00, 0x00, 0x00, 0xc7, 0x44,
   0x24, 0x08, 0x02, 0x00, 0x00, 0x00, 0xc7, 0x44, 0x24, 0x04, 0x03, 0x00,
@@ -539,17 +537,33 @@ ramdisk_driver_thread(void){
 		receive( ANY, &m );
 		switch( m.type ){
 			uint32_t i;
-			uint8_t data;
 			case DEV_READ:
 				lock();
 				printk("ramdisk read!\n");
 				unlock();
 				/* m.buf is the request thread's buffer, this server
 				 * write directly to that buffer */
-				for( i=0; i < m.len; i++){
-					if( m.offset + i >= NR_MAX_SIZE ) assert(0);
-					data = *(disk + m.offset + i);
-					*(uint8_t*)(m.buf + i) = data;
+        uint32_t req_pid = m.req_pid;
+        void *buf = m.buf;
+        uint32_t offset = m.offset;
+        uint32_t len = m.len;
+        uint32_t end = offset + len;
+        if(offset / NR_FILE_SIZE != end / NR_FILE_SIZE){
+          /* out of file bound */
+          assert(0);
+        }
+        /* read page by page */
+        uint32_t num = len % PAGE_SIZE == 0 ? (len / PAGE_SIZE) : ((len / PAGE_SIZE) + 1);
+				for( i = 0; i < num; i++){
+          if(i == num - 1){
+            len = end - offset;
+          }else{
+            len = PAGE_SIZE;
+          } 
+          PCB *pcb = fetch_pcb(req_pid);
+          copy_from_kernel_mine(pcb, buf, disk + offset, len);
+          buf += len;
+          offset += len;
 				}
 				m.ret = i;
 				m.dest = m.src;
@@ -559,7 +573,8 @@ ramdisk_driver_thread(void){
 				printk("ramdisk read finished\n");
 				unlock();
 				break;
-			default:	assert(0);
+			default:
+      	assert(0);
 		}
 	}
 }

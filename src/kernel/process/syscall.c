@@ -4,12 +4,10 @@
 #define SYS_write 2
 #define SYS_puts 3
 #define SYS_fork 4
+#define SYS_exec 5
 extern pid_t PM;
 void do_syscall(TrapFrame *tf) {
 	int id = tf->eax; // system call id
-	if(id == 4){
-		printk("fork system call\n");
-	}
 	int b, c, d; 
 	static Msg msg;
 	switch (id) {
@@ -46,7 +44,20 @@ void do_syscall(TrapFrame *tf) {
 			/* parent process return child's pid */
 			tf->eax = msg.ret;
 			break;
-
+		case SYS_exec:
+			/* input : filename, argument string, current pub */
+			/* output: nothing. new process running */
+			msg.src = current->pid;
+			msg.type = EXEC;		
+			/* filename, # in ramdisk */
+			msg.dev_id = tf->ebx;
+			/* argument address, virtual address w.r.t src proc */
+			msg.buf = (void*)tf->ecx;
+			send(PM, &msg);
+			/* when it receive something, current proc become
+			   another one */
+			receive(PM, &msg);
+			break;
 		default:
 			/* kernel thread use system call to self-trap */
 			break;

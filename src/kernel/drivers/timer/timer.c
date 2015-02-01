@@ -81,7 +81,10 @@ timer_driver_thread(void) {
 					msg->i[0] = m.i[0];
 					break;
 
-				default: assert(0);
+				default:
+					printk("server pid:%d, requesting pid:%d, type:%d\n", 
+						current->pid, m.src, m.type);
+					assert(0);
 			}
 		}
 	}

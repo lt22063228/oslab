@@ -75,6 +75,30 @@ static void pmd(void){
 			msg.ret = child->pid;
 			send(parent->pid, &msg);
 			break;
+		case EXEC:
+			/* must be a statement following case */
+			msg.dest = 100;	
+			/* input : source pid, filename, virtual address of argument */
+			/* output: new process running, responsive message sending */
+			int src = msg.src;
+			// int filename = msg.dev_id;	
+			void *addr = msg.buf;
+			char arg[256] = {0};
+			strcpy_to_kernel(fetch_pcb(src), arg, addr);
+			/* reclaim the resource */
+			/* resource include : lock, message, semaphore */
+			/* as a user process, it's now blocked in a receive */
+			/* all locking, messaging reserve */
+			/* so nothing to reclaim right now */
+
+			/* reinitialize address spcae */
+			/* first, invalidate, but should return the buf */
+			msg.src = current->pid;
+			msg.type = EXEC;
+			msg.req_pid = src;
+			send(MM, &msg);
+			receive(MM, &msg);
+			break;
 		default: 
 			assert(0);
 			break;
@@ -87,6 +111,7 @@ static void pmd(void){
 
 void create_process(void){
 	/* get CR3 and initialize PCB */	
+	print_ready();
 	PCB *p = new_pcb();			
 	Msg m;
 	m.src = current->pid;
@@ -94,6 +119,7 @@ void create_process(void){
 	m.type = NEW_PCB;
 	send( MM, &m);
 	receive( MM, &m );
+	print_ready();
 	/* the only one which is physical address */
 	p->cr3 = (CR3*)m.ret;
 	
@@ -106,9 +132,10 @@ void create_process(void){
 	receive( MM, &m );
 
 	/*get top 512 bytes from file-0, including ELF HEADER and PROGRAM HEADER */
-	m.src = current->pid;
-	m.type = FILE_READ;
 	struct ELFHeader *elf = (struct ELFHeader *)header;
+	m.src = current->pid;
+	m.req_pid = current->pid;
+	m.type = FILE_READ;
 	m.buf = header;
 	m.len = 512;
 	m.dev_id = 0;
@@ -118,7 +145,7 @@ void create_process(void){
 		
 	/*load each program segment*/
 	struct ProgramHeader *ph, *eph;
-	uint8_t *va = 0,*i;
+	uint8_t *va = 0;
 	ph = (struct ProgramHeader *)((char*)elf + elf->phoff);
 	eph = ph + elf->phnum;
 	for(; ph < eph; ph ++) {
@@ -134,22 +161,23 @@ void create_process(void){
 		m.len = ph->memsz;
 		send( MM, &m );
 		receive( MM, &m );
-		va = (void*)m.ret;
 
 		/* read ph->filesz bytes starting from offset ph->off from file "0" into va */
 		/* first of all, load the segment. */	
 		m.src = current->pid;
 		m.type = FILE_READ;
 		m.dest = FM;
+		m.req_pid = p->pid;
 		m.dev_id = 0;
-		m.buf =  va ; /* file-manager recognize virtual address */
+		m.buf = (void*)ph->vaddr ; /* file-manager recognize virtual address */
 		m.offset = ph->off;
 		m.len = ph->filesz;
 		send( FM, &m );
 		receive( FM, &m );
 
 		/* make the remaining memory zero */
-		for( i = va + ph->filesz; i < va + ph->memsz; *i ++ = 0);
+		// for( i = va + ph->filesz; i < va + ph->memsz; *i ++ = 0);
+		set_from_kernel_mine(p, (va + ph->filesz), 0, (ph->memsz - ph->filesz));
 	}
 
 	/* initialize the PCB, kernel stack, put the user process into ready queue */

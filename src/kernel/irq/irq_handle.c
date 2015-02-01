@@ -39,14 +39,17 @@ void schedule();
 void do_syscall(TrapFrame *tf);
 void irq_handle(TrapFrame *tf) {
 	int irq = tf->irq;
-	if(current->pid == 11){
-		printk("child proc irq : %d \n",irq);
+	if(current->pid < 10){
+		printk("kernel. irq: %d\n",irq);
 	}
 	if (irq < 0) {
 		panic("Unhandled exception!");
 	}
 	if (irq == 128) {
 		/* system call */
+		if(current->pid == 10){
+			printk("achor\n");
+		}
 		do_syscall(tf);	
 	}else if(irq == 14){
 		/* page fault */	
@@ -67,6 +70,9 @@ void irq_handle(TrapFrame *tf) {
 	}
 	/* tf is the updated trapFrame pointer, original data in current->tf is the pointer when
 	 * current process is awaken last time, it needs being updated to tf. */
+	if(current->pid == 10){
+		printk("irq_handle:71\n");
+	}
 	current->tf = tf;
 	schedule();
 }

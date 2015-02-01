@@ -52,4 +52,5 @@ extern void receive( pid_t src, Msg *m);
 PCB* fetch_pcb(pid_t );
 void lock();
 void unlock();
+void print_ready();
 #endif

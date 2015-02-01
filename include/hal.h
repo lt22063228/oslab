@@ -11,6 +11,7 @@
 #define NEW_PCB 5
 #define MAP_KERNEL 6
 #define FORK 7
+#define EXEC 8
 
 /* message from outside interruption, no pid */
 #define MSG_HARD_INTR 100
@@ -36,5 +37,7 @@ void copy_from_kernel(PCB* pcb, void* dest, void* src, int len);
 void copy_to_kernel(PCB* pcb, void* dest, void* src, int len);
 void strcpy_to_kernel(PCB* pcb, char* dest, char* src);
 void strcpy_from_kernel(PCB* pcb, char* dest, char* src);
+void copy_from_kernel_mine(PCB* pcb, void* dest, void* src, int len);
+void set_from_kernel_mine(PCB* pcb, void* dest, uint8_t data, int len);
 
 #endif

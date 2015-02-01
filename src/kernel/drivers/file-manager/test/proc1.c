@@ -1,10 +1,13 @@
 #define SYS_puts 3
 #define SYS_fork 4
+#define SYS_exec 5
 volatile int x = 0;
 int syscall(int id,...);
 int main(){
 	volatile int t ;
-	t = syscall(SYS_fork);
+	int filename = 1;
+	char *args = "gcc -O2 -o hello hello.c";
+	t = syscall(SYS_exec, filename, args);
 	if(t == 0){
 		t ++;
 	}else{

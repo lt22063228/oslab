@@ -3,6 +3,7 @@
 #define NBUF 5
 #define NR_PROD 3
 #define NR_CONS 4
+extern PCB idle;
 void sleep(ListHead *p);
 PCB pcb_struct[PCB_SIZE];
 int pcb_count = 0;
@@ -23,7 +24,7 @@ PCB* fetch_pcb(pid_t pid){
 PCB*
 create_kthread(void *fun) {
 	/* FOR LAB1 ---------------------------------------------------------------------- */
-		PCB* p=0;
+		PCB *p = 0;
 		assert(pcb_count != PCB_SIZE);
 		p = &pcb_struct[pcb_count++];
 	//每个进程拥有一个pid，这里将PID设置为数组index，方便查找
@@ -57,18 +58,13 @@ create_kthread(void *fun) {
 
 void
 init_proc() {
+	PCB *pcb = &idle;
+	pcb->pid = 1000;
+	pcb->cr3 = get_kcr3();
 	list_init(&ready);
 	list_init(&block);
 	list_init(&(current->list));
 	list_add_before( &ready, &(current->list) );
-//	create_kthread(A);
-//	create_kthread(B);
-//	create_kthread(C);
-//	create_kthread(D);
-//	create_kthread(E);
-//	test_setup();
-//	create_kthread(A,1);
-//	create_kthread(A,2);
 }
 /* FOR LOCK & SEMAPHORE --------------------------------------------------------------------------
 			--------------------------------------------------------------------------
