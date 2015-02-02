@@ -596,8 +596,10 @@ make_invalid_pde	src/kernel/memory/util.c	/^make_invalid_pde(PDE *p) {$/;"	f
 make_invalid_pte	src/kernel/memory/util.c	/^make_invalid_pte(PTE *p) {$/;"	f
 make_pde	src/kernel/memory/util.c	/^make_pde(PDE *p, void *addr) {$/;"	f
 make_pte	src/kernel/memory/util.c	/^make_pte(PTE *p, void *addr) {$/;"	f
+count	src/kernel/process/schedule.c	/^static uint32_t count = 0;$/;"	v	file:
 current	src/kernel/process/schedule.c	/^PCB idle, *current = &idle;$/;"	v
 idle	src/kernel/process/schedule.c	/^PCB idle, *current = &idle;$/;"	v
+print_ready	src/kernel/process/schedule.c	/^void print_ready(){$/;"	f
 schedule	src/kernel/process/schedule.c	/^schedule(void) {$/;"	f
 SYS_exec	src/kernel/process/syscall.c	7;"	d	file:
 SYS_fork	src/kernel/process/syscall.c	6;"	d	file:

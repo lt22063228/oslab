@@ -89,6 +89,7 @@ mmd(void){
 		uint32_t puser_idx = req_pid - NR_KERNEL_THREAD;
 		size_t memsz;
 		int num_page;
+		int i, j;
 		switch( m.type ){
 			case MAP_KERNEL:
 				/* argument : req_pid */
@@ -108,8 +109,6 @@ mmd(void){
 				// int pa = (req_pid << 22) + (pframe[puser_idx] << 12);
 
 				/* the allocated address must be sequential, in order for kernel to used */
-
-
 				int num;
 				for(num = 0; num < num_page; num++){
 					va = m.offset + (num << 12);
@@ -169,7 +168,6 @@ mmd(void){
 				CR3 *ccr3 = &cr3[puser_idx];
 				PDE *ppde = (PDE*) pa_to_va((pcr3->page_directory_base << 12));
 				PDE *cpde = (PDE*) pa_to_va((ccr3->page_directory_base << 12));
-				int i, j;
 
 				/* don't map kernel again */
 				for(i = 0; i < NR_PDE; i++){
@@ -193,6 +191,8 @@ mmd(void){
 								void *ppa = (void*)(ppte->page_frame << 12);
 								make_pte(cpte, cpa);
 								pframe[puser_idx] ++;
+								if(pframe[puser_idx] > 1024)
+									assert(0);
 								/* copy the page_frame */
 								memcpy(pa_to_va(cpa), pa_to_va(ppa), PAGE_SIZE);
 							}
@@ -208,21 +208,46 @@ mmd(void){
 				send( m.dest, &m );
 				break;
 			case EXEC:
-				// /* input : req_pid */
-				// /* output: invalidate address space */
-				// CR3 *cr3 = fetch_pcb(req_pid)->cr3;
-				// PDE *pde = (PDE*) pa_to_va(cr3->page_directory_base << 12);
-				// int i,j;
-				// for(i = 0; i < NR_PDE; i++){
-				// 	if(pde->present == 1){
-				// 		PTE *pte = (PTE*) pa_to_va(pde->page_frame << 12);
-				// 		for(j = 0; j < NR_PTE; j++){
-				// 			if(pte->present == 1){
-				// 				make_invalid_pte()
-				// 			}
-				// 		}
-				// 	}
-				// }
+				/* input : req_pid */
+				/* output: invalidate address space */
+				m.dest = 100;
+				CR3 *cr3 = fetch_pcb(req_pid)->cr3;
+				PDE *pde = (PDE*) pa_to_va(cr3->page_directory_base << 12);
+				/* invalidate the pde and pte */
+				/* DON'T invalidate pte of kernel */
+				for(i = 0; i < NR_PDE; i++){
+					if(pde->present == 1){
+						PTE *pte = (PTE*) pa_to_va(pde->page_frame << 12);
+						for(j = 0; j < NR_PTE; j++){
+							uint32_t addr =  pte->page_frame;
+							if(pte->present == 1 && addr >= 10 * 1024){
+								make_invalid_pte(pte);
+							}
+							pte ++;
+						}
+						make_invalid_pde(pde);
+					}
+					pde ++;
+				}
+
+				/* reclaim to pt_free */
+				ListHead *list = pt_used[puser_idx].next;
+				while(list != &pt_used[puser_idx]){
+					list_del(list);	
+					list_add_before(&pt_free, list);
+					list = pt_used[puser_idx].next;
+				}
+
+				/* reclaim to pf_free */
+				list = pf_used[puser_idx].next;
+				while(list != &pf_used[puser_idx]){
+					list_del(list);	
+					list_add_before(&pf_free, list);
+					list = pf_used[puser_idx].next;
+				}
+				m.dest = m.src;
+				m.src = MM;
+				send(m.dest, &m);
 				break;
 			default:
 				assert(0);

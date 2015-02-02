@@ -39,20 +39,21 @@ void schedule();
 void do_syscall(TrapFrame *tf);
 void irq_handle(TrapFrame *tf) {
 	int irq = tf->irq;
-	if(current->pid < 10){
-		printk("kernel. irq: %d\n",irq);
-	}
+	// if(current->pid < 10){
+	// 	printk("kernel. irq: %d\n",irq);
+	// }
 	if (irq < 0) {
 		panic("Unhandled exception!");
 	}
 	if (irq == 128) {
 		/* system call */
-		if(current->pid == 10){
-			printk("achor\n");
-		}
+		// if(current->pid == 10){
+		// 	printk("achor\n");
+		// }
 		do_syscall(tf);	
 	}else if(irq == 14){
 		/* page fault */	
+		panic("page fault! pid:%d\n",current->pid);
 	}else if (irq < 1000) {
 		extern uint8_t logo[];
 		panic("Unexpected exception #%d\n\33[1;31mHint: The machine is always right! For more details about exception #%d, see\n%s\n\33[0m", irq, irq, logo);

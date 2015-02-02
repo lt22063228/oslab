@@ -266,6 +266,7 @@ cook	src/kernel/drivers/tty/console.c	/^cook(Console *c) {$/;"	f	file:
 copy_from_kernel	src/lib/kcpy.c	/^void copy_from_kernel(PCB* pcb, void* dest, void* src, int len){$/;"	f
 copy_from_kernel_mine	src/lib/kcpy.c	/^void copy_from_kernel_mine(PCB* pcb, void* dest, void* src, int len){$/;"	f
 copy_to_kernel	src/lib/kcpy.c	/^void copy_to_kernel(PCB* pcb, void* dest, void* src, int len){$/;"	f
+count	src/kernel/process/schedule.c	/^static uint32_t count = 0;$/;"	v	file:
 cr	src/kernel/drivers/tty/console.c	/^cr(Console *c) {$/;"	f	file:
 cr3	include/process.h	/^	CR3* cr3;$/;"	m	struct:PCB
 cr3	src/kernel/drivers/memory-manager/mm.c	/^static CR3 cr3[NR_PROC];$/;"	v	file:
@@ -527,6 +528,7 @@ present	include/x86/memory.h	/^	uint32_t present             : 1;$/;"	m	struct:S
 present	include/x86/memory.h	/^	uint32_t present          : 1;$/;"	m	struct:GateDescriptor
 prev	include/adt/list.h	/^	struct ListHead *prev, *next;$/;"	m	struct:ListHead	typeref:struct:ListHead::ListHead
 prev	include/x86/memory.h	/^	uint32_t prev;			\/\/ don't care$/;"	m	struct:TSS
+print_ready	src/kernel/process/schedule.c	/^void print_ready(){$/;"	f
 printk	src/lib/printk.c	/^printk(const char *ctl, ...) {$/;"	f
 privilege_level	include/x86/memory.h	/^	uint32_t privilege_level     : 2;$/;"	m	struct:SegmentDescriptor
 privilege_level	include/x86/memory.h	/^	uint32_t privilege_level  : 2;$/;"	m	struct:GateDescriptor
