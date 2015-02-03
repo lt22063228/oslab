@@ -4,18 +4,15 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
-A	src/kernel/process/util.c	/^void A(){$/;"	f
 ANY	include/process.h	4;"	d
 ASFLAGS	Makefile	/^ASFLAGS = -m32 -MD -I.\/include$/;"	m
-B	src/kernel/process/util.c	/^void B(){$/;"	f
-C	src/kernel/process/util.c	/^void C(){$/;"	f
 CBUF_SZ	src/kernel/drivers/tty/term.h	35;"	d
 CBUF_SZ	src/kernel/drivers/tty/tty.h	8;"	d
 CC	Makefile	/^CC      = gcc$/;"	m
 CFILES	Makefile	/^CFILES  = $(shell find src\/ -name "*.c")$/;"	m
 CFILES	src/kernel/drivers/file-manager/Makefile	/^CFILES  = $(shell find .\/test -name "*.c")$/;"	m
 CFLAGS	Makefile	/^CFLAGS  = -m32 -static -ggdb -MD -Wall -Werror -I.\/include -O0 \\$/;"	m
-CFLAGS	src/kernel/drivers/file-manager/Makefile	/^CFLAGS  = -m32 -static -ggdb -MD -Wall -Werror -I.\/include -O0 \\$/;"	m
+CFLAGS	src/kernel/drivers/file-manager/Makefile	/^CFLAGS  = -Wno-main -m32 -static -ggdb -MD -Wall -Werror -I.\/include -O0 \\$/;"	m
 CR0	include/x86/cpu.h	/^typedef union CR0 {$/;"	u
 CR0	include/x86/cpu.h	/^} CR0;$/;"	t	typeref:union:CR0
 CR3	include/x86/cpu.h	/^typedef union CR3 {$/;"	u
@@ -26,17 +23,16 @@ C_LWHITE	src/kernel/drivers/tty/term.h	41;"	d
 C_WHITE	src/kernel/drivers/tty/term.h	40;"	d
 Console	src/kernel/drivers/tty/tty.h	/^typedef struct Console {$/;"	s
 Console	src/kernel/drivers/tty/tty.h	/^} Console;$/;"	t	typeref:struct:Console
-D	src/kernel/process/util.c	/^void D(){$/;"	f
 DEV_READ	include/hal.h	7;"	d
 DEV_WRITE	include/hal.h	8;"	d
 DPL_KERNEL	include/x86/memory.h	9;"	d
 DPL_USER	include/x86/memory.h	10;"	d
 Dev	include/hal.h	/^} Dev;$/;"	t	typeref:struct:Device
 Device	include/hal.h	/^typedef struct Device {$/;"	s
-E	src/kernel/process/util.c	/^void E(){$/;"	f
 ELFHeader	boot/boot.h	/^struct ELFHeader {$/;"	s
 ELFHeader	include/x86/io.h	/^struct ELFHeader {$/;"	s
 EXEC	include/hal.h	14;"	d
+EXIT	include/hal.h	15;"	d
 FILE_READ	include/hal.h	9;"	d
 FM	src/kernel/drivers/file-manager/fm.c	/^pid_t FM;$/;"	v
 FORK	include/hal.h	13;"	d
@@ -93,7 +89,7 @@ ListHead	include/adt/list.h	/^typedef struct ListHead ListHead;$/;"	t	typeref:st
 MAP_KERNEL	include/hal.h	12;"	d
 MM	src/kernel/drivers/memory-manager/mm.c	/^pid_t MM;$/;"	v
 MSG_BUFF_SIZE	include/process.h	5;"	d
-MSG_HARD_INTR	include/hal.h	17;"	d
+MSG_HARD_INTR	include/hal.h	19;"	d
 MSG_TIMER_UPDATE	include/time.h	6;"	d
 MSG_TTY_GETKEY	src/kernel/drivers/tty/tty.h	5;"	d
 MSG_TTY_UPDATE	src/kernel/drivers/tty/tty.h	6;"	d
@@ -127,6 +123,7 @@ NR_PTE	src/kernel/drivers/process-manager/pm.c	7;"	d	file:
 NR_SEC_CACHE	src/kernel/drivers/ide/cache.c	2;"	d	file:
 NR_SEGMENTS	include/x86/memory.h	16;"	d
 NR_TTY	src/kernel/drivers/tty/tty.h	4;"	d
+NR_WAITER	src/kernel/drivers/process-manager/pm.c	8;"	d	file:
 NULL	include/const.h	7;"	d
 OBJS	Makefile	/^OBJS    = $(CFILES:.c=.o) $(SFILES:.S=.o)$/;"	m
 OBJS	src/kernel/drivers/file-manager/Makefile	/^OBJS    = $(CFILES:.c=.o) $/;"	m
@@ -181,11 +178,17 @@ SFILES	Makefile	/^SFILES  = $(shell find src\/ -name "*.S")$/;"	m
 SIZE_OF_TIMER	src/kernel/drivers/timer/timer.c	11;"	d	file:
 SYS_exec	src/kernel/drivers/file-manager/test/proc1.c	3;"	d	file:
 SYS_exec	src/kernel/process/syscall.c	7;"	d	file:
+SYS_exit	src/kernel/drivers/file-manager/test/proc1.c	4;"	d	file:
+SYS_exit	src/kernel/process/syscall.c	8;"	d	file:
 SYS_fork	src/kernel/drivers/file-manager/test/proc1.c	2;"	d	file:
 SYS_fork	src/kernel/process/syscall.c	6;"	d	file:
+SYS_getpid	src/kernel/drivers/file-manager/test/proc1.c	5;"	d	file:
+SYS_getpid	src/kernel/process/syscall.c	9;"	d	file:
 SYS_puts	src/kernel/drivers/file-manager/test/proc1.c	1;"	d	file:
 SYS_puts	src/kernel/process/syscall.c	5;"	d	file:
 SYS_read	src/kernel/process/syscall.c	3;"	d	file:
+SYS_waitpid	src/kernel/drivers/file-manager/test/proc1.c	6;"	d	file:
+SYS_waitpid	src/kernel/process/syscall.c	10;"	d	file:
 SYS_write	src/kernel/process/syscall.c	4;"	d	file:
 SectorCache	src/kernel/drivers/ide/cache.c	/^struct SectorCache {$/;"	s	file:
 SegDesc	include/x86/memory.h	/^} SegDesc;$/;"	t	typeref:struct:SegmentDescriptor
@@ -202,7 +205,11 @@ Time	include/time.h	/^} Time;$/;"	t	typeref:struct:Time
 TrapFrame	include/x86/memory.h	/^typedef struct TrapFrame {$/;"	s
 TrapFrame	include/x86/memory.h	/^} TrapFrame;$/;"	t	typeref:struct:TrapFrame
 V	src/kernel/process/util.c	/^void V(Sem *s){$/;"	f
+VAR	src/kernel/drivers/file-manager/Makefile	/^VAR = "default"$/;"	m
+WAITPID	include/hal.h	16;"	d
 WRITEBACK_TIME	src/kernel/drivers/ide/ide.c	6;"	d	file:
+Waiter	src/kernel/drivers/process-manager/pm.c	/^typedef struct Waiter{$/;"	s	file:
+Waiter	src/kernel/drivers/process-manager/pm.c	/^} Waiter;$/;"	t	typeref:struct:Waiter	file:
 __ASSERT_H__	include/assert.h	2;"	d
 __COMMON_H__	include/common.h	2;"	d
 __CONST_H__	include/const.h	2;"	d
@@ -247,7 +254,6 @@ block	src/kernel/process/util.c	/^ListHead ready, block, free;$/;"	v
 bool	include/types.h	/^typedef unsigned char  bool;$/;"	t
 bootmain	boot/main.c	/^bootmain(void) {$/;"	f
 buf	include/process.h	/^			void *buf;$/;"	m	struct:Message::__anon6::__anon7
-buf	src/kernel/process/util.c	/^int buf[NBUF], f=0, r=0, g=1;$/;"	v
 cache	src/kernel/drivers/ide/cache.c	/^static struct SectorCache cache[NR_SEC_CACHE];$/;"	v	typeref:struct:SectorCache	file:
 cache_disable	include/x86/cpu.h	/^		uint32_t cache_disable       : 1;$/;"	m	struct:CR0::__anon1
 cache_fetch	src/kernel/drivers/ide/cache.c	/^cache_fetch(uint32_t sector) {$/;"	f	file:
@@ -270,8 +276,8 @@ count	src/kernel/process/schedule.c	/^static uint32_t count = 0;$/;"	v	file:
 cr	src/kernel/drivers/tty/console.c	/^cr(Console *c) {$/;"	f	file:
 cr3	include/process.h	/^	CR3* cr3;$/;"	m	struct:PCB
 cr3	src/kernel/drivers/memory-manager/mm.c	/^static CR3 cr3[NR_PROC];$/;"	v	file:
-create_kthread	src/kernel/process/util.c	/^create_kthread(void *fun) {$/;"	f
-create_process	src/kernel/drivers/process-manager/pm.c	/^void create_process(void){$/;"	f
+create_kthread	src/kernel/process/util.c	/^PCB* create_kthread(void *fun) {$/;"	f
+create_process	src/kernel/drivers/process-manager/pm.c	/^static void create_process(void){$/;"	f	file:
 create_sem	src/kernel/process/util.c	/^void create_sem( Sem* s, int count ){$/;"	f
 cs	include/x86/memory.h	/^	uint32_t eip, cs, eflags;							\/\/ execution state saved by hardware$/;"	m	struct:TrapFrame
 ctrl	src/kernel/drivers/tty/keyboard.c	/^static int caps, ctrl, alt, shft;$/;"	v	file:
@@ -311,7 +317,6 @@ ehsize	include/x86/io.h	/^	unsigned short ehsize;$/;"	m	struct:ELFHeader
 eip	include/x86/memory.h	/^	uint32_t eip, cs, eflags;							\/\/ execution state saved by hardware$/;"	m	struct:TrapFrame
 elf	boot/boot.h	/^	unsigned char  elf[12];$/;"	m	struct:ELFHeader
 elf	include/x86/io.h	/^	unsigned char  elf[12];$/;"	m	struct:ELFHeader
-empty	src/kernel/process/util.c	/^Sem empty, full, mutex;$/;"	v
 emulation	include/x86/cpu.h	/^		uint32_t emulation           : 1;$/;"	m	struct:CR0::__anon1
 entry	boot/boot.h	/^	unsigned int   entry;$/;"	m	struct:ELFHeader
 entry	include/x86/io.h	/^	unsigned int   entry;$/;"	m	struct:ELFHeader
@@ -320,9 +325,10 @@ es	include/x86/memory.h	/^	uint32_t gs, fs, es, ds;							\/\/ data segment regi
 esi	include/x86/memory.h	/^	uint32_t edi, esi, ebp, xxx, ebx, edx, ecx, eax;	\/\/ GPRs$/;"	m	struct:TrapFrame
 esp	include/x86/memory.h	/^	uint32_t esp, ss;									\/\/ only uses when DPL = 3$/;"	m	struct:TrapFrame
 esp0	include/x86/memory.h	/^	uint32_t esp0;$/;"	m	struct:TSS
+exec	src/kernel/drivers/process-manager/pm.c	/^static void exec(Msg *msg){$/;"	f	file:
+exit	src/kernel/drivers/process-manager/pm.c	/^static void exit(Msg *msg){$/;"	f	file:
 extension_type	include/x86/cpu.h	/^		uint32_t extension_type      : 1;$/;"	m	struct:CR0::__anon1
 f	src/kernel/drivers/tty/tty.h	/^	int i, f, r;$/;"	m	struct:Console
-f	src/kernel/process/util.c	/^int buf[NBUF], f=0, r=0, g=1;$/;"	v
 false	include/const.h	5;"	d
 fetch_pcb	src/kernel/process/util.c	/^PCB* fetch_pcb(pid_t pid){$/;"	f
 file	src/kernel/drivers/ramdisk/ramdisk.c	/^static uint8_t file[NR_MAX_FILE][NR_FILE_SIZE] = {$/;"	v	file:
@@ -333,13 +339,13 @@ flags	boot/boot.h	/^	unsigned int flags;$/;"	m	struct:ProgramHeader
 flags	include/x86/io.h	/^	unsigned int   flags;$/;"	m	struct:ELFHeader
 flags	include/x86/io.h	/^	unsigned int flags;$/;"	m	struct:ProgramHeader
 fmd	src/kernel/drivers/file-manager/fm.c	/^fmd( void ){$/;"	f	file:
+fork	src/kernel/drivers/memory-manager/mm.c	/^static void fork(Msg *msg){$/;"	f	file:
+fork	src/kernel/drivers/process-manager/pm.c	/^static void fork(Msg *msg){$/;"	f	file:
 frame	src/kernel/drivers/memory-manager/mm.c	/^	void *frame;$/;"	m	struct:PFRAME	file:
 free	src/kernel/drivers/hal.c	/^static ListHead free, devices;$/;"	v	file:
 free	src/kernel/process/util.c	/^ListHead ready, block, free;$/;"	v
 free_timer_buff	src/kernel/drivers/timer/timer.c	/^static ListHead free_timer_buff;$/;"	v	file:
 fs	include/x86/memory.h	/^	uint32_t gs, fs, es, ds;							\/\/ data segment registers$/;"	m	struct:TrapFrame
-full	src/kernel/process/util.c	/^Sem empty, full, mutex;$/;"	v
-g	src/kernel/process/util.c	/^int buf[NBUF], f=0, r=0, g=1;$/;"	v
 gdt	boot/start.S	/^gdt:$/;"	l
 gdt	src/kernel/memory/kvm.c	/^static SegDesc gdt[NR_SEGMENTS];$/;"	v	file:
 gdtdesc	boot/start.S	/^gdtdesc:                      # descriptor$/;"	l
@@ -391,6 +397,7 @@ init_idt	src/kernel/irq/idt.c	/^void init_idt() {$/;"	f
 init_intr	src/kernel/irq/i8259.c	/^void init_intr(void) {$/;"	f
 init_mm	src/kernel/drivers/memory-manager/mm.c	/^void init_mm(void) {$/;"	f
 init_page	src/kernel/memory/kvm.c	/^init_page(void) {$/;"	f
+init_pcb	src/kernel/process/util.c	/^void init_pcb(pid_t req_pid){$/;"	f
 init_pm	src/kernel/drivers/process-manager/pm.c	/^void init_pm(void){$/;"	f
 init_proc	src/kernel/process/util.c	/^init_proc() {$/;"	f
 init_ramdisk	src/kernel/drivers/ramdisk/ramdisk.c	/^void init_ramdisk(void){$/;"	f
@@ -412,7 +419,6 @@ kcr3	src/kernel/memory/kvm.c	/^static CR3 kcr3;											\/\/ kernel CR3$/;"	v	
 kernel_va	src/lib/kcpy.c	/^static void* kernel_va(PCB* pcb, void *src){$/;"	f	file:
 keychar	src/kernel/drivers/tty/keyboard.c	/^static int keychar[2][128] = {$/;"	v	file:
 kstack	include/process.h	/^	uint8_t kstack[KSTACK_SIZE];$/;"	m	struct:PCB
-last	src/kernel/process/util.c	/^int last = 0;$/;"	v
 lbuf	src/kernel/drivers/tty/tty.h	/^	char lbuf[LBUF_SZ + 1];$/;"	m	struct:Console
 len	include/process.h	/^			size_t len;$/;"	m	struct:Message::__anon6::__anon7
 lf	src/kernel/drivers/tty/console.c	/^lf(Console *c) {$/;"	f	file:
@@ -423,6 +429,7 @@ list	include/process.h	/^	ListHead list;$/;"	m	struct:Message
 list	include/process.h	/^	ListHead list;$/;"	m	struct:PCB
 list	src/kernel/drivers/memory-manager/mm.c	/^	ListHead list; $/;"	m	struct:PTABLES	file:
 list	src/kernel/drivers/memory-manager/mm.c	/^	ListHead list;$/;"	m	struct:PFRAME	file:
+list	src/kernel/drivers/process-manager/pm.c	/^	ListHead list;$/;"	m	struct:Waiter	file:
 list_add	include/adt/list.h	/^list_add(ListHead *prev, ListHead *next, ListHead *data) {$/;"	f
 list_add_after	include/adt/list.h	/^list_add_after(ListHead *list, ListHead *data) {$/;"	f
 list_add_before	include/adt/list.h	/^list_add_before(ListHead *list, ListHead *data) {$/;"	f
@@ -431,6 +438,8 @@ list_empty	include/adt/list.h	/^list_empty(ListHead *list) {$/;"	f
 list_entry	include/adt/list.h	11;"	d
 list_foreach	include/adt/list.h	60;"	d
 list_init	include/adt/list.h	/^list_init(ListHead *list) {$/;"	f
+load_header	src/kernel/drivers/process-manager/pm.c	/^static void load_header(void* header, int file_idx){$/;"	f	file:
+load_segment	src/kernel/drivers/process-manager/pm.c	/^static void load_segment(pid_t req_pid, struct ELFHeader *elf, int file_idx){$/;"	f	file:
 lock	src/kernel/process/util.c	/^void lock(){$/;"	f
 lock_count	include/process.h	/^	int lock_count;$/;"	m	struct:PCB
 logo	src/lib/logo.c	/^unsigned char logo[] = {$/;"	v
@@ -443,14 +452,16 @@ make_invalid_pde	src/kernel/memory/util.c	/^make_invalid_pde(PDE *p) {$/;"	f
 make_invalid_pte	src/kernel/memory/util.c	/^make_invalid_pte(PTE *p) {$/;"	f
 make_pde	src/kernel/memory/util.c	/^make_pde(PDE *p, void *addr) {$/;"	f
 make_pte	src/kernel/memory/util.c	/^make_pte(PTE *p, void *addr) {$/;"	f
-map_kernel	src/kernel/drivers/memory-manager/mm.c	/^static void map_kernel(pid_t req_pid){$/;"	f	file:
+map_kernel	src/kernel/drivers/memory-manager/mm.c	/^static void map_kernel(Msg *msg){$/;"	f	file:
+map_kernel	src/kernel/drivers/process-manager/pm.c	/^static void map_kernel(pid_t req_pid){$/;"	f	file:
+map_kernel_assist	src/kernel/drivers/memory-manager/mm.c	/^static void map_kernel_assist(pid_t req_pid){$/;"	f	file:
 md	src/kernel/drivers/timer/timer.c	/^md(int year, int month) {$/;"	f	file:
 memcpy	src/lib/string.c	/^void memcpy(void *dest, const void *src, size_t size) {$/;"	f
 memset	src/lib/string.c	/^void memset(void *dest, uint8_t data, size_t size) {$/;"	f
 memsz	boot/boot.h	/^	unsigned int memsz;$/;"	m	struct:ProgramHeader
 memsz	include/x86/io.h	/^	unsigned int memsz;$/;"	m	struct:ProgramHeader
 minute	include/time.h	/^	int hour, minute, second;$/;"	m	struct:Time
-mmd	src/kernel/drivers/memory-manager/mm.c	/^mmd(void){$/;"	f	file:
+mmd	src/kernel/drivers/memory-manager/mm.c	/^static void mmd(void){$/;"	f	file:
 monitor_coprocessor	include/x86/cpu.h	/^		uint32_t monitor_coprocessor : 1;$/;"	m	struct:CR0::__anon1
 month	include/time.h	/^	int year, month, day;$/;"	m	struct:Time
 movl	src/kernel/drivers/tty/console.c	/^movl(Console *c) {$/;"	f	file:
@@ -460,9 +471,10 @@ msg_buff	include/process.h	/^	Msg msg_buff[MSG_BUFF_SIZE];$/;"	m	struct:PCB
 msg_free	include/process.h	/^	ListHead msg_free;$/;"	m	struct:PCB
 msg_full	include/process.h	/^	Sem msg_full;$/;"	m	struct:PCB
 msg_mutex	include/process.h	/^	Sem msg_mutex;$/;"	m	struct:PCB
-mutex	src/kernel/process/util.c	/^Sem empty, full, mutex;$/;"	v
 name	include/hal.h	/^	const char *name;$/;"	m	struct:Device
 name	src/kernel/drivers/tty/tty.h	/^	const char *name;$/;"	m	struct:Console
+new_page	src/kernel/drivers/memory-manager/mm.c	/^static void new_page(Msg *msg){$/;"	f	file:
+new_pcb	src/kernel/drivers/memory-manager/mm.c	/^static void new_pcb(Msg *msg){$/;"	f	file:
 new_pcb	src/kernel/drivers/process-manager/pm.c	/^PCB* new_pcb(void){$/;"	f
 next	include/adt/list.h	/^	struct ListHead *prev, *next;$/;"	m	struct:ListHead	typeref:struct:ListHead::
 next	src/kernel/drivers/tty/console.c	/^next(Console *c) {$/;"	f	file:
@@ -539,7 +551,6 @@ pt_used	src/kernel/drivers/memory-manager/mm.c	/^ListHead pt_used[NR_PROC];$/;"	
 pts	src/kernel/drivers/memory-manager/mm.c	/^Ptable pts[NR_PTABLE];$/;"	v
 putc	src/kernel/drivers/tty/console.c	/^putc(Console *c, char ch) {$/;"	f	file:
 r	src/kernel/drivers/tty/tty.h	/^	int i, f, r;$/;"	m	struct:Console
-r	src/kernel/process/util.c	/^int buf[NBUF], f=0, r=0, g=1;$/;"	v
 ramdisk_driver_thread	src/kernel/drivers/ramdisk/ramdisk.c	/^ramdisk_driver_thread(void){$/;"	f	file:
 read_byte	src/kernel/drivers/ide/cache.c	/^read_byte(uint32_t offset) {$/;"	f
 read_cr0	include/x86/cpu.h	/^read_cr0() {$/;"	f
@@ -552,8 +563,10 @@ readsect	boot/main.c	/^readsect(void *dst, int offset) {$/;"	f
 readseg	boot/main.c	/^readseg(unsigned char *pa, int count, int offset) {$/;"	f
 ready	src/kernel/process/util.c	/^ListHead ready, block, free;$/;"	v
 receive	src/kernel/process/util.c	/^void receive(pid_t src, Msg *m){$/;"	f
+reclaim	src/kernel/drivers/memory-manager/mm.c	/^static void reclaim(Msg *msg){$/;"	f	file:
 removec	src/kernel/drivers/tty/console.c	/^removec(Console *c) {$/;"	f	file:
 req_pid	include/process.h	/^			pid_t req_pid;$/;"	m	struct:Message::__anon6::__anon7
+req_pid	src/kernel/drivers/process-manager/pm.c	/^	pid_t req_pid;$/;"	m	struct:Waiter	file:
 ret	include/process.h	/^		int ret;$/;"	m	union:Message::__anon5
 routine	src/kernel/irq/irq_handle.c	/^	void (*routine)(void);$/;"	m	struct:IRQ_t	file:
 rstk	src/kernel/drivers/tty/tty.h	/^	Msg rstk[RSTK_SZ];$/;"	m	struct:Console
@@ -588,9 +601,10 @@ shstrndx	boot/boot.h	/^	unsigned short shstrndx;$/;"	m	struct:ELFHeader
 shstrndx	include/x86/io.h	/^	unsigned short shstrndx;$/;"	m	struct:ELFHeader
 size	src/kernel/drivers/tty/tty.h	/^	int size, pos;$/;"	m	struct:Console
 size_t	include/types.h	/^typedef          int   size_t;$/;"	t
-sleep	src/kernel/process/util.c	/^void sleep(ListHead *block){$/;"	f
+sleep	src/kernel/process/util.c	/^void sleep(ListHead *block, PCB *pcb){$/;"	f
 soft_use	include/x86/memory.h	/^	uint32_t soft_use            : 1;$/;"	m	struct:SegmentDescriptor
 src	include/process.h	/^	pid_t src, dest;$/;"	m	struct:Message
+src	src/kernel/drivers/process-manager/pm.c	/^	pid_t src;$/;"	m	struct:Waiter	file:
 ss	include/x86/memory.h	/^	uint32_t esp, ss;									\/\/ only uses when DPL = 3$/;"	m	struct:TrapFrame
 ss0	include/x86/memory.h	/^	uint32_t ss0;$/;"	m	struct:TSS
 start	boot/start.S	/^start:$/;"	l
@@ -601,12 +615,11 @@ strcpy	src/lib/string.c	/^void strcpy(char *d, const char *s) {$/;"	f
 strcpy_from_kernel	src/lib/kcpy.c	/^void strcpy_from_kernel(PCB* pcb, char* dest, char* src){$/;"	f
 strcpy_to_kernel	src/lib/kcpy.c	/^void strcpy_to_kernel(PCB* pcb, char* dest, char* src){$/;"	f
 strlen	src/lib/string.c	/^size_t strlen(const char *str) {$/;"	f
+sys_exit	src/kernel/process/syscall.c	/^static void sys_exit(TrapFrame *tf, Msg *msg){$/;"	f	file:
+sys_waitpid	src/kernel/process/syscall.c	/^static void sys_waitpid(TrapFrame *tf, Msg *msg){$/;"	f	file:
 syscall	src/kernel/drivers/file-manager/test/proc1.c	/^syscall(int id, ...) {$/;"	f
 system	include/x86/memory.h	/^	uint32_t system           : 1;$/;"	m	struct:GateDescriptor
 task_switched	include/x86/cpu.h	/^		uint32_t task_switched       : 1;$/;"	m	struct:CR0::__anon1
-test_consumer	src/kernel/process/util.c	/^void test_consumer(void){$/;"	f
-test_producer	src/kernel/process/util.c	/^void test_producer(void){$/;"	f
-test_setup	src/kernel/process/util.c	/^void test_setup(void){$/;"	f
 tf	include/process.h	/^	void *tf;$/;"	m	struct:PCB
 time_intr	src/kernel/drivers/ide/ide.c	/^time_intr(void) {$/;"	f	file:
 timer_buff	src/kernel/drivers/timer/timer.c	/^static Msg timer_buff[SIZE_OF_TIMER];	$/;"	v	file:
@@ -651,7 +664,11 @@ vfprintf	src/lib/printk.c	/^void vfprintf(void (*printer)(char), const char *ctl
 vmem	src/kernel/drivers/tty/console.c	/^static uint16_t *vmem = (void*)pa_to_va(0xb8000);$/;"	v	file:
 w	src/kernel/drivers/tty/tty.h	/^	int w, h, wh;$/;"	m	struct:Console
 wait_intr	include/x86/cpu.h	/^wait_intr() {$/;"	f
+wait_pid	src/kernel/drivers/process-manager/pm.c	/^static void wait_pid(Msg *msg){$/;"	f	file:
 waitdisk	boot/main.c	/^waitdisk(void) {$/;"	f
+waiter_free	src/kernel/drivers/process-manager/pm.c	/^ListHead waiter_free, waiter_used;$/;"	v
+waiter_used	src/kernel/drivers/process-manager/pm.c	/^ListHead waiter_free, waiter_used;$/;"	v
+waiters	src/kernel/drivers/process-manager/pm.c	/^Waiter waiters[NR_WAITER];$/;"	v
 wakeup	src/kernel/process/util.c	/^void wakeup(PCB *p){$/;"	f
 welcome	src/kernel/main.c	/^welcome(void) {$/;"	f
 wh	src/kernel/drivers/tty/tty.h	/^	int w, h, wh;$/;"	m	struct:Console

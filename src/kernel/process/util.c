@@ -4,56 +4,23 @@
 #define NR_PROD 3
 #define NR_CONS 4
 extern PCB idle;
-void sleep(ListHead *p);
 PCB pcb_struct[PCB_SIZE];
 int pcb_count = 0;
 ListHead ready, block, free;
-//测试lock和unlock的变量
-//
-int buf[NBUF], f=0, r=0, g=1;
-int last = 0;
-Sem empty, full, mutex;
-void create_sem(Sem*, int);
-void test_setup(void);
-
-void A();void B();void C();void D();void E();
 
 PCB* fetch_pcb(pid_t pid){
 	return &pcb_struct[pid];
 }
-PCB*
-create_kthread(void *fun) {
-	/* FOR LAB1 ---------------------------------------------------------------------- */
-		PCB *p = 0;
-		assert(pcb_count != PCB_SIZE);
-		p = &pcb_struct[pcb_count++];
-	//每个进程拥有一个pid，这里将PID设置为数组index，方便查找
-		p->pid = pcb_count-1;
-	// the first trapFrame will be in the bottom of the kstack.
-		TrapFrame *t = (TrapFrame*)(p->kstack+KSTACK_SIZE-sizeof(TrapFrame));
-		p->tf = t;
-		p->if_flag = true;
-	//	t->ss = (uint32_t)num;//将传给线程的参数存在ss中，调用栈中第一个参数是SS所在的位子。
-		t->cs = 8;
-		t->eip = (uint32_t)fun;
-		t->eflags = 0x206;
-		
-		list_init(&p->list);
-		list_add_before( &ready, &(p->list));
-	/* END OF LAB1 -------------------------------------------------------------------- */
-		list_init( &(p->msg) );
-		create_sem( &(p->msg_mutex), 1 );
-		create_sem( &(p->msg_full), 0 );
-		//消息机制中用于缓冲消息的缓冲区
-		p->lock_count = 0;
-		p->cr3 = get_kcr3();
-		list_init( &p->msg_free );
-		int i;
-		for( i=0; i < MSG_BUFF_SIZE; i++){
-			list_add_before( &p->msg_free, &p->msg_buff[i].list);
-		}
+PCB* create_kthread(void *fun) {
+	assert(pcb_count != PCB_SIZE);
+	PCB *pcb = fetch_pcb(pcb_count);
+	pcb->pid = pcb_count;
+	pcb_count ++;
+	init_pcb(pcb->pid);
+	((TrapFrame*)pcb->tf)->eip = (uint32_t)fun;
+	pcb->cr3 = get_kcr3();
 
-		return  p;
+	return  pcb;
 }	
 
 void
@@ -69,10 +36,10 @@ init_proc() {
 /* FOR LOCK & SEMAPHORE --------------------------------------------------------------------------
 			--------------------------------------------------------------------------
 			--------------------------------------------------------------------------*/
-void sleep(ListHead *block){
+void sleep(ListHead *block, PCB *pcb){
 	lock();
-	list_del( &current->list );
-	list_add_before(block, &current->list);
+	list_del(&pcb->list );
+	list_add_before(block, &pcb->list);
 	asm volatile("int $0x80");//这里触发来个trap，在中断处理函数中对这个trap不做任何处理，直接跳过
 	unlock();
 }
@@ -122,7 +89,7 @@ void P(Sem *s){
 		   inside sleep(), soft interruption make thread switch happen 
 		   when switching happens, irq_handle will recover the right
 		   lock state of the thread switched to. */
-		sleep( &s->block );
+		sleep(&s->block, current);
 	}
 	unlock();
 }
@@ -143,45 +110,7 @@ void create_sem( Sem* s, int count ){
 /* END OF LOCK--------------------------------------------------------------------------
 			--------------------------------------------------------------------------
 			--------------------------------------------------------------------------*/
-void test_producer(void){
-	while(1){
-		
-		P(&empty);
-		P(&mutex);
-		if( g% 10000 == 0){
-			printk(".");
-		}
-		buf[f++] = g++;
-		f %= NBUF;
-		V(&mutex);
-		V(&full);
-	}
-}
-void test_consumer(void){
-	int get;
-	while(1){
-		P(&full);
-		P(&mutex);
-		get = buf[r++];
-		assert(last == get-1 );
-		last = get;
-		r %= NBUF;
-		V( &empty );
-		V( &mutex );
-	}
-}
-void test_setup(void){
-	create_sem( &full, 0 );
-	create_sem( &empty, NBUF );
-	create_sem( &mutex, 1);
-	int i;
-	for(i=0; i<NR_PROD; i++){
-		wakeup(create_kthread(test_producer));
-	}
-	for(i=0; i<NR_CONS; i++){
-		wakeup(create_kthread(test_consumer));
-	}
-}
+
 //消息机制的send和receive
 void send(pid_t dest, Msg *m){
 	/* different thread share the same address space, so can easily get the PCB */
@@ -192,24 +121,17 @@ void send(pid_t dest, Msg *m){
 	lock();
 	/* Access resource in a critical region : the other PCB can access too */
 	/* ------------------------------------------------------------------- */
-	if(list_empty (&pcb->msg_free) ){
+	if(list_empty(&pcb->msg_free)){
 		/* this is when the target thread has no free message buffer */
 		if ( m->src == -2 ) printk("yes!\n");
 		printk("the requested pid---%d\n, the requesting pid --- %d \n,type---%d\n",dest, m->src,m->type);
 		assert(0);
 	}
-	ListHead *free = pcb->msg_free.next;
-	list_del( free );
-	list_add_before( &pcb->msg, free );
-	volatile Msg *free_msg = list_entry( free, Msg, list);	
-	free_msg->src = m->src;
-	free_msg->dest = m->dest;
-	free_msg->type = m->type;
-	free_msg->req_pid = m->req_pid;
-	free_msg->dev_id = m->dev_id;
-	free_msg->buf = m->buf;
-	free_msg->offset = m->offset;
-	free_msg->len = m->len;
+	ListHead *list = pcb->msg_free.next;
+	list_del(list );
+	list_add_before(&pcb->msg,list );
+	Msg *msg = list_entry(list, Msg, list);	
+	memcpy(msg, m, sizeof(Msg) - sizeof(ListHead));
 	unlock();
 	/* Because V() don't sleep() itself, which can be used in irq_handle */
 	V( msg_full ); 
@@ -224,14 +146,7 @@ void receive(pid_t src, Msg *m){
 		while( index_list != msg_list ){
 			Msg* msg = list_entry(index_list, Msg, list);
 			if( src == ANY || msg->src == src ){
-				m->src = msg->src;
-				m->dest = msg->dest;
-				m->type = msg->type;
-				m->req_pid = msg->req_pid;
-				m->dev_id = msg->dev_id;
-				m->buf = msg->buf;
-				m->offset = msg->offset;
-				m->len = msg->len;
+				memcpy(m, msg, sizeof(Msg) - sizeof(ListHead));
 				list_del( index_list );
 				list_add_before( &current->msg_free, index_list );
 				unlock();
@@ -244,86 +159,31 @@ void receive(pid_t src, Msg *m){
 	}
 }
 
-void A(){
-	Msg m1, m2;
-	m1.src = current->pid;
-	int x = 0;
-	while(1){
-		if( x % 10000000 == 0){
-			printk("a");
-			send(pcb_struct[pcb_count-1].pid, &m1);
-			receive(pcb_struct[pcb_count-1].pid, &m2);
-		}
-		x ++;
-	}
-}
-void B(){
-	Msg m1, m2;
-	m1.src = current->pid;
-	int x = 0;
-	receive(pcb_struct[pcb_count-1].pid, &m2);
-	while(1){
-		if( x % 10000000 == 0 ){
-			printk("b");
-			send(pcb_struct[pcb_count-1].pid, &m1);
-			receive(pcb_struct[pcb_count-1].pid, &m2);
-		}
-		x ++;
-	}
-}
-void C(){
-	Msg m1, m2;
-	m1.src = current->pid;
-	int x = 0;
-	receive(pcb_struct[pcb_count-1].pid, &m2);
-	while(1){
-		if( x % 10000000 == 0 ){
-			printk("c");
-			send(pcb_struct[pcb_count-1].pid, &m1);
-			receive(pcb_struct[pcb_count-1].pid, &m2);
-		}
-		x ++;
-	}
-}
-void D(){
-	Msg m1, m2;
-	m1.src = current->pid;
-	int x = 0;
-	receive(pcb_struct[pcb_count-1].pid, &m2);
-	while(1){
-		if( x % 10000000 == 0 ){
-			printk("d");
-			send(pcb_struct[pcb_count-1].pid, &m1);
-			receive(pcb_struct[pcb_count-1].pid, &m2);
-		}
-		x ++;
-	}
-}
-void E(){
-	Msg m1, m2;
-	m2.src = current->pid;
-	char c;
-	while(1){
-		receive(ANY, &m1);
-		if(m1.src == 0){
-			c = '|';
-			m2.dest = 1;
-		}else if(m1.src == 1){
-			c = '/';
-			m2.dest = 2;
-		}else if(m1.src == 2){
-			c = '-';
-			m2.dest = 3;
-		}else if(m1.src == 3){
-			c = '-';
-			m2.dest = 4;
-		}else if(m1.src == 4){
-			c = '\\';
-			m2.dest = 0;
-		}else{
-			assert(0);
-		}
-		printk("\033[s\033[1000;1000H%c\033[u", c);
-		send(m2.dest, &m2);
-	}
+void init_pcb(pid_t req_pid){
+	/* initialize the pcb */
+	PCB *pcb = fetch_pcb(req_pid);
+	CR3 *cr3 = pcb->cr3;
+	if(pcb->list.prev != NULL)
+		list_del(&pcb->list);
+	memset(pcb, 0, sizeof(PCB));
+	pcb->pid = req_pid;
+	pcb->cr3 = cr3;
+	/* append the argument */	
+	TrapFrame *t = (TrapFrame*)(pcb->kstack + KSTACK_SIZE - sizeof(TrapFrame));
+	pcb->tf = t;
+	// t->ss = (uint32_t)args;
+	list_init(&(pcb->msg));
+	create_sem(&(pcb->msg_mutex), 1);
+	create_sem(&(pcb->msg_full), 0);
+	pcb->lock_count = 0;
+	pcb->if_flag = true;
+	list_init( &pcb->msg_free );
+	int i;
+	for( i=0; i < MSG_BUFF_SIZE; i++){
+		list_add_before( &pcb->msg_free, &pcb->msg_buff[i].list);
+	}	
+
+	t->cs = 8;
+	t->eflags = 0x206;
+	list_init(&pcb->list);
 }

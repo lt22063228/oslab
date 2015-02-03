@@ -45,12 +45,16 @@ typedef struct PCB {
 extern PCB *current;
 extern ListHead ready, free_pcb, block;
 extern ListHead lock_queue;
-extern void wakeup(PCB *p);
-extern PCB* create_kthread( void *fun);
-extern void send( pid_t dest, Msg *m);
-extern void receive( pid_t src, Msg *m);
-PCB* fetch_pcb(pid_t );
+void wakeup(PCB *p);
+void sleep(ListHead *block, PCB *pcb);
+
+PCB* create_kthread( void *fun);
+void create_sem( Sem* s, int count );
+void send( pid_t dest, Msg *m);
+void receive( pid_t src, Msg *m);
+PCB* fetch_pcb(pid_t req_pid);
 void lock();
 void unlock();
 void print_ready();
+void init_pcb(pid_t req_pid);
 #endif

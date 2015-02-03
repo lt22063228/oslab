@@ -12,6 +12,8 @@
 #define MAP_KERNEL 6
 #define FORK 7
 #define EXEC 8
+#define EXIT 9
+#define WAITPID 10
 
 /* message from outside interruption, no pid */
 #define MSG_HARD_INTR 100
