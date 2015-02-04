@@ -11,11 +11,11 @@ $(VAR).img: $(OBJS)
 	$(LD) $(LDFLAGS) -e main -Ttext 0x08048000 -o $(VAR).img $(OBJS)
 	readelf -a $(VAR).img > elf.txt
 	sh dump-file.sh $(VAR).img
-	cp $(VAR).img ../../../../$(VAR).img
+	cp -f $(VAR).img ../../../../$(VAR).img
 
 -include $(OBJS:.o=.d)
 
 clean:
 	rm -f $(VAR).img $(OBJS) $(OBJS:.o=.d)
-	rm a.txt
-	rm ../../../../$(VAR).img
+	rm -f a.txt
+	rm -f ../../../../$(VAR).img

@@ -21,6 +21,7 @@ static void fork(Msg *msg);
 static void exec(Msg *msg);
 static void exit(Msg *msg);
 static void wait_pid(Msg *msg);
+static void allocate_stack(pid_t req_pid);
 
 typedef struct Waiter{
 	pid_t req_pid;
@@ -44,8 +45,8 @@ void init_pm(void){
 	wakeup(pcb);
 }
 static void pmd(void){
-	create_process(4);
-	create_process(5);
+	create_process(7);
+	// create_process(5);
 	static Msg msg;
 	while(1){
 		receive(ANY, &msg);
@@ -72,13 +73,13 @@ static void exec(Msg *msg){
 	/* input : source pid, filename, virtual address of argument */
 	/* output: new process running, responsive message sending */
 	pid_t req_pid = msg->src;
-	static char args[256] = {0};
+	// static char args[256] = {0};
 	PCB *pcb = fetch_pcb(req_pid);
 	int file_idx = msg->dev_id;	
 
 	/* copy arguments into kernel */
-	void *addr = msg->buf;
-	strcpy_to_kernel(pcb, args, addr);
+	// void *addr = msg->buf;
+	// strcpy_to_kernel(pcb, args, addr);
 
 	/* reclaim the resource */
 	/* resource include : lock, message, semaphore */
@@ -96,6 +97,8 @@ static void exec(Msg *msg){
 
 	/* initialize the pcb */
 	init_pcb(req_pid);
+
+	// allocate_stack(req_pid);
 
 	/* map the kernel address */
 	map_kernel(req_pid);	
@@ -177,6 +180,8 @@ static void create_process(int file_idx){
 	
 	/* map the kernel address */
 	map_kernel(req_pid);
+
+	allocate_stack(req_pid);	
 
 	/*get top 512 bytes from file-0, including ELF HEADER and PROGRAM HEADER */
 	struct ELFHeader *elf = (struct ELFHeader *)header;
@@ -306,4 +311,15 @@ static void wait_pid(Msg *msg){
 	waiter->req_pid = req_pid;
 	list_del(list);
 	list_add_before(&waiter_used, list);
+}
+
+static void allocate_stack(pid_t req_pid){
+	Msg msg;
+	msg.src = current->pid;
+	msg.type = NEW_PAGE;
+	msg.req_pid = req_pid;
+	msg.offset = USER_STACK_OFFSET;
+	msg.len = PAGE_SIZE;
+	send(MM, &msg);
+	receive(MM, &msg);
 }

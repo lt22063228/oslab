@@ -217,6 +217,7 @@ static void fork(Msg *msg){
 	PDE *cpde = (PDE*) pa_to_va((ccr3->page_directory_base << 12));
 	int i, j;
 	/* don't map kernel again */
+	/* if it is kernel address, it is make valid in map_kernel_assist() */
 	for(i = 0; i < NR_PDE; i++){
 		if(ppde->present == 1 && cpde->present == 0){
 			/* allocate a ptable for child */
@@ -258,6 +259,10 @@ static void fork(Msg *msg){
 static void reclaim(Msg *msg){
 	pid_t req_pid = msg->req_pid;
 	uint32_t puser_idx = req_pid - NR_KERNEL_THREAD;
+	fetch_pcb(req_pid);
+	if(req_pid == 11){
+		printk("req_pid 11 reclaim ok\n");
+	}
 	CR3 *cr3 = fetch_pcb(req_pid)->cr3;
 	PDE *pde = (PDE*) pa_to_va(cr3->page_directory_base << 12);
 	/* invalidate the pde and pte */

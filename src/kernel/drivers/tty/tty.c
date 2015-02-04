@@ -52,7 +52,6 @@ ttyd(void) {
 						consl_sync(&ttys[m.dev_id]);
 					}
 					else {
-						printk("strange");
 						assert(0);
 					}
 					m.ret = m.len;

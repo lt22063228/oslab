@@ -11,7 +11,7 @@ CBUF_SZ	src/kernel/drivers/tty/tty.h	8;"	d
 CC	Makefile	/^CC      = gcc$/;"	m
 CFILES	Makefile	/^CFILES  = $(shell find src\/ -name "*.c")$/;"	m
 CFILES	src/kernel/drivers/file-manager/Makefile	/^CFILES  = $(shell find .\/test -name "*.c")$/;"	m
-CFLAGS	Makefile	/^CFLAGS  = -m32 -static -ggdb -MD -Wall -Werror -I.\/include -O0 \\$/;"	m
+CFLAGS	Makefile	/^CFLAGS  = -Wno-main -m32 -static -ggdb -MD -Wall -Werror -I.\/include -O0 \\$/;"	m
 CFLAGS	src/kernel/drivers/file-manager/Makefile	/^CFLAGS  = -Wno-main -m32 -static -ggdb -MD -Wall -Werror -I.\/include -O0 \\$/;"	m
 CR0	include/x86/cpu.h	/^typedef union CR0 {$/;"	u
 CR0	include/x86/cpu.h	/^} CR0;$/;"	t	typeref:union:CR0
@@ -51,7 +51,7 @@ INTERRUPT_GATE_32	src/kernel/irq/idt.c	4;"	d	file:
 INTR	include/process.h	7;"	d
 IRQ_SLAVE	src/kernel/irq/i8259.c	5;"	d	file:
 IRQ_t	src/kernel/irq/irq_handle.c	/^struct IRQ_t {$/;"	s	file:
-KMEM	include/memory.h	24;"	d
+KMEM	include/memory.h	25;"	d
 KOFFSET	boot/main.c	13;"	d	file:
 KOFFSET	include/memory.h	6;"	d
 KSTACK_SIZE	include/process.h	3;"	d
@@ -89,7 +89,7 @@ ListHead	include/adt/list.h	/^typedef struct ListHead ListHead;$/;"	t	typeref:st
 MAP_KERNEL	include/hal.h	12;"	d
 MM	src/kernel/drivers/memory-manager/mm.c	/^pid_t MM;$/;"	v
 MSG_BUFF_SIZE	include/process.h	5;"	d
-MSG_HARD_INTR	include/hal.h	19;"	d
+MSG_HARD_INTR	include/hal.h	20;"	d
 MSG_TIMER_UPDATE	include/time.h	6;"	d
 MSG_TTY_GETKEY	src/kernel/drivers/tty/tty.h	5;"	d
 MSG_TTY_UPDATE	src/kernel/drivers/tty/tty.h	6;"	d
@@ -136,7 +136,7 @@ PCB_SIZE	src/kernel/process/util.c	2;"	d	file:
 PDE	include/x86/memory.h	/^} PDE;$/;"	t	typeref:union:PageDirectoryEntry
 PD_SIZE	include/x86/memory.h	31;"	d
 PFRAME	src/kernel/drivers/memory-manager/mm.c	/^typedef struct PFRAME$/;"	s	file:
-PHY_MEM	include/memory.h	27;"	d
+PHY_MEM	include/memory.h	28;"	d
 PM	src/kernel/drivers/process-manager/pm.c	/^pid_t PM;$/;"	v
 PORT_PIC_MASTER	src/kernel/irq/i8259.c	3;"	d	file:
 PORT_PIC_SLAVE	src/kernel/irq/i8259.c	4;"	d	file:
@@ -184,6 +184,8 @@ SYS_fork	src/kernel/drivers/file-manager/test/proc1.c	2;"	d	file:
 SYS_fork	src/kernel/process/syscall.c	6;"	d	file:
 SYS_getpid	src/kernel/drivers/file-manager/test/proc1.c	5;"	d	file:
 SYS_getpid	src/kernel/process/syscall.c	9;"	d	file:
+SYS_gets	src/kernel/drivers/file-manager/test/proc1.c	7;"	d	file:
+SYS_gets	src/kernel/process/syscall.c	11;"	d	file:
 SYS_puts	src/kernel/drivers/file-manager/test/proc1.c	1;"	d	file:
 SYS_puts	src/kernel/process/syscall.c	5;"	d	file:
 SYS_read	src/kernel/process/syscall.c	3;"	d	file:
@@ -204,6 +206,7 @@ Time	include/time.h	/^typedef struct Time {$/;"	s
 Time	include/time.h	/^} Time;$/;"	t	typeref:struct:Time
 TrapFrame	include/x86/memory.h	/^typedef struct TrapFrame {$/;"	s
 TrapFrame	include/x86/memory.h	/^} TrapFrame;$/;"	t	typeref:struct:TrapFrame
+USER_STACK_OFFSET	include/hal.h	17;"	d
 V	src/kernel/process/util.c	/^void V(Sem *s){$/;"	f
 VAR	src/kernel/drivers/file-manager/Makefile	/^VAR = "default"$/;"	m
 WAITPID	include/hal.h	16;"	d
@@ -240,6 +243,7 @@ align_to_page	src/kernel/drivers/memory-manager/mm.c	/^static PTE ptable[NR_PTAB
 align_to_page	src/kernel/memory/kvm.c	/^static PDE kpdir[NR_PDE] align_to_page;						\/\/ kernel page directory$/;"	v	file:
 align_to_page	src/kernel/memory/kvm.c	/^static PTE kptable[PHY_MEM \/ PAGE_SIZE] align_to_page;		\/\/ kernel page tables$/;"	v	file:
 alignment_mask	include/x86/cpu.h	/^		uint32_t alignment_mask      : 1;$/;"	m	struct:CR0::__anon1
+allocate_stack	src/kernel/drivers/process-manager/pm.c	/^static void allocate_stack(pid_t req_pid){$/;"	f	file:
 alt	src/kernel/drivers/tty/keyboard.c	/^static int caps, ctrl, alt, shft;$/;"	v	file:
 ani	src/kernel/drivers/tty/banner.c	/^static char ani[] = "-\\\\|\/";$/;"	v	file:
 asm_do_irq	src/kernel/irq/do_irq.S	/^asm_do_irq:$/;"	l
@@ -277,7 +281,7 @@ cr	src/kernel/drivers/tty/console.c	/^cr(Console *c) {$/;"	f	file:
 cr3	include/process.h	/^	CR3* cr3;$/;"	m	struct:PCB
 cr3	src/kernel/drivers/memory-manager/mm.c	/^static CR3 cr3[NR_PROC];$/;"	v	file:
 create_kthread	src/kernel/process/util.c	/^PCB* create_kthread(void *fun) {$/;"	f
-create_process	src/kernel/drivers/process-manager/pm.c	/^static void create_process(void){$/;"	f	file:
+create_process	src/kernel/drivers/process-manager/pm.c	/^static void create_process(int file_idx){$/;"	f	file:
 create_sem	src/kernel/process/util.c	/^void create_sem( Sem* s, int count ){$/;"	f
 cs	include/x86/memory.h	/^	uint32_t eip, cs, eflags;							\/\/ execution state saved by hardware$/;"	m	struct:TrapFrame
 ctrl	src/kernel/drivers/tty/keyboard.c	/^static int caps, ctrl, alt, shft;$/;"	v	file:
@@ -325,6 +329,7 @@ es	include/x86/memory.h	/^	uint32_t gs, fs, es, ds;							\/\/ data segment regi
 esi	include/x86/memory.h	/^	uint32_t edi, esi, ebp, xxx, ebx, edx, ecx, eax;	\/\/ GPRs$/;"	m	struct:TrapFrame
 esp	include/x86/memory.h	/^	uint32_t esp, ss;									\/\/ only uses when DPL = 3$/;"	m	struct:TrapFrame
 esp0	include/x86/memory.h	/^	uint32_t esp0;$/;"	m	struct:TSS
+exec	src/kernel/drivers/file-manager/test/proc1.c	/^static int exec(int filename, char *cmd){$/;"	f	file:
 exec	src/kernel/drivers/process-manager/pm.c	/^static void exec(Msg *msg){$/;"	f	file:
 exit	src/kernel/drivers/process-manager/pm.c	/^static void exit(Msg *msg){$/;"	f	file:
 extension_type	include/x86/cpu.h	/^		uint32_t extension_type      : 1;$/;"	m	struct:CR0::__anon1
@@ -339,6 +344,7 @@ flags	boot/boot.h	/^	unsigned int flags;$/;"	m	struct:ProgramHeader
 flags	include/x86/io.h	/^	unsigned int   flags;$/;"	m	struct:ELFHeader
 flags	include/x86/io.h	/^	unsigned int flags;$/;"	m	struct:ProgramHeader
 fmd	src/kernel/drivers/file-manager/fm.c	/^fmd( void ){$/;"	f	file:
+fork	src/kernel/drivers/file-manager/test/proc1.c	/^static unsigned int fork(){$/;"	f	file:
 fork	src/kernel/drivers/memory-manager/mm.c	/^static void fork(Msg *msg){$/;"	f	file:
 fork	src/kernel/drivers/process-manager/pm.c	/^static void fork(Msg *msg){$/;"	f	file:
 frame	src/kernel/drivers/memory-manager/mm.c	/^	void *frame;$/;"	m	struct:PFRAME	file:
@@ -447,7 +453,7 @@ machine	boot/boot.h	/^	unsigned short machine;$/;"	m	struct:ELFHeader
 machine	include/x86/io.h	/^	unsigned short machine;$/;"	m	struct:ELFHeader
 magic	boot/boot.h	/^	unsigned int   magic;$/;"	m	struct:ELFHeader
 magic	include/x86/io.h	/^	unsigned int   magic;$/;"	m	struct:ELFHeader
-main	src/kernel/drivers/file-manager/test/proc1.c	/^int main(){$/;"	f
+main	src/kernel/drivers/file-manager/test/proc1.c	/^int main(char *args){$/;"	f
 make_invalid_pde	src/kernel/memory/util.c	/^make_invalid_pde(PDE *p) {$/;"	f
 make_invalid_pte	src/kernel/memory/util.c	/^make_invalid_pte(PTE *p) {$/;"	f
 make_pde	src/kernel/memory/util.c	/^make_pde(PDE *p, void *addr) {$/;"	f
@@ -493,7 +499,7 @@ os_init_cont	src/kernel/main.c	/^os_init_cont(void) {$/;"	f
 out_byte	boot/boot.h	/^out_byte(short port, char data) {$/;"	f
 out_byte	include/x86/io.h	/^out_byte(uint16_t port, uint8_t data) {$/;"	f
 out_long	include/x86/io.h	/^out_long(uint16_t port, uint32_t data) {$/;"	f
-pa_to_va	include/memory.h	20;"	d
+pa_to_va	include/memory.h	21;"	d
 pad0	include/x86/cpu.h	/^		uint32_t pad0                : 10;$/;"	m	struct:CR0::__anon1
 pad0	include/x86/cpu.h	/^		uint32_t pad0                : 3;$/;"	m	struct:CR3::__anon2
 pad0	include/x86/memory.h	/^		uint32_t pad0                : 1;$/;"	m	struct:PageTableEntry::__anon4
@@ -555,6 +561,7 @@ ramdisk_driver_thread	src/kernel/drivers/ramdisk/ramdisk.c	/^ramdisk_driver_thre
 read_byte	src/kernel/drivers/ide/cache.c	/^read_byte(uint32_t offset) {$/;"	f
 read_cr0	include/x86/cpu.h	/^read_cr0() {$/;"	f
 read_eflags	include/x86/cpu.h	/^read_eflags(void) {$/;"	f
+read_line	src/kernel/drivers/file-manager/test/proc1.c	/^static void read_line(char *cmd){$/;"	f	file:
 read_request	src/kernel/drivers/tty/console.c	/^read_request(Msg *m) {$/;"	f
 read_write	include/x86/memory.h	/^		uint32_t read_write          : 1; $/;"	m	struct:PageDirectoryEntry::__anon3
 read_write	include/x86/memory.h	/^		uint32_t read_write          : 1;$/;"	m	struct:PageTableEntry::__anon4
@@ -616,6 +623,7 @@ strcpy_from_kernel	src/lib/kcpy.c	/^void strcpy_from_kernel(PCB* pcb, char* dest
 strcpy_to_kernel	src/lib/kcpy.c	/^void strcpy_to_kernel(PCB* pcb, char* dest, char* src){$/;"	f
 strlen	src/lib/string.c	/^size_t strlen(const char *str) {$/;"	f
 sys_exit	src/kernel/process/syscall.c	/^static void sys_exit(TrapFrame *tf, Msg *msg){$/;"	f	file:
+sys_gets	src/kernel/process/syscall.c	/^static void sys_gets(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_waitpid	src/kernel/process/syscall.c	/^static void sys_waitpid(TrapFrame *tf, Msg *msg){$/;"	f	file:
 syscall	src/kernel/drivers/file-manager/test/proc1.c	/^syscall(int id, ...) {$/;"	f
 system	include/x86/memory.h	/^	uint32_t system           : 1;$/;"	m	struct:GateDescriptor
@@ -649,7 +657,7 @@ used	src/kernel/drivers/ide/cache.c	/^	bool used, dirty;$/;"	m	struct:SectorCach
 used_timer_buff	src/kernel/drivers/timer/timer.c	/^static ListHead used_timer_buff;$/;"	v	file:
 user_supervisor	include/x86/memory.h	/^		uint32_t user_supervisor     : 1;$/;"	m	struct:PageDirectoryEntry::__anon3
 user_supervisor	include/x86/memory.h	/^		uint32_t user_supervisor     : 1;$/;"	m	struct:PageTableEntry::__anon4
-va_to_pa	include/memory.h	17;"	d
+va_to_pa	include/memory.h	18;"	d
 vaddr	boot/boot.h	/^	unsigned int vaddr;$/;"	m	struct:ProgramHeader
 vaddr	include/x86/io.h	/^	unsigned int vaddr;$/;"	m	struct:ProgramHeader
 val	include/x86/cpu.h	/^	uint32_t val;$/;"	m	union:CR0
@@ -669,6 +677,7 @@ waitdisk	boot/main.c	/^waitdisk(void) {$/;"	f
 waiter_free	src/kernel/drivers/process-manager/pm.c	/^ListHead waiter_free, waiter_used;$/;"	v
 waiter_used	src/kernel/drivers/process-manager/pm.c	/^ListHead waiter_free, waiter_used;$/;"	v
 waiters	src/kernel/drivers/process-manager/pm.c	/^Waiter waiters[NR_WAITER];$/;"	v
+waitpid	src/kernel/drivers/file-manager/test/proc1.c	/^static void waitpid(int pid){$/;"	f	file:
 wakeup	src/kernel/process/util.c	/^void wakeup(PCB *p){$/;"	f
 welcome	src/kernel/main.c	/^welcome(void) {$/;"	f
 wh	src/kernel/drivers/tty/tty.h	/^	int w, h, wh;$/;"	m	struct:Console

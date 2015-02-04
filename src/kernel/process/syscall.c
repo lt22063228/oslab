@@ -8,10 +8,12 @@
 #define SYS_exit 6
 #define SYS_getpid 7
 #define SYS_waitpid 8
+#define SYS_gets 9
 extern pid_t PM;
 
 static void sys_exit(TrapFrame *tf, Msg *msg);
 static void sys_waitpid(TrapFrame *tf, Msg *msg);
+static void sys_gets(TrapFrame *tf, Msg *msg);
 
 void do_syscall(TrapFrame *tf) {
 	int id = tf->eax; // system call id
@@ -36,6 +38,9 @@ void do_syscall(TrapFrame *tf) {
 			break;
 		case SYS_write:
 			/* register eax is to store the return value */
+			break;
+		case SYS_gets:
+			sys_gets(tf, &msg);
 			break;
 		case SYS_puts:
 			/* testing puts system call */
@@ -66,6 +71,7 @@ void do_syscall(TrapFrame *tf) {
 			msg.type = EXEC;		
 			/* filename, # in ramdisk */
 			msg.dev_id = tf->ebx;
+			printk("file to be excuted is %d", msg.dev_id);
 			/* argument address, virtual address w.r.t src proc */
 			msg.buf = (void*)tf->ecx;
 			send(PM, &msg);
@@ -85,7 +91,8 @@ static void sys_exit(TrapFrame *tf, Msg *msg){
 	msg->req_pid = current->pid;
 	msg->type = EXIT;
 	send(PM, msg);
-
+	printk("exit success!!!!\n");
+	sleep(&block, current);
 }
 
 static void sys_waitpid(TrapFrame *tf, Msg *msg){
@@ -97,4 +104,9 @@ static void sys_waitpid(TrapFrame *tf, Msg *msg){
 	printk("wating!!!!!!!!\n");
 	receive(PM, msg);
 	printk("waiting success!!!!!!!\n");
+}
+
+static void sys_gets(TrapFrame *tf, Msg *msg){
+	void *buf = (void*)tf->ebx;
+	dev_read("tty1", current->pid, buf, 0, 255);	
 }

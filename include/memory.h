@@ -8,6 +8,7 @@
 inline CR3* get_kcr3();
 inline PDE* get_kpdir();
 inline PTE* get_kptable();
+inline void set_tss_esp0(uint32_t eps);
 
 void make_invalid_pde(PDE *);
 void make_invalid_pte(PTE *);

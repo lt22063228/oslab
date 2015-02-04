@@ -45,6 +45,14 @@ void irq_handle(TrapFrame *tf) {
 	if (irq < 0) {
 		panic("Unhandled exception!");
 	}
+	if(current->pid == 11){
+		printk("syscall id is %d\n", tf->eax);
+		printk("hohoho\n");
+	}
+	if(irq == 13){
+		uint32_t error_code = tf->error_code;
+		printk("13 fault, pid is:%d, error code:%d\n",current->pid, error_code);
+	}
 	if (irq == 128) {
 		/* system call */
 		// if(current->pid == 10){

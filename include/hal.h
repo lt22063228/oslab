@@ -14,6 +14,7 @@
 #define EXEC 8
 #define EXIT 9
 #define WAITPID 10
+#define USER_STACK_OFFSET 0xbffff000
 
 /* message from outside interruption, no pid */
 #define MSG_HARD_INTR 100

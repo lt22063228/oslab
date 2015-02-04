@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "hal.h"
 extern pid_t MM;
 void print_ready();
 PCB idle, *current = &idle;
@@ -19,11 +20,8 @@ schedule(void) {
 	if(current->pid == 11){
 		printk("this is pid 11\n");
 	}
-	if(current != &idle){	
-		write_cr3( current->cr3 );
-	}else{
-		write_cr3(current->cr3);
-	}
+	write_cr3( current->cr3 );
+	// set_tss_esp0((uint32_t)current->tf);//(((TrapFrame*)(current->tf))->esp);
 }
 static uint32_t count = 0;
 void print_ready(){

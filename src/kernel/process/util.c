@@ -183,6 +183,8 @@ void init_pcb(pid_t req_pid){
 		list_add_before( &pcb->msg_free, &pcb->msg_buff[i].list);
 	}	
 
+	// t->ss = USER_STACK_OFFSET;
+	// t->esp = 0;
 	t->cs = 8;
 	t->eflags = 0x206;
 	list_init(&pcb->list);

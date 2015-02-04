@@ -4,6 +4,7 @@
 #define	SYS_exit 6 
 #define SYS_getpid 7
 #define SYS_waitpid 8
+#define SYS_gets 9
 // volatile int x = 0;
 int syscall(int id,...);
 // int main(){
@@ -31,6 +32,50 @@ syscall(int id, ...) {
 	return ret;
 }
 
+volatile int x = 0;
+static void read_line(char *cmd);
+static unsigned int fork();
+static void waitpid(int pid);
+static int exec(int filename, char *cmd);
+int main(char *args){
+	char cmd[256];
+	while(1){
+		read_line(cmd);
+		int filename = cmd[0] - '0';
+		int pid = fork();
+		if( pid == 0) {
+			exec(filename, cmd);
+		}else {
+			waitpid(pid);
+		}
+	}
+}
+static void read_line(char *cmd){
+	syscall(SYS_gets, cmd);	
+}
+static void waitpid(int pid){
+	syscall(SYS_waitpid, pid);
+}
+static unsigned int fork(){
+	return syscall(SYS_fork);	
+} 
+static int exec(int filename, char *cmd){
+	return syscall(SYS_exec, filename, cmd);
+}
+
+/* test puts */
+// volatile int x = 0;
+// int main(char *args){
+// 	while(1){
+// 		volatile int t;
+// 		char buff[256];
+// 		syscall(SYS_gets, buff);	
+// 		syscall(SYS_puts, buff);
+// 		t ++;
+// 		x ++;
+// 	}
+// }
+
 // volatile int x = 0;
 // int main(char *args){
 // 	while(1){
@@ -41,18 +86,18 @@ syscall(int id, ...) {
 // 	}
 // }
 
-volatile int x= 0;
-int main(char *args){
-	while(1){
-		volatile int t;
-		t = syscall(SYS_getpid);
-		if(x == 1){
-			syscall(SYS_exit);
-		}
-		x ++;
-		t ++;
-	}
-}
+// volatile int x= 0;
+// int main(char *args){
+// 	while(1){
+// 		volatile int t;
+// 		t = syscall(SYS_getpid);
+// 		if(x == 1){
+// 			syscall(SYS_exit);
+// 		}
+// 		x ++;
+// 		t ++;
+// 	}
+// }
 
 
 
