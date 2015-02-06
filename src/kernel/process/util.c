@@ -199,7 +199,8 @@ void init_pcb(pid_t req_pid){
 	pcb->pid = req_pid;
 	pcb->cr3 = cr3;
 	/* append the argument */	
-	TrapFrame *t = (TrapFrame*)(pcb->kstack + KSTACK_SIZE - sizeof(TrapFrame));
+	TrapFrame *t = (TrapFrame*)(pcb->kstack + KSTACK_SIZE - 2*sizeof(TrapFrame));
+	pcb->tf = t;
 	// t->ss = (uint32_t)args;
 	list_init(&(pcb->msg));
 	create_sem(&(pcb->msg_mutex), 1);
@@ -211,12 +212,8 @@ void init_pcb(pid_t req_pid){
 	for( i=0; i < MSG_BUFF_SIZE; i++){
 		list_add_before( &pcb->msg_free, &pcb->msg_buff[i].list);
 	}	
-	t->cs = SELECTOR_KERNEL(SEG_KERNEL_CODE);
-	t->ds = SELECTOR_KERNEL(SEG_KERNEL_DATA);
-	t->eflags = 0x206;
 
 	if(req_pid >= 10){
-		t ++;
 		t->esp = USER_STACK_OFFSET + 1000;
 		t->ss = SELECTOR_USER(SEG_USER_DATA);
 		t->ds = SELECTOR_USER(SEG_USER_DATA);
@@ -224,8 +221,17 @@ void init_pcb(pid_t req_pid){
 		t->fs = SELECTOR_USER(SEG_USER_DATA);
 		t->gs = SELECTOR_USER(SEG_USER_DATA);
 		t->cs = SELECTOR_USER(SEG_USER_CODE);
-		t->eflags = 0x206;
 	}
-	pcb->tf = t;
+	t->cs = SELECTOR_KERNEL(SEG_KERNEL_CODE);
+	t->ds = SELECTOR_KERNEL(SEG_KERNEL_DATA);
+	t->eflags = 0x206;
+
+	/* initial a kernel stack frame for user process */
+	t ++;
+	t->cs = SELECTOR_KERNEL(SEG_KERNEL_CODE);
+	t->ds = SELECTOR_KERNEL(SEG_KERNEL_DATA);
+	t->eflags = 0x206;
+
+
 	list_init(&pcb->list);
 }
