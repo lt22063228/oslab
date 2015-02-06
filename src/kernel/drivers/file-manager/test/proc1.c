@@ -32,17 +32,21 @@ syscall(int id, ...) {
 	return ret;
 }
 
-// static void read_line(char *cmd);
+static void read_line(char *cmd);
 static unsigned int fork();
-// static void waitpid(int pid);
-// static int exec(int filename, char *cmd);
-// static void shell(void);
+static void waitpid(int pid);
+static int exec(int filename, char *cmd);
+static void shell(void);
+static void test_exec();
 static void test_fork();
 int main(char *args){
+	test_exec();
 	test_fork();
+	shell();
 	return 1;
 }
 static void test_fork(){
+	return;
 	volatile int t = fork();
 
 	if(t == 0){
@@ -57,30 +61,34 @@ static void test_fork(){
 		}
 	}
 }
-// static void shell(){
-// 	char cmd[256];
-// 	while(1){
-// 		read_line(cmd);
-// 		int filename = cmd[0] - '0';
-// 		int pid = fork();
-// 		if( pid == 0) {
-// 			exec(filename, cmd);
-// 		}else {
-// 			waitpid(pid);
-// 		}
-// 	}
-// }
+static void shell(){
+	char cmd[256];
+	while(1){
+		read_line(cmd);
+		int filename = cmd[0] - '0';
+		int pid = fork();
+		if( pid == 0) {
+			exec(filename, cmd);
+		}else {
+			waitpid(pid);
+			while(1);
+		}
+	}
+}
 
-// static void read_line(char *cmd){
-// 	syscall(SYS_gets, cmd);	
-// }
-// static void waitpid(int pid){
-// 	syscall(SYS_waitpid, pid);
-// }
+static void read_line(char *cmd){
+	syscall(SYS_gets, cmd);	
+}
+static void waitpid(int pid){
+	syscall(SYS_waitpid, pid);
+}
 static unsigned int fork(){
 	return syscall(SYS_fork);	
 } 
-// static int exec(int filename, char *cmd){
-// 	return syscall(SYS_exec, filename, cmd);
-// }
-
+static int exec(int filename, char *cmd){
+	return syscall(SYS_exec, filename, cmd);
+}
+static void test_exec(){
+	return;
+	exec(0, "nothing");
+}

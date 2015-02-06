@@ -45,7 +45,7 @@ void init_pm(void){
 	wakeup(pcb);
 }
 static void pmd(void){
-	create_process(0);
+	create_process(1);
 	// create_process(5);
 	static Msg msg;
 	while(1){
@@ -140,7 +140,7 @@ static void fork(Msg *msg){
 	}
 	uint32_t *pointer = ((uint32_t*)(child->tf));
 	while(pointer < (uint32_t*)(child->kstack + KSTACK_SIZE)){
-		if(*pointer > 0xc034348c && *pointer < 0xc034748c){
+		if(*pointer > (uint32_t)parent->kstack && *pointer < (uint32_t)(parent->kstack + KSTACK_SIZE)){
 			*pointer += kstack_offset;	
 		}
 		pointer ++;

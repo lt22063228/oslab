@@ -276,7 +276,7 @@ cook	src/kernel/drivers/tty/console.c	/^cook(Console *c) {$/;"	f	file:
 copy_from_kernel	src/lib/kcpy.c	/^void copy_from_kernel(PCB* pcb, void* dest, void* src, int len){$/;"	f
 copy_from_kernel_mine	src/lib/kcpy.c	/^void copy_from_kernel_mine(PCB* pcb, void* dest, void* src, int len){$/;"	f
 copy_to_kernel	src/lib/kcpy.c	/^void copy_to_kernel(PCB* pcb, void* dest, void* src, int len){$/;"	f
-count	src/kernel/process/schedule.c	/^static uint32_t count = 0;$/;"	v	file:
+count	src/kernel/irq/irq_handle.c	/^uint32_t count = 0;$/;"	v
 cr	src/kernel/drivers/tty/console.c	/^cr(Console *c) {$/;"	f	file:
 cr3	include/process.h	/^	CR3* cr3;$/;"	m	struct:PCB
 cr3	src/kernel/drivers/memory-manager/mm.c	/^static CR3 cr3[NR_PROC];$/;"	v	file:
@@ -329,7 +329,6 @@ es	include/x86/memory.h	/^	uint32_t gs, fs, es, ds;							\/\/ data segment regi
 esi	include/x86/memory.h	/^	uint32_t edi, esi, ebp, xxx, ebx, edx, ecx, eax;	\/\/ GPRs$/;"	m	struct:TrapFrame
 esp	include/x86/memory.h	/^	uint32_t esp, ss;									\/\/ only uses when DPL = 3$/;"	m	struct:TrapFrame
 esp0	include/x86/memory.h	/^	uint32_t esp0;$/;"	m	struct:TSS
-exec	src/kernel/drivers/file-manager/test/proc1.c	/^static int exec(int filename, char *cmd){$/;"	f	file:
 exec	src/kernel/drivers/process-manager/pm.c	/^static void exec(Msg *msg){$/;"	f	file:
 exit	src/kernel/drivers/process-manager/pm.c	/^static void exit(Msg *msg){$/;"	f	file:
 extension_type	include/x86/cpu.h	/^		uint32_t extension_type      : 1;$/;"	m	struct:CR0::__anon1
@@ -473,6 +472,7 @@ month	include/time.h	/^	int year, month, day;$/;"	m	struct:Time
 movl	src/kernel/drivers/tty/console.c	/^movl(Console *c) {$/;"	f	file:
 movr	src/kernel/drivers/tty/console.c	/^movr(Console *c) {$/;"	f	file:
 msg	include/process.h	/^	ListHead msg;$/;"	m	struct:PCB
+msg	src/kernel/process/syscall.c	/^static Msg msg;$/;"	v	file:
 msg_buff	include/process.h	/^	Msg msg_buff[MSG_BUFF_SIZE];$/;"	m	struct:PCB
 msg_free	include/process.h	/^	ListHead msg_free;$/;"	m	struct:PCB
 msg_full	include/process.h	/^	Sem msg_full;$/;"	m	struct:PCB
@@ -561,7 +561,6 @@ ramdisk_driver_thread	src/kernel/drivers/ramdisk/ramdisk.c	/^ramdisk_driver_thre
 read_byte	src/kernel/drivers/ide/cache.c	/^read_byte(uint32_t offset) {$/;"	f
 read_cr0	include/x86/cpu.h	/^read_cr0() {$/;"	f
 read_eflags	include/x86/cpu.h	/^read_eflags(void) {$/;"	f
-read_line	src/kernel/drivers/file-manager/test/proc1.c	/^static void read_line(char *cmd){$/;"	f	file:
 read_request	src/kernel/drivers/tty/console.c	/^read_request(Msg *m) {$/;"	f
 read_write	include/x86/memory.h	/^		uint32_t read_write          : 1; $/;"	m	struct:PageDirectoryEntry::__anon3
 read_write	include/x86/memory.h	/^		uint32_t read_write          : 1;$/;"	m	struct:PageTableEntry::__anon4
@@ -579,7 +578,7 @@ routine	src/kernel/irq/irq_handle.c	/^	void (*routine)(void);$/;"	m	struct:IRQ_t
 rstk	src/kernel/drivers/tty/tty.h	/^	Msg rstk[RSTK_SZ];$/;"	m	struct:Console
 rt	src/kernel/drivers/timer/timer.c	/^static Time rt;$/;"	v	file:
 rtop	src/kernel/drivers/tty/tty.h	/^	int rtop;$/;"	m	struct:Console
-schedule	src/kernel/process/schedule.c	/^schedule(void) {$/;"	f
+schedule	src/kernel/process/schedule.c	/^void schedule(void) {$/;"	f
 scr	src/kernel/drivers/tty/tty.h	/^	uint16_t *scr;$/;"	m	struct:Console
 scrup	src/kernel/drivers/tty/console.c	/^scrup(Console *c) {$/;"	f	file:
 second	include/time.h	/^	int hour, minute, second;$/;"	m	struct:Time
@@ -623,11 +622,14 @@ strcpy_from_kernel	src/lib/kcpy.c	/^void strcpy_from_kernel(PCB* pcb, char* dest
 strcpy_to_kernel	src/lib/kcpy.c	/^void strcpy_to_kernel(PCB* pcb, char* dest, char* src){$/;"	f
 strlen	src/lib/string.c	/^size_t strlen(const char *str) {$/;"	f
 sys_exit	src/kernel/process/syscall.c	/^static void sys_exit(TrapFrame *tf, Msg *msg){$/;"	f	file:
+sys_fork	src/kernel/process/syscall.c	/^static void sys_fork(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_gets	src/kernel/process/syscall.c	/^static void sys_gets(TrapFrame *tf, Msg *msg){$/;"	f	file:
+sys_puts	src/kernel/process/syscall.c	/^static void sys_puts(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_waitpid	src/kernel/process/syscall.c	/^static void sys_waitpid(TrapFrame *tf, Msg *msg){$/;"	f	file:
 syscall	src/kernel/drivers/file-manager/test/proc1.c	/^syscall(int id, ...) {$/;"	f
 system	include/x86/memory.h	/^	uint32_t system           : 1;$/;"	m	struct:GateDescriptor
 task_switched	include/x86/cpu.h	/^		uint32_t task_switched       : 1;$/;"	m	struct:CR0::__anon1
+test_fork	src/kernel/drivers/file-manager/test/proc1.c	/^static void test_fork(){$/;"	f	file:
 tf	include/process.h	/^	void *tf;$/;"	m	struct:PCB
 time_intr	src/kernel/drivers/ide/ide.c	/^time_intr(void) {$/;"	f	file:
 timer_buff	src/kernel/drivers/timer/timer.c	/^static Msg timer_buff[SIZE_OF_TIMER];	$/;"	v	file:
@@ -677,8 +679,8 @@ waitdisk	boot/main.c	/^waitdisk(void) {$/;"	f
 waiter_free	src/kernel/drivers/process-manager/pm.c	/^ListHead waiter_free, waiter_used;$/;"	v
 waiter_used	src/kernel/drivers/process-manager/pm.c	/^ListHead waiter_free, waiter_used;$/;"	v
 waiters	src/kernel/drivers/process-manager/pm.c	/^Waiter waiters[NR_WAITER];$/;"	v
-waitpid	src/kernel/drivers/file-manager/test/proc1.c	/^static void waitpid(int pid){$/;"	f	file:
 wakeup	src/kernel/process/util.c	/^void wakeup(PCB *p){$/;"	f
+watcher	src/kernel/process/util.c	/^pid_t *watcher = (pid_t*)0xc034437c;$/;"	v
 welcome	src/kernel/main.c	/^welcome(void) {$/;"	f
 wh	src/kernel/drivers/tty/tty.h	/^	int w, h, wh;$/;"	m	struct:Console
 write_byte	src/kernel/drivers/ide/cache.c	/^write_byte(uint32_t offset, uint8_t data) {$/;"	f
@@ -688,6 +690,5 @@ write_gdtr	include/x86/cpu.h	/^write_gdtr(void *addr, uint32_t size) {$/;"	f
 write_idtr	include/x86/cpu.h	/^write_idtr(void *addr, uint32_t size) {$/;"	f
 write_protect	include/x86/cpu.h	/^		uint32_t write_protect       : 1; $/;"	m	struct:CR0::__anon1
 write_tr	include/x86/cpu.h	/^write_tr(uint16_t selector) {$/;"	f
-x	src/kernel/drivers/file-manager/test/proc1.c	/^volatile int x = 0;$/;"	v
 xxx	include/x86/memory.h	/^	uint32_t edi, esi, ebp, xxx, ebx, edx, ecx, eax;	\/\/ GPRs$/;"	m	struct:TrapFrame
 year	include/time.h	/^	int year, month, day;$/;"	m	struct:Time

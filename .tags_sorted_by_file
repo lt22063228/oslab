@@ -354,13 +354,10 @@ SYS_getpid	src/kernel/drivers/file-manager/test/proc1.c	5;"	d	file:
 SYS_gets	src/kernel/drivers/file-manager/test/proc1.c	7;"	d	file:
 SYS_puts	src/kernel/drivers/file-manager/test/proc1.c	1;"	d	file:
 SYS_waitpid	src/kernel/drivers/file-manager/test/proc1.c	6;"	d	file:
-exec	src/kernel/drivers/file-manager/test/proc1.c	/^static int exec(int filename, char *cmd){$/;"	f	file:
 fork	src/kernel/drivers/file-manager/test/proc1.c	/^static unsigned int fork(){$/;"	f	file:
 main	src/kernel/drivers/file-manager/test/proc1.c	/^int main(char *args){$/;"	f
-read_line	src/kernel/drivers/file-manager/test/proc1.c	/^static void read_line(char *cmd){$/;"	f	file:
 syscall	src/kernel/drivers/file-manager/test/proc1.c	/^syscall(int id, ...) {$/;"	f
-waitpid	src/kernel/drivers/file-manager/test/proc1.c	/^static void waitpid(int pid){$/;"	f	file:
-x	src/kernel/drivers/file-manager/test/proc1.c	/^volatile int x = 0;$/;"	v
+test_fork	src/kernel/drivers/file-manager/test/proc1.c	/^static void test_fork(){$/;"	f	file:
 NR_DEV	src/kernel/drivers/hal.c	5;"	d	file:
 dev_pool	src/kernel/drivers/hal.c	/^static Dev dev_pool[NR_DEV];$/;"	v	file:
 dev_read	src/kernel/drivers/hal.c	/^dev_read(const char *dev_name, pid_t reqst_pid, void *buf, off_t offset, size_t len) {$/;"	f
@@ -604,6 +601,7 @@ IRQ_t	src/kernel/irq/irq_handle.c	/^struct IRQ_t {$/;"	s	file:
 NR_HARD_INTR	src/kernel/irq/irq_handle.c	6;"	d	file:
 NR_IRQ_HANDLE	src/kernel/irq/irq_handle.c	3;"	d	file:
 add_irq_handle	src/kernel/irq/irq_handle.c	/^add_irq_handle(int irq, void (*func)(void) ) {$/;"	f
+count	src/kernel/irq/irq_handle.c	/^uint32_t count = 0;$/;"	v
 handle_count	src/kernel/irq/irq_handle.c	/^static int handle_count = 0;$/;"	v	file:
 handle_pool	src/kernel/irq/irq_handle.c	/^static struct IRQ_t handle_pool[NR_IRQ_HANDLE];$/;"	v	typeref:struct:IRQ_t	file:
 handles	src/kernel/irq/irq_handle.c	/^static struct IRQ_t *handles[NR_HARD_INTR];$/;"	v	typeref:struct:IRQ_t	file:
@@ -630,11 +628,10 @@ make_invalid_pde	src/kernel/memory/util.c	/^make_invalid_pde(PDE *p) {$/;"	f
 make_invalid_pte	src/kernel/memory/util.c	/^make_invalid_pte(PTE *p) {$/;"	f
 make_pde	src/kernel/memory/util.c	/^make_pde(PDE *p, void *addr) {$/;"	f
 make_pte	src/kernel/memory/util.c	/^make_pte(PTE *p, void *addr) {$/;"	f
-count	src/kernel/process/schedule.c	/^static uint32_t count = 0;$/;"	v	file:
 current	src/kernel/process/schedule.c	/^PCB idle, *current = &idle;$/;"	v
 idle	src/kernel/process/schedule.c	/^PCB idle, *current = &idle;$/;"	v
 print_ready	src/kernel/process/schedule.c	/^void print_ready(){$/;"	f
-schedule	src/kernel/process/schedule.c	/^schedule(void) {$/;"	f
+schedule	src/kernel/process/schedule.c	/^void schedule(void) {$/;"	f
 SYS_exec	src/kernel/process/syscall.c	7;"	d	file:
 SYS_exit	src/kernel/process/syscall.c	8;"	d	file:
 SYS_fork	src/kernel/process/syscall.c	6;"	d	file:
@@ -645,8 +642,11 @@ SYS_read	src/kernel/process/syscall.c	3;"	d	file:
 SYS_waitpid	src/kernel/process/syscall.c	10;"	d	file:
 SYS_write	src/kernel/process/syscall.c	4;"	d	file:
 do_syscall	src/kernel/process/syscall.c	/^void do_syscall(TrapFrame *tf) {$/;"	f
+msg	src/kernel/process/syscall.c	/^static Msg msg;$/;"	v	file:
 sys_exit	src/kernel/process/syscall.c	/^static void sys_exit(TrapFrame *tf, Msg *msg){$/;"	f	file:
+sys_fork	src/kernel/process/syscall.c	/^static void sys_fork(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_gets	src/kernel/process/syscall.c	/^static void sys_gets(TrapFrame *tf, Msg *msg){$/;"	f	file:
+sys_puts	src/kernel/process/syscall.c	/^static void sys_puts(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_waitpid	src/kernel/process/syscall.c	/^static void sys_waitpid(TrapFrame *tf, Msg *msg){$/;"	f	file:
 NBUF	src/kernel/process/util.c	3;"	d	file:
 NR_CONS	src/kernel/process/util.c	5;"	d	file:
@@ -670,6 +670,7 @@ send	src/kernel/process/util.c	/^void send(pid_t dest, Msg *m){$/;"	f
 sleep	src/kernel/process/util.c	/^void sleep(ListHead *block, PCB *pcb){$/;"	f
 unlock	src/kernel/process/util.c	/^void unlock(){$/;"	f
 wakeup	src/kernel/process/util.c	/^void wakeup(PCB *p){$/;"	f
+watcher	src/kernel/process/util.c	/^pid_t *watcher = (pid_t*)0xc034437c;$/;"	v
 copy_from_kernel	src/lib/kcpy.c	/^void copy_from_kernel(PCB* pcb, void* dest, void* src, int len){$/;"	f
 copy_from_kernel_mine	src/lib/kcpy.c	/^void copy_from_kernel_mine(PCB* pcb, void* dest, void* src, int len){$/;"	f
 copy_to_kernel	src/lib/kcpy.c	/^void copy_to_kernel(PCB* pcb, void* dest, void* src, int len){$/;"	f

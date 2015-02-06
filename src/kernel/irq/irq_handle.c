@@ -36,7 +36,7 @@ add_irq_handle(int irq, void (*func)(void) ) {
 	handles[irq] = ptr;
 }
 void schedule();
-// void do_syscall(TrapFrame *tf);
+void do_syscall(TrapFrame *tf);
 uint32_t count = 0;
 void irq_handle(TrapFrame *tf) {
 	int irq = tf->irq;
@@ -60,32 +60,7 @@ void irq_handle(TrapFrame *tf) {
 	// }
 	if (irq == 128) {
 		/* system call */
-		// if(current->pid == 10){
-		// 	printk("achor\n");
-		// }
-		int id = tf->eax;
-		if(id == 4){
-			printk("syscall.c: pid:%d, fork.\n", current->pid);
-			/* tf is parent process's trapframe, first level*/
-			/* msg.src contains parent pid, which can be used to 
-			   fetch_pcb(),  but that is not enough, we need 'tf'
-			   to store the first level trapframe pointer */
-			Msg msg;
-			extern pid_t PM;
-			msg.src = current->pid;
-			msg.type = FORK;
-			/* here, tf is the first level trapframe */
-			msg.buf = (void*)tf;
-			send(PM, &msg);
-			PDE *pde = (PDE*)(current->cr3->page_directory_base << 12);
-			PTE *pte = (PTE*)(pde->page_frame << 12);
-
-			printk("ptable + 796:%d\n", (pte+796)->present);
-			receive(PM, &msg);
-			/* parent process return child's pid */
-			tf->eax = msg.ret;
-		}
-		// do_syscall(tf);	
+		do_syscall(tf);	
 	}else if (irq < 1000) {
 		extern uint8_t logo[];
 		panic("From PID:%d\nCOUNT:%d\nUnexpected exception #%d\n\33[1;31mHint: The machine is always right! For more details about exception #%d, see\n%s\n\33[0m", current->pid, count, irq, irq, logo);
@@ -103,9 +78,6 @@ void irq_handle(TrapFrame *tf) {
 	}
 	/* tf is the updated trapFrame pointer, original data in current->tf is the pointer when
 	 * current process is awaken last time, it needs being updated to tf. */
-	if(current->pid == 10){
-		printk("irq_handle:71\n");
-	}
 	current->tf = tf;
 	schedule();
 }

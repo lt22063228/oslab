@@ -15,10 +15,11 @@ static void sys_exit(TrapFrame *tf, Msg *msg);
 static void sys_waitpid(TrapFrame *tf, Msg *msg);
 static void sys_gets(TrapFrame *tf, Msg *msg);
 static void sys_puts(TrapFrame *tf, Msg *msg);
+static void sys_fork(TrapFrame *tf, Msg *msg);
+static void sys_exec(TrapFrame *tf, Msg *msg);
 
 static Msg msg;
 void do_syscall(TrapFrame *tf) {
-	return;
 	int id = tf->eax; // system call id
 	switch (id) {
 		case SYS_read:
@@ -53,42 +54,43 @@ void do_syscall(TrapFrame *tf) {
 			sys_puts(tf, &msg);
 			break;
 		case SYS_fork:
-			printk("syscall.c: pid:%d, fork.\n", current->pid);
-			/* tf is parent process's trapframe, first level*/
-			/* msg.src contains parent pid, which can be used to 
-			   fetch_pcb(),  but that is not enough, we need 'tf'
-			   to store the first level trapframe pointer */
-			msg.src = current->pid;
-			msg.type = FORK;
-			/* here, tf is the first level trapframe */
-			msg.buf = (void*)tf;
-			send(PM, &msg);
-			PDE *pde = (PDE*)(current->cr3->page_directory_base << 12);
-			PTE *pte = (PTE*)(pde->page_frame << 12);
-
-			printk("ptable + 796:%d\n", (pte+796)->present);
-			receive(PM, &msg);
-			/* parent process return child's pid */
-			tf->eax = msg.ret;
+			sys_fork(tf, &msg);
 			break;
 		case SYS_exec:
 			printk("syscall.c: pid:%d, exec.\n", current->pid);
-			/* input : filename, argument string, current pcb */
-			/* output: nothing. new process running */
-			msg.src = current->pid;
-			msg.type = EXEC;		
-			/* filename, # in ramdisk */
-			msg.dev_id = tf->ebx;
-			/* argument address, virtual address w.r.t src proc */
-			msg.buf = (void*)tf->ecx;
-			send(PM, &msg);
-			// receive(PM, &msg);
-			sleep(&block, current);
+			sys_exec(tf, &msg);
 			break;
 		default:
 			/* kernel thread use system call to self-trap */
 			break;
 	}
+}
+static void sys_exec(TrapFrame *tf, Msg *msg){
+	/* input : filename, argument string, current pcb */
+	/* output: nothing. new process running */
+	msg->src = current->pid;
+	msg->type = EXEC;		
+	/* filename, # in ramdisk */
+	msg->dev_id = tf->ebx;
+	/* argument address, virtual address w.r.t src proc */
+	msg->buf = (void*)tf->ecx;
+	send(PM, msg);
+	// receive(PM, &msg);
+	sleep(&block, current);
+}
+static void sys_fork(TrapFrame *tf, Msg *msg){
+	/* tf is parent process's trapframe, first level*/
+	/* msg.src contains parent pid, which can be used to 
+	   fetch_pcb(),  but that is not enough, we need 'tf'
+	   to store the first level trapframe pointer */
+	msg->src = current->pid;
+	msg->type = FORK;
+	/* here, tf is the first level trapframe */
+	msg->buf = (void*)tf;
+	send(PM, msg);
+	receive(PM, msg);
+	/* parent process return child's pid */
+	tf->eax = msg->ret;
 }
 
 static void sys_exit(TrapFrame *tf, Msg *msg){
