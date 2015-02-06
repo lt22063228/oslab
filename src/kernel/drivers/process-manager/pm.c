@@ -45,7 +45,7 @@ void init_pm(void){
 	wakeup(pcb);
 }
 static void pmd(void){
-	create_process(1);
+	create_process(2);
 	// create_process(5);
 	static Msg msg;
 	while(1){
@@ -98,7 +98,7 @@ static void exec(Msg *msg){
 	/* initialize the pcb */
 	init_pcb(req_pid);
 
-	// allocate_stack(req_pid);
+	allocate_stack(req_pid);
 
 	/* map the kernel address */
 	map_kernel(req_pid);	
@@ -133,18 +133,18 @@ static void fork(Msg *msg){
 	/*after memcpy, we can set the return value */
 	((TrapFrame*)(child->tf))->eax = 0;
 	/*update ebp*/
-	TrapFrame *tf = child->tf;
-	TrapFrame *end = (TrapFrame*)(child->kstack+KSTACK_SIZE-sizeof(TrapFrame));
-	for(; tf < end; tf = (TrapFrame*)tf->ebp){
-		tf->ebp = tf->ebp + kstack_offset;	
-	}
-	uint32_t *pointer = ((uint32_t*)(child->tf));
-	while(pointer < (uint32_t*)(child->kstack + KSTACK_SIZE)){
-		if(*pointer > (uint32_t)parent->kstack && *pointer < (uint32_t)(parent->kstack + KSTACK_SIZE)){
-			*pointer += kstack_offset;	
-		}
-		pointer ++;
-	}
+	// TrapFrame *tf = child->tf;
+	// TrapFrame *end = (TrapFrame*)(child->kstack+KSTACK_SIZE-sizeof(TrapFrame));
+	// for(; tf < end; tf = (TrapFrame*)tf->ebp){
+	// 	tf->ebp = tf->ebp + kstack_offset;	
+	// }
+	// uint32_t *pointer = ((uint32_t*)(child->tf));
+	// while(pointer < (uint32_t*)(child->kstack + KSTACK_SIZE)){
+	// 	if(*pointer > (uint32_t)parent->kstack && *pointer < (uint32_t)(parent->kstack + KSTACK_SIZE)){
+	// 		*pointer += kstack_offset;	
+	// 	}
+	// 	pointer ++;
+	// }
 
 	/*copy all the content of the parent's address space
 	  from cr3 register .*/

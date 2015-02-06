@@ -39,11 +39,19 @@ static int exec(int filename, char *cmd);
 static void shell(void);
 static void test_exec();
 static void test_fork();
+static void simple();
 int main(char *args){
 	test_exec();
 	test_fork();
 	shell();
+	simple();
 	return 1;
+}
+static void simple(){
+	volatile int x = 0;
+	while(1){
+		x ++;
+	}
 }
 static void test_fork(){
 	return;
@@ -62,6 +70,7 @@ static void test_fork(){
 	}
 }
 static void shell(){
+	return;
 	char cmd[256];
 	while(1){
 		read_line(cmd);

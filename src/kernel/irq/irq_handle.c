@@ -41,28 +41,17 @@ uint32_t count = 0;
 void irq_handle(TrapFrame *tf) {
 	int irq = tf->irq;
 	count ++;
-	// if(current->pid < 10){
-	// 	printk("kernel. irq: %d\n",irq);
-	// }
+
 	if (irq < 0) {
 		panic("Unhandled exception!");
 	}
-	// if(current->pid == 11){
-	// 	printk("syscall id is %d\n", tf->eax);
-	// 	printk("hohoho\n");
-	// }
-	// if(irq == 13){
-	// 	uint32_t error_code = tf->error_code;
-	// 	printk("13 fault, pid is:%d, error code:%d\n",current->pid, error_code);
-	// }else if(irq == 14){
-	// 	/* page fault */	
-	// 	panic("page fault! pid:%d\n",current->pid);
-	// }
+
 	if (irq == 128) {
 		/* system call */
 		do_syscall(tf);	
 	}else if (irq < 1000) {
 		extern uint8_t logo[];
+		printk("COUNT:%d",count);
 		panic("From PID:%d\nCOUNT:%d\nUnexpected exception #%d\n\33[1;31mHint: The machine is always right! For more details about exception #%d, see\n%s\n\33[0m", current->pid, count, irq, irq, logo);
 	} else if (irq >= 1000) {
 		/* The following code is to handle external interrupts.

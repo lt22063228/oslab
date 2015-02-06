@@ -4,6 +4,7 @@ extern pid_t MM;
 void print_ready();
 PCB idle, *current = &idle;
 extern uint32_t count;
+// uint32_t *esp_addr;
 void schedule(void) {
 	ListHead *list = ready.next;
 	ListHead *now;
@@ -17,8 +18,18 @@ void schedule(void) {
 	if(current->pid == 12 || current->pid == 11){
 		printk("I'AM PROC %d\n", current->pid);
 	}
+	TrapFrame *tf = (TrapFrame*)current->tf;
+	if(current->pid == 10){
+		// PCB *next = list_entry(current->list.next, PCB, list);
+		// if(count > 167){
+		// 	printk("\n\n");
+		// }
+		// printk("th esp is %d, address is %d\n", tf->esp, &(tf->esp));
+		// esp_addr = &(tf->esp);
+		tf ++;
+		set_tss_esp0((uint32_t)tf);//(((TrapFrame*)(current->tf))->esp);
+	}
 	write_cr3( current->cr3 );
-	// set_tss_esp0((uint32_t)current->tf);//(((TrapFrame*)(current->tf))->esp);
 }
 void print_ready(){
 	ListHead *cur = ready.next;

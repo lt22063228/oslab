@@ -1,4 +1,6 @@
 #include "kernel.h"
+#define GDT_ENTRY(n)  \
+	((n) << 3)
 #define PCB_SIZE 16
 #define NBUF 5
 #define NR_PROD 3
@@ -179,10 +181,7 @@ void receive(pid_t src, Msg *m){
 				// m->offset = msg->offset;
 				// m->len = msg->len;
 				list_del( index_list );
-				list_add_before( &current->msg_free, index_list );
-				unlock();
-				return;
-			}
+				list_add_before( &current->msg_free, index_list ); unlock(); return; }
 			index_list = index_list->next;
 		}
 		unlock();
@@ -201,7 +200,6 @@ void init_pcb(pid_t req_pid){
 	pcb->cr3 = cr3;
 	/* append the argument */	
 	TrapFrame *t = (TrapFrame*)(pcb->kstack + KSTACK_SIZE - sizeof(TrapFrame));
-	pcb->tf = t;
 	// t->ss = (uint32_t)args;
 	list_init(&(pcb->msg));
 	create_sem(&(pcb->msg_mutex), 1);
@@ -213,10 +211,21 @@ void init_pcb(pid_t req_pid){
 	for( i=0; i < MSG_BUFF_SIZE; i++){
 		list_add_before( &pcb->msg_free, &pcb->msg_buff[i].list);
 	}	
-
-	// t->ss = USER_STACK_OFFSET;
-	// t->esp = 0;
-	t->cs = 8;
+	t->cs = SELECTOR_KERNEL(SEG_KERNEL_CODE);
+	t->ds = SELECTOR_KERNEL(SEG_KERNEL_DATA);
 	t->eflags = 0x206;
+
+	if(req_pid >= 10){
+		t ++;
+		t->esp = USER_STACK_OFFSET + 1000;
+		t->ss = SELECTOR_USER(SEG_USER_DATA);
+		t->ds = SELECTOR_USER(SEG_USER_DATA);
+		t->es = SELECTOR_USER(SEG_USER_DATA);
+		t->fs = SELECTOR_USER(SEG_USER_DATA);
+		t->gs = SELECTOR_USER(SEG_USER_DATA);
+		t->cs = SELECTOR_USER(SEG_USER_CODE);
+		t->eflags = 0x206;
+	}
+	pcb->tf = t;
 	list_init(&pcb->list);
 }
