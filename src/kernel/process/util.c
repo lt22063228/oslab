@@ -43,10 +43,20 @@ void sleep(ListHead *block, PCB *pcb){
 	asm volatile("int $0x80");//这里触发来个trap，在中断处理函数中对这个trap不做任何处理，直接跳过
 	unlock();
 }
+void print_ready();
 void wakeup(PCB *p){
 	lock();
+	if(p->pid == 11){
+		print_ready();
+	}
 	list_del( &(p->list) );
+	if(p->pid == 11){
+		print_ready();
+	}
 	list_add_before( &ready, &(p->list) );
+	if(p->pid == 11){
+		print_ready();
+	}
 	unlock();
 }
 //需要解决使用关中断作为锁的三大问题：1，在V操作之前如果已经lock，那么PV操作会使它unlock
@@ -132,10 +142,19 @@ void send(pid_t dest, Msg *m){
 	list_add_before(&pcb->msg,list );
 	Msg *msg = list_entry(list, Msg, list);	
 	memcpy(msg, m, sizeof(Msg) - sizeof(ListHead));
+	// msg->src = m->src;
+	// msg->dest = m->dest;
+	// msg->type = m->type;
+	// msg->req_pid = m->req_pid;
+	// msg->buf = m->buf;
+	// msg->dev_id = m->dev_id;
+	// msg->offset = m->offset;
+	// m->len = m->len;
 	unlock();
 	/* Because V() don't sleep() itself, which can be used in irq_handle */
 	V( msg_full ); 
 }
+pid_t *watcher = (pid_t*)0xc034437c;
 void receive(pid_t src, Msg *m){
 	ListHead *msg_list = &(current->msg);
 	Sem *msg_full = &(current->msg_full);
@@ -145,8 +164,20 @@ void receive(pid_t src, Msg *m){
 		ListHead *index_list = msg_list->next;
 		while( index_list != msg_list ){
 			Msg* msg = list_entry(index_list, Msg, list);
+			PDE *pde = (PDE*)(current->cr3->page_directory_base << 12);
+			PTE *pte = (PTE*)(pde->page_frame << 12);
+			if(current->pid == 10)
+				printk("ptable + 796:%d\n", (pte+796)->present);
 			if( src == ANY || msg->src == src ){
 				memcpy(m, msg, sizeof(Msg) - sizeof(ListHead));
+				// m->src = msg->src;
+				// m->dest = msg->dest;
+				// m->req_pid = msg->req_pid;
+				// m->buf = msg->buf;
+				// m->dev_id = msg->dev_id;
+				// m->type = msg->type;
+				// m->offset = msg->offset;
+				// m->len = msg->len;
 				list_del( index_list );
 				list_add_before( &current->msg_free, index_list );
 				unlock();

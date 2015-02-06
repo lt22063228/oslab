@@ -51,6 +51,9 @@ init_page(void) {
 		make_pde(&pdir[pdir_idx], ptable);
 		make_pde(&pdir[pdir_idx + KOFFSET / PD_SIZE], ptable);
 		for (ptable_idx = 0; ptable_idx < NR_PTE; ptable_idx ++) {
+			if(ptable_idx == 796){
+				printk("--------------------------------\n--------------\n\nn\n\n");
+			}
 			make_pte(ptable, (void*)(pframe_idx << 12));
 			pframe_idx ++;
 			ptable ++;

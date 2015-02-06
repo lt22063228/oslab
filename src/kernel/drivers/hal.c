@@ -92,8 +92,6 @@ dev_rw(const char *dev_name, int type, pid_t reqst_pid, void *buf, off_t offset,
 
 size_t
 dev_read(const char *dev_name, pid_t reqst_pid, void *buf, off_t offset, size_t len) {
-	if(reqst_pid == 10)
-		printk("offset is %d\n", offset);
 	return dev_rw(dev_name, DEV_READ, reqst_pid, buf, offset, len);
 }
 

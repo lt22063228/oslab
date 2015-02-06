@@ -45,7 +45,7 @@ void init_pm(void){
 	wakeup(pcb);
 }
 static void pmd(void){
-	create_process(7);
+	create_process(0);
 	// create_process(5);
 	static Msg msg;
 	while(1){
@@ -137,6 +137,13 @@ static void fork(Msg *msg){
 	TrapFrame *end = (TrapFrame*)(child->kstack+KSTACK_SIZE-sizeof(TrapFrame));
 	for(; tf < end; tf = (TrapFrame*)tf->ebp){
 		tf->ebp = tf->ebp + kstack_offset;	
+	}
+	uint32_t *pointer = ((uint32_t*)(child->tf));
+	while(pointer < (uint32_t*)(child->kstack + KSTACK_SIZE)){
+		if(*pointer > 0xc034348c && *pointer < 0xc034748c){
+			*pointer += kstack_offset;	
+		}
+		pointer ++;
 	}
 
 	/*copy all the content of the parent's address space
