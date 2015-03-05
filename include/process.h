@@ -6,6 +6,7 @@
 #define IF_MASK 0x200
 #define INTR assert(read_eflags()&IF_MASK)
 #define NOINTR assert(~read_eflags()&IF_MASK)
+#define NR_PROCESS_FDE 16
 typedef struct Semaphore{
 	int token;
 	ListHead block;
@@ -28,6 +29,10 @@ typedef struct Message {
 	};
 	ListHead list;
 } Msg;
+typedef struct process_FDE {
+	int is_used;
+	int index;
+} process_FDE;
 typedef struct PCB {
 	void *tf;
 	uint8_t kstack[KSTACK_SIZE];
@@ -39,6 +44,7 @@ typedef struct PCB {
 	int lock_count;
 	bool if_flag;
 	Msg msg_buff[MSG_BUFF_SIZE];
+	process_FDE fdes[NR_PROCESS_FDE]; 
 	ListHead msg_free;
 	CR3* cr3;
 } PCB;

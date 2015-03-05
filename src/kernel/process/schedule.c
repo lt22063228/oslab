@@ -15,9 +15,9 @@ void schedule(void) {
 	list_add_before( &ready, list );
 	now = ready.next;
 	current = list_entry( now, PCB, list ); 
-	if(current->pid == 11 || current->pid == 12){
-		printk("I'AM PROC %d\n", current->pid);
-	}
+	// if(current->pid == 11 || current->pid == 12){
+	// 	printk("I'AM PROC %d\n", current->pid);
+	// }
 	TrapFrame *tf = (TrapFrame*)current->tf;
 	if(current->pid == 10){
 		// PCB *next = list_entry(current->list.next, PCB, list);

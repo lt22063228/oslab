@@ -1,7 +1,5 @@
 #include "kernel.h"
 #include "hal.h"
-#define SYS_read 1
-#define SYS_write 2
 #define SYS_puts 3
 #define SYS_fork 4
 #define SYS_exec 5
@@ -9,7 +7,15 @@
 #define SYS_getpid 7
 #define SYS_waitpid 8
 #define SYS_gets 9
+#define SYS_cat 10
+#define SYS_open 11
+#define SYS_read 12
+#define SYS_write 13
+#define SYS_close 14
+#define SYS_lseek 15
+#define SYS_echo 16
 extern pid_t PM;
+extern pid_t FM;
 
 static void sys_exit(TrapFrame *tf, Msg *msg);
 static void sys_waitpid(TrapFrame *tf, Msg *msg);
@@ -17,17 +23,35 @@ static void sys_gets(TrapFrame *tf, Msg *msg);
 static void sys_puts(TrapFrame *tf, Msg *msg);
 static void sys_fork(TrapFrame *tf, Msg *msg);
 static void sys_exec(TrapFrame *tf, Msg *msg);
+static void sys_cat(TrapFrame *tf, Msg *msg);
+static void sys_open(TrapFrame *tf, Msg *msg);
+static void sys_close(TrapFrame *tf, Msg *msg);
+static void sys_read(TrapFrame *tf, Msg *msg);
+static void sys_write(TrapFrame *tf, Msg *msg);
+static void sys_lseek(TrapFrame *tf, Msg *msg); 
+static void sys_echo(TrapFrame *tf, Msg *msg);
 
 static Msg msg;
 void do_syscall(TrapFrame *tf) {
 	int id = tf->eax; // system call id
 	switch (id) {
 		case SYS_read:
-			// ...
-			// send(FM, m);
-			// receive(FM, m);
-			// int nread = m.ret;
-			// tf->eax = nread;   // return value is stored in eax
+			sys_read(tf, &msg);
+			break;
+		case SYS_write:
+			sys_write(tf, &msg);
+			break;
+		case SYS_open:
+			sys_open(tf, &msg);
+			break;
+		case SYS_close:
+			sys_close(tf, &msg);
+			break;
+		case SYS_lseek:
+			sys_lseek(tf, &msg);
+			break;
+		case SYS_echo:
+			sys_echo(tf, &msg);
 			break;
 		case SYS_exit:
 			printk("syscall.c: pid:%d, exit.\n", current->pid);
@@ -40,9 +64,6 @@ void do_syscall(TrapFrame *tf) {
 		case SYS_getpid:
 			printk("syscall.c: pid:%d, getpid.\n", current->pid);
 			tf->eax = current->pid;
-			break;
-		case SYS_write:
-			/* register eax is to store the return value */
 			break;
 		case SYS_gets:
 			printk("syscall.c: pid:%d, gets.\n", current->pid);
@@ -60,10 +81,84 @@ void do_syscall(TrapFrame *tf) {
 			printk("syscall.c: pid:%d, exec.\n", current->pid);
 			sys_exec(tf, &msg);
 			break;
+		case SYS_cat:
+			printk("syscall.c: pid:%d, cat.\n", current->pid);
+			sys_cat(tf, &msg);
+			break;
 		default:
 			/* kernel thread use system call to self-trap */
 			break;
 	}
+}
+static void sys_echo(TrapFrame *tf, Msg *msg){
+	char *buf = (char*)tf->ebx;	
+	int i = 0;
+	while(*(buf + i) != '\000') i++;
+	dev_write("tty1", current->pid, buf, 0, i);	
+}
+static void sys_lseek(TrapFrame *tf, Msg *msg){
+	msg->src = current->pid;
+	msg->type = FILE_LSEEK;
+	msg->req_pid = current->pid;
+	msg->dev_id = (int)tf->ebx;
+	msg->offset = (int)tf->ecx;
+	int whence = (int)tf->edx;
+	msg->len = whence;
+	send(FM, msg);
+	receive(FM, msg);
+}
+static void sys_write(TrapFrame *tf, Msg *msg){
+	msg->src = current->pid;
+	msg->type = FILE_WRITE;
+	msg->req_pid = current->pid;
+	msg->dev_id = (int)tf->ebx;
+	msg->buf = (void*)tf->ecx;
+	msg->len = (size_t)tf->edx;
+	send(FM, msg);
+	receive(FM, msg);
+}
+static void sys_read(TrapFrame *tf, Msg *msg){
+	msg->src = current->pid;
+	msg->type = FILE_READ;
+	msg->req_pid = current->pid;
+	msg->dev_id = (int)tf->ebx;
+	msg->buf = (void*)tf->ecx;
+	msg->len = (size_t)tf->edx;
+	send(FM, msg);
+	receive(FM, msg);
+}
+static void sys_close(TrapFrame *tf, Msg *msg){
+	msg->src = current->pid;
+	msg->type = FILE_CLOSE;
+	msg->req_pid = current->pid;
+	msg->dev_id = (int)tf->ebx;
+	send(FM, msg);
+	receive(FM, msg);
+}
+static void sys_open(TrapFrame *tf, Msg *msg){
+	msg->src = current->pid;
+	msg->type = FILE_OPEN;
+	msg->req_pid = current->pid;
+	msg->dev_id = (int)tf->ebx;
+	send(FM, msg);
+	receive(FM, msg);
+	tf->eax = msg->ret;
+}
+static void sys_cat(TrapFrame *tf, Msg *msg){
+	/* output file to screen */
+	int write_size = 0;
+	static char buf[256];
+	msg->src = current->pid;
+	msg->type = FILE_READ;
+	msg->req_pid = current->pid;
+	msg->dev_id = (int)tf->ebx;
+	msg->buf = buf;
+	msg->offset = 0;
+	msg->len = 256;
+	send(FM, msg);
+	receive(FM, msg);
+	while(*(buf + write_size)) write_size++;
+	dev_write("tty1", current->pid, buf, 0, write_size);	
 }
 static void sys_exec(TrapFrame *tf, Msg *msg){
 	/* input : filename, argument string, current pcb */
@@ -72,6 +167,10 @@ static void sys_exec(TrapFrame *tf, Msg *msg){
 	msg->type = EXEC;		
 	/* filename, # in ramdisk */
 	msg->dev_id = tf->ebx;
+	if(msg->dev_id > 4 || msg->dev_id < 0){
+		printk("the filename must be an INTEGER!!!!!!!!!!!!!!\n");
+		assert(0);
+	}
 	/* argument address, virtual address w.r.t src proc */
 	msg->buf = (void*)tf->ecx;
 	send(PM, msg);
@@ -117,9 +216,10 @@ static void sys_waitpid(TrapFrame *tf, Msg *msg){
 
 static void sys_gets(TrapFrame *tf, Msg *msg){
 	void *buf = (void*)tf->ebx;
-	dev_read("tty1", current->pid, buf, 0, 255);	
+	int n = dev_read("tty1", current->pid, buf, -1, 255);	
+	*((char*)buf + n) = 0;
 }
 static void sys_puts(TrapFrame *tf, Msg *msg){
 	void *buf = (void*)tf->ebx;
-	dev_write("tty1", current->pid, buf, 0, 255);	
+	dev_write("tty1", current->pid, buf, -1, 255);	
 }

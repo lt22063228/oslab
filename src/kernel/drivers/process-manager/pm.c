@@ -45,7 +45,7 @@ void init_pm(void){
 	wakeup(pcb);
 }
 static void pmd(void){
-	create_process(1);
+	create_process(0);
 	// create_process(5);
 	static Msg msg;
 	while(1){
@@ -185,6 +185,16 @@ static void create_process(int file_idx){
 	/* the only one which is physical address */
 	pcb->cr3 = (CR3*)msg.ret;
 	
+	/* create the stdio */
+	int i;
+	for(i = 0; i < 3; i ++){
+		msg.src = current->pid;
+		msg.req_pid = pcb->pid;
+		msg.type = FILE_OPEN;
+		msg.dev_id = 1;
+		send(FM, &msg);
+		receive(FM, &msg);
+	}
 	/* map the kernel address */
 	map_kernel(req_pid);
 

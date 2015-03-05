@@ -82,13 +82,22 @@ Dev	include/hal.h	/^} Dev;$/;"	t	typeref:struct:Device
 Device	include/hal.h	/^typedef struct Device {$/;"	s
 EXEC	include/hal.h	14;"	d
 EXIT	include/hal.h	15;"	d
+FILE_CLOSE	include/hal.h	18;"	d
+FILE_LSEEK	include/hal.h	20;"	d
+FILE_OPEN	include/hal.h	17;"	d
 FILE_READ	include/hal.h	9;"	d
+FILE_WRITE	include/hal.h	19;"	d
 FORK	include/hal.h	13;"	d
 MAP_KERNEL	include/hal.h	12;"	d
-MSG_HARD_INTR	include/hal.h	20;"	d
+MSG_HARD_INTR	include/hal.h	30;"	d
 NEW_PAGE	include/hal.h	10;"	d
 NEW_PCB	include/hal.h	11;"	d
-USER_STACK_OFFSET	include/hal.h	17;"	d
+STDERR_FILENO	include/hal.h	28;"	d
+STDIN_FILENO	include/hal.h	26;"	d
+STDOUT_FILENO	include/hal.h	27;"	d
+TYPE_DEV	include/hal.h	24;"	d
+TYPE_REG	include/hal.h	23;"	d
+USER_STACK_OFFSET	include/hal.h	21;"	d
 WAITPID	include/hal.h	16;"	d
 __HAL_H__	include/hal.h	2;"	d
 dev_id	include/hal.h	/^	int dev_id;$/;"	m	struct:Device
@@ -110,6 +119,7 @@ MSG_BUFF_SIZE	include/process.h	5;"	d
 Message	include/process.h	/^typedef struct Message {$/;"	s
 Msg	include/process.h	/^} Msg;$/;"	t	typeref:struct:Message
 NOINTR	include/process.h	8;"	d
+NR_PROCESS_FDE	include/process.h	9;"	d
 PCB	include/process.h	/^typedef struct PCB {$/;"	s
 PCB	include/process.h	/^} PCB;$/;"	t	typeref:struct:PCB
 Sem	include/process.h	/^}Sem;$/;"	t	typeref:struct:Semaphore
@@ -120,8 +130,11 @@ buf	include/process.h	/^			void *buf;$/;"	m	struct:Message::__anon6::__anon7
 cr3	include/process.h	/^	CR3* cr3;$/;"	m	struct:PCB
 dest	include/process.h	/^	pid_t src, dest;$/;"	m	struct:Message
 dev_id	include/process.h	/^			int dev_id;$/;"	m	struct:Message::__anon6::__anon7
+fdes	include/process.h	/^	process_FDE fdes[NR_PROCESS_FDE]; $/;"	m	struct:PCB
 i	include/process.h	/^		int i[5];$/;"	m	union:Message::__anon6
 if_flag	include/process.h	/^	bool if_flag;$/;"	m	struct:PCB
+index	include/process.h	/^	int index;$/;"	m	struct:process_FDE
+is_used	include/process.h	/^	int is_used;$/;"	m	struct:process_FDE
 kstack	include/process.h	/^	uint8_t kstack[KSTACK_SIZE];$/;"	m	struct:PCB
 len	include/process.h	/^			size_t len;$/;"	m	struct:Message::__anon6::__anon7
 list	include/process.h	/^	ListHead list;$/;"	m	struct:Message
@@ -134,6 +147,8 @@ msg_full	include/process.h	/^	Sem msg_full;$/;"	m	struct:PCB
 msg_mutex	include/process.h	/^	Sem msg_mutex;$/;"	m	struct:PCB
 offset	include/process.h	/^			off_t offset;$/;"	m	struct:Message::__anon6::__anon7
 pid	include/process.h	/^	pid_t pid;$/;"	m	struct:PCB
+process_FDE	include/process.h	/^typedef struct process_FDE {$/;"	s
+process_FDE	include/process.h	/^} process_FDE;$/;"	t	typeref:struct:process_FDE
 req_pid	include/process.h	/^			pid_t req_pid;$/;"	m	struct:Message::__anon6::__anon7
 ret	include/process.h	/^		int ret;$/;"	m	union:Message::__anon5
 src	include/process.h	/^	pid_t src, dest;$/;"	m	struct:Message
@@ -344,20 +359,69 @@ OBJS	src/kernel/drivers/file-manager/Makefile	/^OBJS    = $(CFILES:.c=.o) $/;"	m
 VAR	src/kernel/drivers/file-manager/Makefile	/^VAR = "default"$/;"	m
 cc	src/kernel/drivers/file-manager/Makefile	/^cc = gcc$/;"	m
 FM	src/kernel/drivers/file-manager/fm.c	/^pid_t FM;$/;"	v
-do_read	src/kernel/drivers/file-manager/fm.c	/^void do_read( int file_name, pid_t req_pid, uint8_t *buf, off_t offset, size_t len  ){$/;"	f
+NR_SYSTEM_FDE	src/kernel/drivers/file-manager/fm.c	4;"	d	file:
+count	src/kernel/drivers/file-manager/fm.c	/^	int count;$/;"	m	struct:system_FDE	file:
+dev_id	src/kernel/drivers/file-manager/fm.c	/^	int dev_id;$/;"	m	struct:system_FDE	file:
+dev_type	src/kernel/drivers/file-manager/fm.c	/^	int dev_type;$/;"	m	struct:system_FDE	file:
+do_read	src/kernel/drivers/file-manager/fm.c	/^void do_read(int dev_type, int dev_id, pid_t req_pid, uint8_t *buf, off_t offset, size_t len  ){$/;"	f
+do_write	src/kernel/drivers/file-manager/fm.c	/^void do_write(int dev_type, int dev_id, pid_t req_pid, uint8_t *buf, off_t offset, size_t len){$/;"	f
+file_close	src/kernel/drivers/file-manager/fm.c	/^static void file_close(Msg *msg){$/;"	f	file:
+file_lseek	src/kernel/drivers/file-manager/fm.c	/^static void file_lseek(Msg *msg){$/;"	f	file:
+file_open	src/kernel/drivers/file-manager/fm.c	/^static void file_open(Msg *msg){$/;"	f	file:
+file_read	src/kernel/drivers/file-manager/fm.c	/^static void file_read(Msg *msg){$/;"	f	file:
+file_write	src/kernel/drivers/file-manager/fm.c	/^static void file_write(Msg *msg){$/;"	f	file:
 fmd	src/kernel/drivers/file-manager/fm.c	/^fmd( void ){$/;"	f	file:
 init_fm	src/kernel/drivers/file-manager/fm.c	/^void init_fm(void) {$/;"	f
+is_used	src/kernel/drivers/file-manager/fm.c	/^	int is_used;$/;"	m	struct:system_FDE	file:
+offset	src/kernel/drivers/file-manager/fm.c	/^	off_t offset;$/;"	m	struct:system_FDE	file:
+system_FDE	src/kernel/drivers/file-manager/fm.c	/^typedef struct system_FDE{$/;"	s	file:
+system_FDE	src/kernel/drivers/file-manager/fm.c	/^} system_FDE;$/;"	t	typeref:struct:system_FDE	file:
+system_fdes	src/kernel/drivers/file-manager/fm.c	/^system_FDE system_fdes[NR_SYSTEM_FDE];$/;"	v
+CMD_CAT	src/kernel/drivers/file-manager/test/proc1.c	83;"	d	file:
+CMD_CLOSE	src/kernel/drivers/file-manager/test/proc1.c	85;"	d	file:
+CMD_ECHO	src/kernel/drivers/file-manager/test/proc1.c	89;"	d	file:
+CMD_ERROR	src/kernel/drivers/file-manager/test/proc1.c	81;"	d	file:
+CMD_FORK	src/kernel/drivers/file-manager/test/proc1.c	82;"	d	file:
+CMD_LSEEK	src/kernel/drivers/file-manager/test/proc1.c	88;"	d	file:
+CMD_OPEN	src/kernel/drivers/file-manager/test/proc1.c	84;"	d	file:
+CMD_READ	src/kernel/drivers/file-manager/test/proc1.c	86;"	d	file:
+CMD_WRITE	src/kernel/drivers/file-manager/test/proc1.c	87;"	d	file:
+NR_CMD	src/kernel/drivers/file-manager/test/proc1.c	80;"	d	file:
+SYS_cat	src/kernel/drivers/file-manager/test/proc1.c	8;"	d	file:
+SYS_close	src/kernel/drivers/file-manager/test/proc1.c	12;"	d	file:
+SYS_echo	src/kernel/drivers/file-manager/test/proc1.c	14;"	d	file:
 SYS_exec	src/kernel/drivers/file-manager/test/proc1.c	3;"	d	file:
 SYS_exit	src/kernel/drivers/file-manager/test/proc1.c	4;"	d	file:
 SYS_fork	src/kernel/drivers/file-manager/test/proc1.c	2;"	d	file:
 SYS_getpid	src/kernel/drivers/file-manager/test/proc1.c	5;"	d	file:
 SYS_gets	src/kernel/drivers/file-manager/test/proc1.c	7;"	d	file:
+SYS_lseek	src/kernel/drivers/file-manager/test/proc1.c	13;"	d	file:
+SYS_open	src/kernel/drivers/file-manager/test/proc1.c	9;"	d	file:
 SYS_puts	src/kernel/drivers/file-manager/test/proc1.c	1;"	d	file:
+SYS_read	src/kernel/drivers/file-manager/test/proc1.c	10;"	d	file:
 SYS_waitpid	src/kernel/drivers/file-manager/test/proc1.c	6;"	d	file:
+SYS_write	src/kernel/drivers/file-manager/test/proc1.c	11;"	d	file:
+arg_type	src/kernel/drivers/file-manager/test/proc1.c	/^char arg_type[NR_CMD][8] = {"100", "100", "100", "100", "121", "121",  "111",  "200"};$/;"	v
+builtin	src/kernel/drivers/file-manager/test/proc1.c	/^char builtin[NR_CMD][16] = {"exec","cat","open","close","read","write","lseek","echo"};$/;"	v
+cat	src/kernel/drivers/file-manager/test/proc1.c	/^static void cat(int filename){$/;"	f	file:
+close	src/kernel/drivers/file-manager/test/proc1.c	/^static int close(int fd){$/;"	f	file:
+echo	src/kernel/drivers/file-manager/test/proc1.c	/^static void echo(void *buf){$/;"	f	file:
+exec	src/kernel/drivers/file-manager/test/proc1.c	/^static int exec(int filename, char *cmd){$/;"	f	file:
 fork	src/kernel/drivers/file-manager/test/proc1.c	/^static unsigned int fork(){$/;"	f	file:
+lseek	src/kernel/drivers/file-manager/test/proc1.c	/^static int lseek(int fd, int offset, int whence){$/;"	f	file:
 main	src/kernel/drivers/file-manager/test/proc1.c	/^int main(char *args){$/;"	f
+open	src/kernel/drivers/file-manager/test/proc1.c	/^static int open(int filename){$/;"	f	file:
+parse	src/kernel/drivers/file-manager/test/proc1.c	/^static int parse(char *cmd, void *arg){$/;"	f	file:
+read	src/kernel/drivers/file-manager/test/proc1.c	/^static int read(int fd, void *buf, int len){$/;"	f	file:
+read_line	src/kernel/drivers/file-manager/test/proc1.c	/^static void read_line(char *cmd){$/;"	f	file:
+shell	src/kernel/drivers/file-manager/test/proc1.c	/^static void shell(){$/;"	f	file:
+simple	src/kernel/drivers/file-manager/test/proc1.c	/^static void simple(){$/;"	f	file:
 syscall	src/kernel/drivers/file-manager/test/proc1.c	/^syscall(int id, ...) {$/;"	f
+test_cat	src/kernel/drivers/file-manager/test/proc1.c	/^static void test_cat(){$/;"	f	file:
+test_exec	src/kernel/drivers/file-manager/test/proc1.c	/^static void test_exec(){$/;"	f	file:
 test_fork	src/kernel/drivers/file-manager/test/proc1.c	/^static void test_fork(){$/;"	f	file:
+waitpid	src/kernel/drivers/file-manager/test/proc1.c	/^static void waitpid(int pid){$/;"	f	file:
+write	src/kernel/drivers/file-manager/test/proc1.c	/^static int write(int fd, void *buf, int len){$/;"	f	file:
 NR_DEV	src/kernel/drivers/hal.c	5;"	d	file:
 dev_pool	src/kernel/drivers/hal.c	/^static Dev dev_pool[NR_DEV];$/;"	v	file:
 dev_read	src/kernel/drivers/hal.c	/^dev_read(const char *dev_name, pid_t reqst_pid, void *buf, off_t offset, size_t len) {$/;"	f
@@ -466,6 +530,8 @@ disk	src/kernel/drivers/ramdisk/ramdisk.c	/^static uint8_t *disk = (void*)file;$
 file	src/kernel/drivers/ramdisk/ramdisk.c	/^static uint8_t file[NR_MAX_FILE][NR_FILE_SIZE] = {$/;"	v	file:
 init_ramdisk	src/kernel/drivers/ramdisk/ramdisk.c	/^void init_ramdisk(void){$/;"	f
 ramdisk_driver_thread	src/kernel/drivers/ramdisk/ramdisk.c	/^ramdisk_driver_thread(void){$/;"	f	file:
+read	src/kernel/drivers/ramdisk/ramdisk.c	/^static void read(Msg *msg){$/;"	f	file:
+write	src/kernel/drivers/ramdisk/ramdisk.c	/^static void write(Msg *msg){$/;"	f	file:
 FREQ_8253	src/kernel/drivers/timer/timer.c	10;"	d	file:
 PORT_RTC	src/kernel/drivers/timer/timer.c	9;"	d	file:
 PORT_TIME	src/kernel/drivers/timer/timer.c	8;"	d	file:
@@ -632,27 +698,41 @@ current	src/kernel/process/schedule.c	/^PCB idle, *current = &idle;$/;"	v
 idle	src/kernel/process/schedule.c	/^PCB idle, *current = &idle;$/;"	v
 print_ready	src/kernel/process/schedule.c	/^void print_ready(){$/;"	f
 schedule	src/kernel/process/schedule.c	/^void schedule(void) {$/;"	f
-SYS_exec	src/kernel/process/syscall.c	7;"	d	file:
-SYS_exit	src/kernel/process/syscall.c	8;"	d	file:
-SYS_fork	src/kernel/process/syscall.c	6;"	d	file:
-SYS_getpid	src/kernel/process/syscall.c	9;"	d	file:
-SYS_gets	src/kernel/process/syscall.c	11;"	d	file:
-SYS_puts	src/kernel/process/syscall.c	5;"	d	file:
-SYS_read	src/kernel/process/syscall.c	3;"	d	file:
-SYS_waitpid	src/kernel/process/syscall.c	10;"	d	file:
-SYS_write	src/kernel/process/syscall.c	4;"	d	file:
+SYS_cat	src/kernel/process/syscall.c	10;"	d	file:
+SYS_close	src/kernel/process/syscall.c	14;"	d	file:
+SYS_echo	src/kernel/process/syscall.c	16;"	d	file:
+SYS_exec	src/kernel/process/syscall.c	5;"	d	file:
+SYS_exit	src/kernel/process/syscall.c	6;"	d	file:
+SYS_fork	src/kernel/process/syscall.c	4;"	d	file:
+SYS_getpid	src/kernel/process/syscall.c	7;"	d	file:
+SYS_gets	src/kernel/process/syscall.c	9;"	d	file:
+SYS_lseek	src/kernel/process/syscall.c	15;"	d	file:
+SYS_open	src/kernel/process/syscall.c	11;"	d	file:
+SYS_puts	src/kernel/process/syscall.c	3;"	d	file:
+SYS_read	src/kernel/process/syscall.c	12;"	d	file:
+SYS_waitpid	src/kernel/process/syscall.c	8;"	d	file:
+SYS_write	src/kernel/process/syscall.c	13;"	d	file:
 do_syscall	src/kernel/process/syscall.c	/^void do_syscall(TrapFrame *tf) {$/;"	f
 msg	src/kernel/process/syscall.c	/^static Msg msg;$/;"	v	file:
+sys_cat	src/kernel/process/syscall.c	/^static void sys_cat(TrapFrame *tf, Msg *msg){$/;"	f	file:
+sys_close	src/kernel/process/syscall.c	/^static void sys_close(TrapFrame *tf, Msg *msg){$/;"	f	file:
+sys_echo	src/kernel/process/syscall.c	/^static void sys_echo(TrapFrame *tf, Msg *msg){$/;"	f	file:
+sys_exec	src/kernel/process/syscall.c	/^static void sys_exec(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_exit	src/kernel/process/syscall.c	/^static void sys_exit(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_fork	src/kernel/process/syscall.c	/^static void sys_fork(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_gets	src/kernel/process/syscall.c	/^static void sys_gets(TrapFrame *tf, Msg *msg){$/;"	f	file:
+sys_lseek	src/kernel/process/syscall.c	/^static void sys_lseek(TrapFrame *tf, Msg *msg){$/;"	f	file:
+sys_open	src/kernel/process/syscall.c	/^static void sys_open(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_puts	src/kernel/process/syscall.c	/^static void sys_puts(TrapFrame *tf, Msg *msg){$/;"	f	file:
+sys_read	src/kernel/process/syscall.c	/^static void sys_read(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_waitpid	src/kernel/process/syscall.c	/^static void sys_waitpid(TrapFrame *tf, Msg *msg){$/;"	f	file:
-NBUF	src/kernel/process/util.c	3;"	d	file:
-NR_CONS	src/kernel/process/util.c	5;"	d	file:
-NR_PROD	src/kernel/process/util.c	4;"	d	file:
+sys_write	src/kernel/process/syscall.c	/^static void sys_write(TrapFrame *tf, Msg *msg){$/;"	f	file:
+GDT_ENTRY	src/kernel/process/util.c	2;"	d	file:
+NBUF	src/kernel/process/util.c	5;"	d	file:
+NR_CONS	src/kernel/process/util.c	7;"	d	file:
+NR_PROD	src/kernel/process/util.c	6;"	d	file:
 P	src/kernel/process/util.c	/^void P(Sem *s){$/;"	f
-PCB_SIZE	src/kernel/process/util.c	2;"	d	file:
+PCB_SIZE	src/kernel/process/util.c	4;"	d	file:
 V	src/kernel/process/util.c	/^void V(Sem *s){$/;"	f
 block	src/kernel/process/util.c	/^ListHead ready, block, free;$/;"	v
 create_kthread	src/kernel/process/util.c	/^PCB* create_kthread(void *fun) {$/;"	f

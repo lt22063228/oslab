@@ -14,8 +14,18 @@
 #define EXEC 8
 #define EXIT 9
 #define WAITPID 10
+#define FILE_OPEN 11
+#define FILE_CLOSE 12
+#define FILE_WRITE 13
+#define FILE_LSEEK 14
 #define USER_STACK_OFFSET (0xbffff000)
 
+#define TYPE_REG 0
+#define TYPE_DEV 1
+
+#define STDIN_FILENO 0
+#define STDOUT_FILENO 1
+#define STDERR_FILENO 2
 /* message from outside interruption, no pid */
 #define MSG_HARD_INTR 100
 
