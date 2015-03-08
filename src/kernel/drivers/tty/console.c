@@ -158,9 +158,7 @@ read_request(Msg *m) {
 		if (c->rtop == RSTK_SZ) panic("too many read request");
 		memcpy(&c->rstk[c->rtop ++], m, sizeof(Msg));
 	} else {
-		printk("c->f:%d, c->r:%d\n", c->f, c->r);
 		int nread = get_cooked(c, m->req_pid, m->buf, m->len);
-		printk("c->f:%d, c->r:%d\n", c->f, c->r);
 		m->ret = nread;
 		pid_t dest = m->src;
 		m->src = TTY;

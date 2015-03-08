@@ -358,6 +358,63 @@ LDFLAGS	src/kernel/drivers/file-manager/Makefile	/^LDFLAGS = -melf_i386$/;"	m
 OBJS	src/kernel/drivers/file-manager/Makefile	/^OBJS    = $(CFILES:.c=.o) $/;"	m
 VAR	src/kernel/drivers/file-manager/Makefile	/^VAR = "default"$/;"	m
 cc	src/kernel/drivers/file-manager/Makefile	/^cc = gcc$/;"	m
+BLOCK_BASE	src/kernel/drivers/file-manager/file_system/file_formatter.c	10;"	d	file:
+BLOCK_BITMAP_BASE	src/kernel/drivers/file-manager/file_system/file_formatter.c	8;"	d	file:
+FILE_DIR	src/kernel/drivers/file-manager/file_system/file_formatter.c	19;"	d	file:
+FILE_PLAIN	src/kernel/drivers/file-manager/file_system/file_formatter.c	18;"	d	file:
+INDEX_SIZE	src/kernel/drivers/file-manager/file_system/file_formatter.c	12;"	d	file:
+INODE_BASE	src/kernel/drivers/file-manager/file_system/file_formatter.c	9;"	d	file:
+INODE_BITMAP_BASE	src/kernel/drivers/file-manager/file_system/file_formatter.c	7;"	d	file:
+NR_BLOCK	src/kernel/drivers/file-manager/file_system/file_formatter.c	4;"	d	file:
+NR_INDEX	src/kernel/drivers/file-manager/file_system/file_formatter.c	13;"	d	file:
+NR_INODE	src/kernel/drivers/file-manager/file_system/file_formatter.c	3;"	d	file:
+ONE_INDEX_BASE	src/kernel/drivers/file-manager/file_system/file_formatter.c	14;"	d	file:
+ROOT_INODE	src/kernel/drivers/file-manager/file_system/file_formatter.c	107;"	d	file:
+SIZE_OF_BLOCK	src/kernel/drivers/file-manager/file_system/file_formatter.c	5;"	d	file:
+SIZE_OF_IMAGE	src/kernel/drivers/file-manager/file_system/file_formatter.c	11;"	d	file:
+THREE_INDEX_BASE	src/kernel/drivers/file-manager/file_system/file_formatter.c	16;"	d	file:
+TWO_INDEX_BASE	src/kernel/drivers/file-manager/file_system/file_formatter.c	15;"	d	file:
+block_bitmap	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^char block_bitmap[NR_BLOCK];$/;"	v
+block_t	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^typedef int block_t;$/;"	t	file:
+chdir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^int chdir(char *dir){$/;"	f
+check_file_type	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^int check_file_type(inode_t file){$/;"	f
+current_dir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t current_dir;$/;"	v
+data	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^static char data[SIZE_OF_IMAGE] = {'\\0'};$/;"	v	file:
+dev_id	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	int dev_id;$/;"	m	struct:inode_entry	file:
+dir_entry	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^typedef struct dir_entry{$/;"	s	file:
+dir_entry	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^} dir_entry;$/;"	t	typeref:struct:dir_entry	file:
+filename	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	char filename[32];$/;"	m	struct:dir_entry	file:
+find_file	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t find_file(char *name, inode_t dest){$/;"	f
+get_file	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t get_file(char *path, inode_t from){$/;"	f
+get_free_block	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^block_t get_free_block(char *block_bitmap){$/;"	f
+get_free_inode	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t get_free_inode(char *inode_bitmap){$/;"	f
+get_path_and_name	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^void get_path_and_name(char *dir, char *path, char *name){$/;"	f
+index	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	block_t index[15];$/;"	m	struct:inode_entry	file:
+index_block	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^block_t index_block(int seq_num, inode_t inode_index, block_t block_index){$/;"	f
+inode	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	inode_t inode;$/;"	m	struct:dir_entry	file:
+inode_bitmap	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^char inode_bitmap[NR_INODE];$/;"	v
+inode_entry	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^typedef struct inode_entry{$/;"	s	file:
+inode_entry	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^} inode_entry;$/;"	t	typeref:struct:inode_entry	file:
+inode_t	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^typedef int inode_t;$/;"	t	file:
+link	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	int link;$/;"	m	struct:inode_entry	file:
+lsdir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^int lsdir(char *dir, char *buf){$/;"	f
+main	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^int main(){$/;"	f
+make_dir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t make_dir(char *name, inode_t dest){$/;"	f
+make_file	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t make_file(char *name, inode_t dest){$/;"	f
+make_root	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t make_root(){$/;"	f
+mkdir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t mkdir(char *dir){$/;"	f
+pad	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	char pad[52];$/;"	m	struct:inode_entry	file:
+print_dir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^void print_dir(char *buf){$/;"	f
+read_block	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^void read_block(block_t index, void *data){$/;"	f
+read_inode	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^void read_inode(inode_t index, inode_entry *data, int count){$/;"	f
+remove_file	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^int remove_file(inode_t file_index){$/;"	f
+rmdir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^int rmdir(char *dir){$/;"	f
+root_dir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t root_dir;$/;"	v
+size	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	size_t size;$/;"	m	struct:inode_entry	file:
+size_t	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^typedef unsigned int size_t;$/;"	t	file:
+type	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	int type;$/;"	m	struct:inode_entry	file:
+write_block	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^void write_block(block_t index, void *data){$/;"	f
+write_inode	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^void write_inode(inode_t index, inode_entry *data, int count){$/;"	f
 FM	src/kernel/drivers/file-manager/fm.c	/^pid_t FM;$/;"	v
 NR_SYSTEM_FDE	src/kernel/drivers/file-manager/fm.c	4;"	d	file:
 count	src/kernel/drivers/file-manager/fm.c	/^	int count;$/;"	m	struct:system_FDE	file:
@@ -474,6 +531,7 @@ PFRAME	src/kernel/drivers/memory-manager/mm.c	/^typedef struct PFRAME$/;"	s	file
 PTABLES	src/kernel/drivers/memory-manager/mm.c	/^typedef struct PTABLES{$/;"	s	file:
 Pframe	src/kernel/drivers/memory-manager/mm.c	/^} Pframe;$/;"	t	typeref:struct:PFRAME	file:
 Ptable	src/kernel/drivers/memory-manager/mm.c	/^} Ptable;$/;"	t	typeref:struct:PTABLES	file:
+SPACE_OF_KERNEL	src/kernel/drivers/memory-manager/mm.c	75;"	d	file:
 align_to_page	src/kernel/drivers/memory-manager/mm.c	/^static PDE pdir[NR_PROC][NR_PDE] align_to_page;$/;"	v	file:
 align_to_page	src/kernel/drivers/memory-manager/mm.c	/^static PTE ptable[NR_PTABLE][NR_PTE] align_to_page;$/;"	v	file:
 cr3	src/kernel/drivers/memory-manager/mm.c	/^static CR3 cr3[NR_PROC];$/;"	v	file:

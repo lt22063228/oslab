@@ -15,17 +15,8 @@ void schedule(void) {
 	list_add_before( &ready, list );
 	now = ready.next;
 	current = list_entry( now, PCB, list ); 
-	// if(current->pid == 11 || current->pid == 12){
-	// 	printk("I'AM PROC %d\n", current->pid);
-	// }
 	TrapFrame *tf = (TrapFrame*)current->tf;
 	if(current->pid == 10){
-		// PCB *next = list_entry(current->list.next, PCB, list);
-		// if(count > 167){
-		// 	printk("\n\n");
-		// }
-		// printk("th esp is %d, address is %d\n", tf->esp, &(tf->esp));
-		// esp_addr = &(tf->esp);
 		tf ++;
 		set_tss_esp0((uint32_t)tf);//(((TrapFrame*)(current->tf))->esp);
 	}
