@@ -15,5 +15,6 @@ typedef unsigned char  bool;
 typedef          int   pid_t;
 typedef          int   size_t;
 typedef          int   off_t;
+typedef			 int   inode_t;
 
 #endif

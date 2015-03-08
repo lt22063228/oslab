@@ -12,6 +12,8 @@
 #define SYS_close 14
 #define SYS_lseek 15
 #define SYS_echo 16
+#define SYS_makefile 17
+#define SYS_listdir 18
 int syscall(int id,...);
 int __attribute__((__noinline__))
 syscall(int id, ...) {
@@ -32,6 +34,8 @@ static void test_fork();
 static void test_cat();
 static void simple();
 
+static void list_dir();
+static void make_file(char *name);
 static int read(int fd, void *buf, int len);
 static int write(int fd, void *buf, int len);
 static int open(int filename);
@@ -39,10 +43,11 @@ static int close(int fd);
 static int lseek(int fd, int offset, int whence);
 static void echo(void *buf);
 int main(char *args){
+	shell();
+	test_cat();
 	test_cat();
 	test_exec();
 	test_fork();
-	shell();
 	simple();
 	return 1;
 }
@@ -77,7 +82,7 @@ static void test_cat(){
 		x ++;
 	}
 }
-#define NR_CMD 8
+#define NR_CMD 10
 #define CMD_ERROR -1
 #define CMD_FORK 0
 #define CMD_CAT 1
@@ -87,9 +92,11 @@ static void test_cat(){
 #define CMD_WRITE 5
 #define CMD_LSEEK 6
 #define CMD_ECHO 7
-char builtin[NR_CMD][16] = {"exec","cat","open","close","read","write","lseek","echo"};
+#define CMD_MAKEFILE 8
+#define CMD_LISTDIR 9
+char builtin[NR_CMD][16] = {"exec","cat","open","close","read","write","lseek","echo", "make_file", "ls" };
 // 0 for no parameter, 1 for integer, 2 for char array
-char arg_type[NR_CMD][8] = {"100", "100", "100", "100", "121", "121",  "111",  "200"};
+char arg_type[NR_CMD][8] = {"100", "100", "100", "100", "121", "121",  "111",  "200",  "200",      "000"};
 static int parse(char *cmd, void *arg){
 	int i;
 	for(i = 0; i < NR_CMD; i++){
@@ -165,6 +172,12 @@ static void shell(){
 			case CMD_ECHO:
 				echo((void *)buf);
 				break;
+			case CMD_MAKEFILE:
+				make_file((char*)arg);
+				break;
+			case CMD_LISTDIR:
+				list_dir();
+				break;
 			default:
 				echo("default switch in proc1.c\n");
 				break;
@@ -172,6 +185,12 @@ static void shell(){
 	}
 }
 
+static void list_dir(){
+	syscall(SYS_listdir);
+}
+static void make_file(char *name){
+	syscall(SYS_makefile, name);
+}
 static void read_line(char *cmd){
 	syscall(SYS_gets, cmd);	
 }
@@ -188,18 +207,23 @@ static void cat(int filename){
 	syscall(SYS_cat, filename);
 }
 static int read(int fd, void *buf, int len){
+	return 0;
 	return syscall(SYS_read, fd, buf, len);
 }
 static int write(int fd, void *buf, int len){
+	return 0;
 	return syscall(SYS_write, fd, buf, len);
 }
 static int open(int filename){
+	return 0;
 	return syscall(SYS_open, filename);
 }
 static int close(int fd){
+	return 0;
 	return syscall(SYS_close, fd);
 }
 static int lseek(int fd, int offset, int whence){
+	return 0;
 	return syscall(SYS_lseek, fd, whence);
 }
 static void echo(void *buf){

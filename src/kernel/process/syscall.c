@@ -14,6 +14,8 @@
 #define SYS_close 14
 #define SYS_lseek 15
 #define SYS_echo 16
+#define SYS_makefile 17
+#define SYS_listdir 18
 extern pid_t PM;
 extern pid_t FM;
 
@@ -30,10 +32,15 @@ static void sys_read(TrapFrame *tf, Msg *msg);
 static void sys_write(TrapFrame *tf, Msg *msg);
 static void sys_lseek(TrapFrame *tf, Msg *msg); 
 static void sys_echo(TrapFrame *tf, Msg *msg);
+static void sys_makefile(TrapFrame *tf, Msg *msg);
+static void sys_listdir(TrapFrame *tf, Msg *msg);
 
 static Msg msg;
 void do_syscall(TrapFrame *tf) {
 	int id = tf->eax; // system call id
+	if(current->pid == 10){
+		printk("haha");
+	}
 	switch (id) {
 		case SYS_read:
 			sys_read(tf, &msg);
@@ -85,9 +92,54 @@ void do_syscall(TrapFrame *tf) {
 			printk("syscall.c: pid:%d, cat.\n", current->pid);
 			sys_cat(tf, &msg);
 			break;
+		case SYS_makefile:
+			sys_makefile(tf, &msg);
+			break;
+		case SYS_listdir:
+			sys_listdir(tf, &msg);
+			break;
 		default:
 			/* kernel thread use system call to self-trap */
 			break;
+	}
+}
+static void sys_makefile(TrapFrame *tf, Msg *msg){
+	char *path = (char*)tf->ebx;
+	msg->src = current->pid;
+	msg->req_pid = current->pid;
+	msg->buf = path;
+	msg->type = MAKE_FILE;
+	msg->offset = FILE_PLAIN;	
+
+	send(FM, msg);
+	receive(FM, msg);
+}
+
+// void print_dir(char *buf){
+// 	char *source = buf;
+// 	char *end = buf + 20*SIZE_OF_BLOCK;
+// 	while(*source != '\0' && source < end){
+// 		printf("%s\n", source);
+// 		source += (strlen(source) + 1);
+// 	}
+// }
+static void sys_listdir(TrapFrame *tf, Msg *msg){
+	char buf[2048] = {0};
+	char *path = "/";
+	msg->src = current->pid;
+	msg->req_pid = current->pid;
+	msg->buf = (void*)buf;
+	msg->offset = (off_t)path;
+
+	send(FM, msg);
+	receive(FM, msg);
+
+	int start = 0, i;
+	for(i = 0; i < 2048 && *(buf + i) != '\000'; i++){
+		if(*(buf + i) == '\n'){
+			dev_write("tty1", current->pid, buf, start, i - start + 1);
+			start = i + 1;
+		}
 	}
 }
 static void sys_echo(TrapFrame *tf, Msg *msg){

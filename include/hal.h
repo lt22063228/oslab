@@ -18,10 +18,17 @@
 #define FILE_CLOSE 12
 #define FILE_WRITE 13
 #define FILE_LSEEK 14
+#define MAKE_FILE 15
+#define LIST_DIR 16
 #define USER_STACK_OFFSET (0xbffff000)
 
 #define TYPE_REG 0
 #define TYPE_DEV 1
+
+#define ROOT_INODE 2
+
+#define FILE_PLAIN 0
+#define FILE_DIR 1
 
 #define STDIN_FILENO 0
 #define STDOUT_FILENO 1

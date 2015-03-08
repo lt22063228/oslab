@@ -198,6 +198,7 @@ void init_pcb(pid_t req_pid){
 	memset(pcb, 0, sizeof(PCB));
 	pcb->pid = req_pid;
 	pcb->cr3 = cr3;
+	pcb->current_dir = ROOT_INODE;
 	/* append the argument */	
 	TrapFrame *t = (TrapFrame*)(pcb->kstack + KSTACK_SIZE - 2*sizeof(TrapFrame));
 	pcb->tf = t;

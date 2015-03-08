@@ -46,6 +46,7 @@ typedef struct PCB {
 	Msg msg_buff[MSG_BUFF_SIZE];
 	process_FDE fdes[NR_PROCESS_FDE]; 
 	ListHead msg_free;
+	inode_t current_dir;
 	CR3* cr3;
 } PCB;
 extern PCB *current;
