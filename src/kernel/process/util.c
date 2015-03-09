@@ -166,10 +166,14 @@ void receive(pid_t src, Msg *m){
 		ListHead *index_list = msg_list->next;
 		while( index_list != msg_list ){
 			Msg* msg = list_entry(index_list, Msg, list);
-			PDE *pde = (PDE*)(current->cr3->page_directory_base << 12);
-			PTE *pte = (PTE*)(pde->page_frame << 12);
-			if(current->pid == 10)
-				printk("ptable + 796:%d\n", (pte+796)->present);
+			// PDE *pde = (PDE*)(current->cr3->page_directory_base << 12);
+			// PTE *pte = (PTE*)(pde->page_frame << 12);
+			// if(current->pid == 10)
+			// 	printk("ptable + 796:%d\n", (pte+796)->present);
+			extern pid_t RAMDISK;
+			if(src == RAMDISK){
+				src *= 1;
+			}
 			if( src == ANY || msg->src == src ){
 				memcpy(m, msg, sizeof(Msg) - sizeof(ListHead));
 				// m->src = msg->src;
@@ -181,7 +185,10 @@ void receive(pid_t src, Msg *m){
 				// m->offset = msg->offset;
 				// m->len = msg->len;
 				list_del( index_list );
-				list_add_before( &current->msg_free, index_list ); unlock(); return; }
+				list_add_before( &current->msg_free, index_list );
+				unlock();
+				return;
+			}
 			index_list = index_list->next;
 		}
 		unlock();

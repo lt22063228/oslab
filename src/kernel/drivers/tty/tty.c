@@ -45,7 +45,7 @@ ttyd(void) {
 						char c;
 						int i;
 						for (i = 0; i < m.len; i ++) {
-							copy_to_kernel(fetch_pcb(m.req_pid), &c, (char*)m.buf + i, 1);
+							copy_to_kernel(fetch_pcb(m.req_pid), &c, (char*)m.buf + m.offset + i, 1);
 							consl_writec(&ttys[m.dev_id], c);
 						}
 						//每个控制台都缓存着数据，当切换到某个控制台时候将所有的信息显示出来j

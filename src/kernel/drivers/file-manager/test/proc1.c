@@ -94,9 +94,9 @@ static void test_cat(){
 #define CMD_ECHO 7
 #define CMD_MAKEFILE 8
 #define CMD_LISTDIR 9
-char builtin[NR_CMD][16] = {"exec","cat","open","close","read","write","lseek","echo", "make_file", "ls" };
+char builtin[NR_CMD][16] = {"exec","cat","open","close","read","write","lseek","echo", "make_file", "list" };
 // 0 for no parameter, 1 for integer, 2 for char array
-char arg_type[NR_CMD][8] = {"100", "100", "100", "100", "121", "121",  "111",  "200",  "200",      "000"};
+char arg_type[NR_CMD][8] = {"100", "100", "100", "100", "121", "121",  "111",  "200",  "200",      "200"};
 static int parse(char *cmd, void *arg){
 	int i;
 	for(i = 0; i < NR_CMD; i++){
@@ -127,7 +127,7 @@ static int parse(char *cmd, void *arg){
 					*char_arg = *(cmd + j);
 					char_arg ++;
 				}
-				*char_arg ++ = '\n';
+				// *char_arg ++ = '\n';
 				*char_arg = '\0';
 			}else{
 				return -2;	

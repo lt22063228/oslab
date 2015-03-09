@@ -6,10 +6,8 @@
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
 ANY	include/process.h	4;"	d
 ASFLAGS	Makefile	/^ASFLAGS = -m32 -MD -I.\/include$/;"	m
-BLOCK_BASE	src/kernel/drivers/file-manager/file_system/file_formatter.c	10;"	d	file:
-BLOCK_BASE	src/kernel/drivers/file-manager/fm.c	17;"	d	file:
-BLOCK_BITMAP_BASE	src/kernel/drivers/file-manager/file_system/file_formatter.c	8;"	d	file:
-BLOCK_BITMAP_BASE	src/kernel/drivers/file-manager/fm.c	15;"	d	file:
+BLOCK_BASE	src/kernel/drivers/file-manager/fm.c	18;"	d	file:
+BLOCK_BITMAP_BASE	src/kernel/drivers/file-manager/fm.c	16;"	d	file:
 CBUF_SZ	src/kernel/drivers/tty/term.h	35;"	d
 CBUF_SZ	src/kernel/drivers/tty/tty.h	8;"	d
 CC	Makefile	/^CC      = gcc$/;"	m
@@ -17,17 +15,17 @@ CFILES	Makefile	/^CFILES  = $(shell find src\/ -name "*.c")$/;"	m
 CFILES	src/kernel/drivers/file-manager/Makefile	/^CFILES  = $(shell find .\/test -name "*.c")$/;"	m
 CFLAGS	Makefile	/^CFLAGS  = -Wno-main -m32 -static -ggdb -MD -Wall -Werror -I.\/include -O0 \\$/;"	m
 CFLAGS	src/kernel/drivers/file-manager/Makefile	/^CFLAGS  = -Wno-main -m32 -static -ggdb -MD -Wall -Werror -I.\/include -O0 \\$/;"	m
-CMD_CAT	src/kernel/drivers/file-manager/test/proc1.c	83;"	d	file:
-CMD_CLOSE	src/kernel/drivers/file-manager/test/proc1.c	85;"	d	file:
-CMD_ECHO	src/kernel/drivers/file-manager/test/proc1.c	89;"	d	file:
-CMD_ERROR	src/kernel/drivers/file-manager/test/proc1.c	81;"	d	file:
-CMD_FORK	src/kernel/drivers/file-manager/test/proc1.c	82;"	d	file:
-CMD_LISTDIR	src/kernel/drivers/file-manager/test/proc1.c	91;"	d	file:
-CMD_LSEEK	src/kernel/drivers/file-manager/test/proc1.c	88;"	d	file:
-CMD_MAKEFILE	src/kernel/drivers/file-manager/test/proc1.c	90;"	d	file:
-CMD_OPEN	src/kernel/drivers/file-manager/test/proc1.c	84;"	d	file:
-CMD_READ	src/kernel/drivers/file-manager/test/proc1.c	86;"	d	file:
-CMD_WRITE	src/kernel/drivers/file-manager/test/proc1.c	87;"	d	file:
+CMD_CAT	src/kernel/drivers/file-manager/test/proc1.c	88;"	d	file:
+CMD_CLOSE	src/kernel/drivers/file-manager/test/proc1.c	90;"	d	file:
+CMD_ECHO	src/kernel/drivers/file-manager/test/proc1.c	94;"	d	file:
+CMD_ERROR	src/kernel/drivers/file-manager/test/proc1.c	86;"	d	file:
+CMD_FORK	src/kernel/drivers/file-manager/test/proc1.c	87;"	d	file:
+CMD_LISTDIR	src/kernel/drivers/file-manager/test/proc1.c	96;"	d	file:
+CMD_LSEEK	src/kernel/drivers/file-manager/test/proc1.c	93;"	d	file:
+CMD_MAKEFILE	src/kernel/drivers/file-manager/test/proc1.c	95;"	d	file:
+CMD_OPEN	src/kernel/drivers/file-manager/test/proc1.c	89;"	d	file:
+CMD_READ	src/kernel/drivers/file-manager/test/proc1.c	91;"	d	file:
+CMD_WRITE	src/kernel/drivers/file-manager/test/proc1.c	92;"	d	file:
 CR0	include/x86/cpu.h	/^typedef union CR0 {$/;"	u
 CR0	include/x86/cpu.h	/^} CR0;$/;"	t	typeref:union:CR0
 CR3	include/x86/cpu.h	/^typedef union CR3 {$/;"	u
@@ -49,12 +47,10 @@ ELFHeader	include/x86/io.h	/^struct ELFHeader {$/;"	s
 EXEC	include/hal.h	14;"	d
 EXIT	include/hal.h	15;"	d
 FILE_CLOSE	include/hal.h	18;"	d
-FILE_DIR	src/kernel/drivers/file-manager/file_system/file_formatter.c	19;"	d	file:
-FILE_DIR	src/kernel/drivers/file-manager/fm.c	26;"	d	file:
+FILE_DIR	include/hal.h	31;"	d
 FILE_LSEEK	include/hal.h	20;"	d
 FILE_OPEN	include/hal.h	17;"	d
-FILE_PLAIN	src/kernel/drivers/file-manager/file_system/file_formatter.c	18;"	d	file:
-FILE_PLAIN	src/kernel/drivers/file-manager/fm.c	25;"	d	file:
+FILE_PLAIN	include/hal.h	30;"	d
 FILE_READ	include/hal.h	9;"	d
 FILE_WRITE	include/hal.h	19;"	d
 FM	src/kernel/drivers/file-manager/fm.c	/^pid_t FM;$/;"	v
@@ -71,12 +67,9 @@ IDE_PORT_CTRL	src/kernel/drivers/ide/disk.c	7;"	d	file:
 IDE_READY	src/kernel/drivers/ide/ide.h	4;"	d
 IDE_WRITEBACK	src/kernel/drivers/ide/ide.h	5;"	d
 IF_MASK	include/process.h	6;"	d
-INDEX_SIZE	src/kernel/drivers/file-manager/file_system/file_formatter.c	12;"	d	file:
-INDEX_SIZE	src/kernel/drivers/file-manager/fm.c	19;"	d	file:
-INODE_BASE	src/kernel/drivers/file-manager/file_system/file_formatter.c	9;"	d	file:
-INODE_BASE	src/kernel/drivers/file-manager/fm.c	16;"	d	file:
-INODE_BITMAP_BASE	src/kernel/drivers/file-manager/file_system/file_formatter.c	7;"	d	file:
-INODE_BITMAP_BASE	src/kernel/drivers/file-manager/fm.c	14;"	d	file:
+INDEX_SIZE	src/kernel/drivers/file-manager/fm.c	20;"	d	file:
+INODE_BASE	src/kernel/drivers/file-manager/fm.c	17;"	d	file:
+INODE_BITMAP_BASE	src/kernel/drivers/file-manager/fm.c	15;"	d	file:
 INTERRUPT_GATE_32	src/kernel/irq/idt.c	4;"	d	file:
 INTR	include/process.h	7;"	d
 IRQ_SLAVE	src/kernel/irq/i8259.c	5;"	d	file:
@@ -121,7 +114,7 @@ MAKE_FILE	include/hal.h	21;"	d
 MAP_KERNEL	include/hal.h	12;"	d
 MM	src/kernel/drivers/memory-manager/mm.c	/^pid_t MM;$/;"	v
 MSG_BUFF_SIZE	include/process.h	5;"	d
-MSG_HARD_INTR	include/hal.h	32;"	d
+MSG_HARD_INTR	include/hal.h	37;"	d
 MSG_TIMER_UPDATE	include/time.h	6;"	d
 MSG_TTY_GETKEY	src/kernel/drivers/tty/tty.h	5;"	d
 MSG_TTY_UPDATE	src/kernel/drivers/tty/tty.h	6;"	d
@@ -134,17 +127,14 @@ NEW_PAGE	include/hal.h	10;"	d
 NEW_PCB	include/hal.h	11;"	d
 NEW_TIMER	include/time.h	5;"	d
 NOINTR	include/process.h	8;"	d
-NR_BLOCK	src/kernel/drivers/file-manager/file_system/file_formatter.c	4;"	d	file:
-NR_BLOCK	src/kernel/drivers/file-manager/fm.c	11;"	d	file:
-NR_CMD	src/kernel/drivers/file-manager/test/proc1.c	80;"	d	file:
+NR_BLOCK	src/kernel/drivers/file-manager/fm.c	12;"	d	file:
+NR_CMD	src/kernel/drivers/file-manager/test/proc1.c	85;"	d	file:
 NR_CONS	src/kernel/process/util.c	7;"	d	file:
 NR_DEV	src/kernel/drivers/hal.c	5;"	d	file:
 NR_FILE_SIZE	include/ramdisk.h	4;"	d
 NR_HARD_INTR	src/kernel/irq/irq_handle.c	6;"	d	file:
-NR_INDEX	src/kernel/drivers/file-manager/file_system/file_formatter.c	13;"	d	file:
-NR_INDEX	src/kernel/drivers/file-manager/fm.c	20;"	d	file:
-NR_INODE	src/kernel/drivers/file-manager/file_system/file_formatter.c	3;"	d	file:
-NR_INODE	src/kernel/drivers/file-manager/fm.c	10;"	d	file:
+NR_INDEX	src/kernel/drivers/file-manager/fm.c	21;"	d	file:
+NR_INODE	src/kernel/drivers/file-manager/fm.c	11;"	d	file:
 NR_IRQ	include/x86/cpu.h	112;"	d
 NR_IRQ_HANDLE	src/kernel/irq/irq_handle.c	3;"	d	file:
 NR_KERNEL_THREAD	src/kernel/drivers/memory-manager/mm.c	7;"	d	file:
@@ -168,8 +158,7 @@ NR_WAITER	src/kernel/drivers/process-manager/pm.c	8;"	d	file:
 NULL	include/const.h	7;"	d
 OBJS	Makefile	/^OBJS    = $(CFILES:.c=.o) $(SFILES:.S=.o)$/;"	m
 OBJS	src/kernel/drivers/file-manager/Makefile	/^OBJS    = $(CFILES:.c=.o) $/;"	m
-ONE_INDEX_BASE	src/kernel/drivers/file-manager/file_system/file_formatter.c	14;"	d	file:
-ONE_INDEX_BASE	src/kernel/drivers/file-manager/fm.c	21;"	d	file:
+ONE_INDEX_BASE	src/kernel/drivers/file-manager/fm.c	22;"	d	file:
 P	src/kernel/process/util.c	/^void P(Sem *s){$/;"	f
 PAGE_SIZE	include/x86/memory.h	28;"	d
 PCB	include/process.h	/^typedef struct PCB {$/;"	s
@@ -195,7 +184,7 @@ ProgramHeader	include/x86/io.h	/^struct ProgramHeader {$/;"	s
 Ptable	src/kernel/drivers/memory-manager/mm.c	/^} Ptable;$/;"	t	typeref:struct:PTABLES	file:
 QEMU	Makefile	/^QEMU    = qemu-system-i386$/;"	m
 RAMDISK	src/kernel/drivers/ramdisk/ramdisk.c	/^pid_t RAMDISK;$/;"	v
-ROOT_INODE	src/kernel/drivers/file-manager/file_system/file_formatter.c	114;"	d	file:
+ROOT_INODE	include/hal.h	28;"	d
 RSTK_SZ	src/kernel/drivers/tty/tty.h	9;"	d
 SCR_H	src/kernel/drivers/tty/term.h	44;"	d
 SCR_W	src/kernel/drivers/tty/term.h	43;"	d
@@ -219,15 +208,12 @@ SELECTOR_KERNEL	include/x86/memory.h	24;"	d
 SELECTOR_USER	include/x86/memory.h	25;"	d
 SERIAL_PORT	src/lib/serial.c	3;"	d	file:
 SFILES	Makefile	/^SFILES  = $(shell find src\/ -name "*.S")$/;"	m
-SIZE_OF_BLOCK	src/kernel/drivers/file-manager/file_system/file_formatter.c	5;"	d	file:
-SIZE_OF_BLOCK	src/kernel/drivers/file-manager/fm.c	12;"	d	file:
-SIZE_OF_IMAGE	src/kernel/drivers/file-manager/file_system/file_formatter.c	11;"	d	file:
-SIZE_OF_IMAGE	src/kernel/drivers/file-manager/fm.c	18;"	d	file:
+SIZE_OF_BLOCK	src/kernel/drivers/file-manager/fm.c	13;"	d	file:
+SIZE_OF_IMAGE	src/kernel/drivers/file-manager/fm.c	19;"	d	file:
 SIZE_OF_TIMER	src/kernel/drivers/timer/timer.c	11;"	d	file:
-SPACE_OF_KERNEL	src/kernel/drivers/memory-manager/mm.c	75;"	d	file:
-STDERR_FILENO	include/hal.h	30;"	d
-STDIN_FILENO	include/hal.h	28;"	d
-STDOUT_FILENO	include/hal.h	29;"	d
+STDERR_FILENO	include/hal.h	35;"	d
+STDIN_FILENO	include/hal.h	33;"	d
+STDOUT_FILENO	include/hal.h	34;"	d
 SYS_cat	src/kernel/drivers/file-manager/test/proc1.c	8;"	d	file:
 SYS_cat	src/kernel/process/syscall.c	10;"	d	file:
 SYS_close	src/kernel/drivers/file-manager/test/proc1.c	12;"	d	file:
@@ -244,8 +230,12 @@ SYS_getpid	src/kernel/drivers/file-manager/test/proc1.c	5;"	d	file:
 SYS_getpid	src/kernel/process/syscall.c	7;"	d	file:
 SYS_gets	src/kernel/drivers/file-manager/test/proc1.c	7;"	d	file:
 SYS_gets	src/kernel/process/syscall.c	9;"	d	file:
+SYS_listdir	src/kernel/drivers/file-manager/test/proc1.c	16;"	d	file:
+SYS_listdir	src/kernel/process/syscall.c	18;"	d	file:
 SYS_lseek	src/kernel/drivers/file-manager/test/proc1.c	13;"	d	file:
 SYS_lseek	src/kernel/process/syscall.c	15;"	d	file:
+SYS_makefile	src/kernel/drivers/file-manager/test/proc1.c	15;"	d	file:
+SYS_makefile	src/kernel/process/syscall.c	17;"	d	file:
 SYS_open	src/kernel/drivers/file-manager/test/proc1.c	9;"	d	file:
 SYS_open	src/kernel/process/syscall.c	11;"	d	file:
 SYS_puts	src/kernel/drivers/file-manager/test/proc1.c	1;"	d	file:
@@ -261,15 +251,13 @@ SegDesc	include/x86/memory.h	/^} SegDesc;$/;"	t	typeref:struct:SegmentDescriptor
 SegmentDescriptor	include/x86/memory.h	/^typedef struct SegmentDescriptor {$/;"	s
 Sem	include/process.h	/^}Sem;$/;"	t	typeref:struct:Semaphore
 Semaphore	include/process.h	/^typedef struct Semaphore{$/;"	s
-THREE_INDEX_BASE	src/kernel/drivers/file-manager/file_system/file_formatter.c	16;"	d	file:
-THREE_INDEX_BASE	src/kernel/drivers/file-manager/fm.c	23;"	d	file:
+THREE_INDEX_BASE	src/kernel/drivers/file-manager/fm.c	24;"	d	file:
 TIMER	src/kernel/drivers/timer/timer.c	/^pid_t TIMER;$/;"	v
 TRAP_GATE_32	src/kernel/irq/idt.c	5;"	d	file:
 TSS	include/x86/memory.h	/^typedef struct TSS {$/;"	s
 TSS	include/x86/memory.h	/^} TSS;$/;"	t	typeref:struct:TSS
 TTY	src/kernel/drivers/tty/tty.c	/^pid_t TTY;$/;"	v
-TWO_INDEX_BASE	src/kernel/drivers/file-manager/file_system/file_formatter.c	15;"	d	file:
-TWO_INDEX_BASE	src/kernel/drivers/file-manager/fm.c	22;"	d	file:
+TWO_INDEX_BASE	src/kernel/drivers/file-manager/fm.c	23;"	d	file:
 TYPE_DEV	include/hal.h	26;"	d
 TYPE_REG	include/hal.h	25;"	d
 Time	include/time.h	/^typedef struct Time {$/;"	s
@@ -316,7 +304,7 @@ alignment_mask	include/x86/cpu.h	/^		uint32_t alignment_mask      : 1;$/;"	m	str
 allocate_stack	src/kernel/drivers/process-manager/pm.c	/^static void allocate_stack(pid_t req_pid){$/;"	f	file:
 alt	src/kernel/drivers/tty/keyboard.c	/^static int caps, ctrl, alt, shft;$/;"	v	file:
 ani	src/kernel/drivers/tty/banner.c	/^static char ani[] = "-\\\\|\/";$/;"	v	file:
-arg_type	src/kernel/drivers/file-manager/test/proc1.c	/^char arg_type[NR_CMD][8] = {"100", "100", "100", "100", "121", "121",  "111",  "200",  "200",      "000"};$/;"	v
+arg_type	src/kernel/drivers/file-manager/test/proc1.c	/^char arg_type[NR_CMD][8] = {"100", "100", "100", "100", "121", "121",  "111",  "200",  "200",      "200"};$/;"	v
 asm_do_irq	src/kernel/irq/do_irq.S	/^asm_do_irq:$/;"	l
 assert	include/assert.h	17;"	d
 backsp	src/kernel/drivers/tty/console.c	/^backsp(Console *c) {$/;"	f	file:
@@ -326,14 +314,12 @@ base_23_16	include/x86/memory.h	/^	uint32_t base_23_16          : 8;$/;"	m	struc
 base_31_24	include/x86/memory.h	/^	uint32_t base_31_24          : 8;$/;"	m	struct:SegmentDescriptor
 block	include/process.h	/^	ListHead block;$/;"	m	struct:Semaphore
 block	src/kernel/process/util.c	/^ListHead ready, block, free;$/;"	v
-block_bitmap	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^char block_bitmap[NR_BLOCK];$/;"	v
-block_bitmap	src/kernel/drivers/file-manager/fm.c	/^char block_bitmap[NR_BLOCK];$/;"	v
-block_t	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^typedef int block_t;$/;"	t	file:
+block_bitmap	src/kernel/drivers/file-manager/fm.c	/^uint8_t block_bitmap[NR_BLOCK];$/;"	v
 block_t	src/kernel/drivers/file-manager/fm.c	/^typedef int block_t;$/;"	t	file:
 bool	include/types.h	/^typedef unsigned char  bool;$/;"	t
 bootmain	boot/main.c	/^bootmain(void) {$/;"	f
 buf	include/process.h	/^			void *buf;$/;"	m	struct:Message::__anon6::__anon7
-builtin	src/kernel/drivers/file-manager/test/proc1.c	/^char builtin[NR_CMD][16] = {"exec","cat","open","close","read","write","lseek","echo", "make_file", "ls" };$/;"	v
+builtin	src/kernel/drivers/file-manager/test/proc1.c	/^char builtin[NR_CMD][16] = {"exec","cat","open","close","read","write","lseek","echo", "make_file", "list" };$/;"	v
 cache	src/kernel/drivers/ide/cache.c	/^static struct SectorCache cache[NR_SEC_CACHE];$/;"	v	typeref:struct:SectorCache	file:
 cache_disable	include/x86/cpu.h	/^		uint32_t cache_disable       : 1;$/;"	m	struct:CR0::__anon1
 cache_fetch	src/kernel/drivers/ide/cache.c	/^cache_fetch(uint32_t sector) {$/;"	f	file:
@@ -343,8 +329,6 @@ caps	src/kernel/drivers/tty/keyboard.c	/^static int caps, ctrl, alt, shft;$/;"	v
 cat	src/kernel/drivers/file-manager/test/proc1.c	/^static void cat(int filename){$/;"	f	file:
 cbuf	src/kernel/drivers/tty/tty.h	/^	char cbuf[CBUF_SZ + 1];$/;"	m	struct:Console
 cc	src/kernel/drivers/file-manager/Makefile	/^cc = gcc$/;"	m
-chdir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^int chdir(char *dir){$/;"	f
-check_file_type	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^int check_file_type(inode_t file){$/;"	f
 check_file_type	src/kernel/drivers/file-manager/fm.c	/^int check_file_type(inode_t file){$/;"	f
 cli	include/x86/cpu.h	/^cli(void) {$/;"	f
 close	src/kernel/drivers/file-manager/test/proc1.c	/^static int close(int fd){$/;"	f	file:
@@ -370,14 +354,11 @@ ctrl	src/kernel/drivers/tty/keyboard.c	/^static int caps, ctrl, alt, shft;$/;"	v
 current	src/kernel/process/schedule.c	/^PCB idle, *current = &idle;$/;"	v
 current_consl	src/kernel/drivers/tty/console.c	/^Console *current_consl;$/;"	v
 current_dir	include/process.h	/^	inode_t current_dir;$/;"	m	struct:PCB
-current_dir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t current_dir;$/;"	v
-data	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^static char data[SIZE_OF_IMAGE] = {'\\0'};$/;"	v	file:
 day	include/time.h	/^	int year, month, day;$/;"	m	struct:Time
 del	src/kernel/drivers/tty/console.c	/^del(Console *c) {$/;"	f	file:
 dest	include/process.h	/^	pid_t src, dest;$/;"	m	struct:Message
 dev_id	include/hal.h	/^	int dev_id;$/;"	m	struct:Device
 dev_id	include/process.h	/^			int dev_id;$/;"	m	struct:Message::__anon6::__anon7
-dev_id	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	int dev_id;$/;"	m	struct:inode_entry	file:
 dev_id	src/kernel/drivers/file-manager/fm.c	/^	int dev_id;$/;"	m	struct:inode_entry	file:
 dev_id	src/kernel/drivers/file-manager/fm.c	/^	int dev_id;$/;"	m	struct:system_FDE	file:
 dev_pool	src/kernel/drivers/hal.c	/^static Dev dev_pool[NR_DEV];$/;"	v	file:
@@ -386,13 +367,10 @@ dev_rw	src/kernel/drivers/hal.c	/^dev_rw(const char *dev_name, int type, pid_t r
 dev_type	src/kernel/drivers/file-manager/fm.c	/^	int dev_type;$/;"	m	struct:system_FDE	file:
 dev_write	src/kernel/drivers/hal.c	/^dev_write(const char *dev_name, pid_t reqst_pid, void *buf, off_t offset, size_t len) {$/;"	f
 devices	src/kernel/drivers/hal.c	/^static ListHead free, devices;$/;"	v	file:
-dir_entry	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^typedef struct dir_entry{$/;"	s	file:
-dir_entry	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^} dir_entry;$/;"	t	typeref:struct:dir_entry	file:
 dir_entry	src/kernel/drivers/file-manager/fm.c	/^typedef struct dir_entry{$/;"	s	file:
 dir_entry	src/kernel/drivers/file-manager/fm.c	/^} dir_entry;$/;"	t	typeref:struct:dir_entry	file:
 dirty	include/x86/memory.h	/^		uint32_t dirty               : 1;$/;"	m	struct:PageTableEntry::__anon4
 dirty	src/kernel/drivers/ide/cache.c	/^	bool used, dirty;$/;"	m	struct:SectorCache	file:
-disk	src/kernel/drivers/ramdisk/ramdisk.c	/^static uint8_t *disk = (void*)file;$/;"	v	file:
 disk_do_read	src/kernel/drivers/ide/disk.c	/^disk_do_read(void *buf, uint32_t sector) {$/;"	f
 disk_do_write	src/kernel/drivers/ide/disk.c	/^disk_do_write(void *buf, uint32_t sector) {$/;"	f
 do_read	src/kernel/drivers/file-manager/fm.c	/^void do_read(int dev_type, int dev_id, pid_t req_pid, uint8_t *buf, off_t offset, size_t len  ){$/;"	f
@@ -432,18 +410,18 @@ f	src/kernel/drivers/tty/tty.h	/^	int i, f, r;$/;"	m	struct:Console
 false	include/const.h	5;"	d
 fdes	include/process.h	/^	process_FDE fdes[NR_PROCESS_FDE]; $/;"	m	struct:PCB
 fetch_pcb	src/kernel/process/util.c	/^PCB* fetch_pcb(pid_t pid){$/;"	f
-file	src/kernel/drivers/ramdisk/ramdisk.c	/^static uint8_t file[] = {$/;"	v	file:
+file	src/kernel/drivers/ramdisk/ramdisk.c	/^static uint8_t file[NR_MAX_FILE][NR_FILE_SIZE] = {$/;"	v	file:
 file_close	src/kernel/drivers/file-manager/fm.c	/^static void file_close(Msg *msg){$/;"	f	file:
 file_inode	src/kernel/drivers/file-manager/fm.c	/^	inode_t file_inode;$/;"	m	struct:system_FDE	file:
 file_lseek	src/kernel/drivers/file-manager/fm.c	/^static void file_lseek(Msg *msg){$/;"	f	file:
 file_open	src/kernel/drivers/file-manager/fm.c	/^static void file_open(Msg *msg){$/;"	f	file:
 file_read	src/kernel/drivers/file-manager/fm.c	/^static void file_read(Msg *msg){$/;"	f	file:
+file_system	src/kernel/drivers/ramdisk/ramdisk.c	/^static uint8_t file_system[] = {$/;"	v	file:
 file_write	src/kernel/drivers/file-manager/fm.c	/^static void file_write(Msg *msg){$/;"	f	file:
-filename	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	char filename[32];$/;"	m	struct:dir_entry	file:
 filename	src/kernel/drivers/file-manager/fm.c	/^	char filename[32];$/;"	m	struct:dir_entry	file:
 filesz	boot/boot.h	/^	unsigned int filesz;$/;"	m	struct:ProgramHeader
 filesz	include/x86/io.h	/^	unsigned int filesz;$/;"	m	struct:ProgramHeader
-find_file	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t find_file(char *name, inode_t dest){$/;"	f
+find_file	src/kernel/drivers/file-manager/fm.c	/^inode_t find_file(char *name, inode_t dest){$/;"	f
 flags	boot/boot.h	/^	unsigned int   flags;$/;"	m	struct:ELFHeader
 flags	boot/boot.h	/^	unsigned int flags;$/;"	m	struct:ProgramHeader
 flags	include/x86/io.h	/^	unsigned int   flags;$/;"	m	struct:ELFHeader
@@ -464,17 +442,13 @@ geide	src/kernel/drivers/ide/ideread.c	/^geide(void){$/;"	f	file:
 getStrByBase	src/lib/printk.c	/^void getStrByBase(char* arr,int base, int n){$/;"	f
 get_cooked	src/kernel/drivers/tty/console.c	/^get_cooked(Console *c, pid_t pid, char *buf, int count) {$/;"	f	file:
 get_current_tty	src/kernel/drivers/tty/console.c	/^get_current_tty(void) {$/;"	f
-get_file	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t get_file(char *path, inode_t from){$/;"	f
 get_file	src/kernel/drivers/file-manager/fm.c	/^inode_t get_file(char *path, inode_t parent_dir){$/;"	f
-get_free_block	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^block_t get_free_block(char *block_bitmap){$/;"	f
-get_free_block	src/kernel/drivers/file-manager/fm.c	/^block_t get_free_block(char *block_bitmap){$/;"	f
-get_free_inode	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t get_free_inode(char *inode_bitmap){$/;"	f
-get_free_inode	src/kernel/drivers/file-manager/fm.c	/^inode_t get_free_inode(char *inode_bitmap){$/;"	f
+get_free_block	src/kernel/drivers/file-manager/fm.c	/^block_t get_free_block(uint8_t *block_bitmap){$/;"	f
+get_free_inode	src/kernel/drivers/file-manager/fm.c	/^inode_t get_free_inode(uint8_t *inode_bitmap){$/;"	f
 get_jiffy	src/kernel/drivers/timer/timer.c	/^get_jiffy() {$/;"	f
 get_kcr3	src/kernel/memory/kvm.c	/^inline CR3* get_kcr3() {$/;"	f
 get_kpdir	src/kernel/memory/kvm.c	/^inline PDE* get_kpdir() {$/;"	f
 get_kptable	src/kernel/memory/kvm.c	/^inline PTE* get_kptable() {$/;"	f
-get_path_and_name	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^void get_path_and_name(char *dir, char *path, char *name){$/;"	f
 get_time	src/kernel/drivers/timer/timer.c	/^get_time(Time *tm) {$/;"	f
 getty	src/kernel/drivers/tty/getty.c	/^getty(void) {$/;"	f	file:
 global	include/x86/memory.h	/^		uint32_t global              : 1;$/;"	m	struct:PageTableEntry::__anon4
@@ -503,9 +477,7 @@ in_byte	include/x86/io.h	/^in_byte(uint16_t port) {$/;"	f
 in_long	boot/boot.h	/^in_long(short port) {$/;"	f
 in_long	include/x86/io.h	/^in_long(uint16_t port) {$/;"	f
 index	include/process.h	/^	int index;$/;"	m	struct:process_FDE
-index	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	block_t index[15];$/;"	m	struct:inode_entry	file:
 index	src/kernel/drivers/file-manager/fm.c	/^	block_t index[15];$/;"	m	struct:inode_entry	file:
-index_block	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^block_t index_block(int seq_num, inode_t inode_index, block_t block_index){$/;"	f
 index_block	src/kernel/drivers/file-manager/fm.c	/^block_t index_block(int seq_num, inode_t parent_dir, block_t new_file){$/;"	f
 init_consl	src/kernel/drivers/tty/console.c	/^init_consl(int tty_index) {$/;"	f	file:
 init_console	src/kernel/drivers/tty/console.c	/^void init_console(void) {$/;"	f
@@ -529,15 +501,11 @@ init_segment	src/kernel/memory/kvm.c	/^init_segment(void) {$/;"	f
 init_serial	src/lib/serial.c	/^init_serial(void) {$/;"	f
 init_timer	src/kernel/drivers/timer/timer.c	/^void init_timer(void) {$/;"	f
 init_tty	src/kernel/drivers/tty/tty.c	/^void init_tty(void) {$/;"	f
-inode	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	inode_t inode;$/;"	m	struct:dir_entry	file:
 inode	src/kernel/drivers/file-manager/fm.c	/^	inode_t inode;$/;"	m	struct:dir_entry	file:
-inode_bitmap	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^char inode_bitmap[NR_INODE];$/;"	v
-inode_bitmap	src/kernel/drivers/file-manager/fm.c	/^char inode_bitmap[NR_INODE];$/;"	v
-inode_entry	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^typedef struct inode_entry{$/;"	s	file:
-inode_entry	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^} inode_entry;$/;"	t	typeref:struct:inode_entry	file:
+inode_bitmap	src/kernel/drivers/file-manager/fm.c	/^uint8_t inode_bitmap[NR_INODE];$/;"	v
 inode_entry	src/kernel/drivers/file-manager/fm.c	/^typedef struct inode_entry{$/;"	s	file:
 inode_entry	src/kernel/drivers/file-manager/fm.c	/^} inode_entry;$/;"	t	typeref:struct:inode_entry	file:
-inode_t	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^typedef int inode_t;$/;"	t	file:
+inode_t	include/types.h	/^typedef			 int   inode_t;$/;"	t
 inode_t	src/kernel/drivers/file-manager/fm.c	/^typedef int inode_t;$/;"	t	file:
 int16_t	include/types.h	/^typedef          short int16_t;$/;"	t
 int32_t	include/types.h	/^typedef          int   int32_t;$/;"	t
@@ -559,7 +527,6 @@ len	include/process.h	/^			size_t len;$/;"	m	struct:Message::__anon6::__anon7
 lf	src/kernel/drivers/tty/console.c	/^lf(Console *c) {$/;"	f	file:
 limit_15_0	include/x86/memory.h	/^	uint32_t limit_15_0          : 16;$/;"	m	struct:SegmentDescriptor
 limit_19_16	include/x86/memory.h	/^	uint32_t limit_19_16         : 4;$/;"	m	struct:SegmentDescriptor
-link	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	int link;$/;"	m	struct:inode_entry	file:
 link	src/kernel/drivers/file-manager/fm.c	/^	int link;$/;"	m	struct:inode_entry	file:
 list	include/hal.h	/^	ListHead list;$/;"	m	struct:Device
 list	include/process.h	/^	ListHead list;$/;"	m	struct:Message
@@ -581,24 +548,19 @@ load_segment	src/kernel/drivers/process-manager/pm.c	/^static void load_segment(
 lock	src/kernel/process/util.c	/^void lock(){$/;"	f
 lock_count	include/process.h	/^	int lock_count;$/;"	m	struct:PCB
 logo	src/lib/logo.c	/^unsigned char logo[] = {$/;"	v
-lsdir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^int lsdir(char *dir, char *buf){$/;"	f
 lsdir	src/kernel/drivers/file-manager/fm.c	/^int lsdir(char *dir, char *buf, inode_t current_dir){$/;"	f
 lseek	src/kernel/drivers/file-manager/test/proc1.c	/^static int lseek(int fd, int offset, int whence){$/;"	f	file:
 machine	boot/boot.h	/^	unsigned short machine;$/;"	m	struct:ELFHeader
 machine	include/x86/io.h	/^	unsigned short machine;$/;"	m	struct:ELFHeader
 magic	boot/boot.h	/^	unsigned int   magic;$/;"	m	struct:ELFHeader
 magic	include/x86/io.h	/^	unsigned int   magic;$/;"	m	struct:ELFHeader
-main	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^int main(){$/;"	f
 main	src/kernel/drivers/file-manager/test/proc1.c	/^int main(char *args){$/;"	f
-make_dir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t make_dir(char *name, inode_t dest){$/;"	f
-make_file	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t make_file(char *name, inode_t dest){$/;"	f
 make_file	src/kernel/drivers/file-manager/fm.c	/^inode_t make_file(char *name, inode_t parent_dir, int file_type){$/;"	f
 make_file	src/kernel/drivers/file-manager/test/proc1.c	/^static void make_file(char *name){$/;"	f	file:
 make_invalid_pde	src/kernel/memory/util.c	/^make_invalid_pde(PDE *p) {$/;"	f
 make_invalid_pte	src/kernel/memory/util.c	/^make_invalid_pte(PTE *p) {$/;"	f
 make_pde	src/kernel/memory/util.c	/^make_pde(PDE *p, void *addr) {$/;"	f
 make_pte	src/kernel/memory/util.c	/^make_pte(PTE *p, void *addr) {$/;"	f
-make_root	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t make_root(){$/;"	f
 map_kernel	src/kernel/drivers/memory-manager/mm.c	/^static void map_kernel(Msg *msg){$/;"	f	file:
 map_kernel	src/kernel/drivers/process-manager/pm.c	/^static void map_kernel(pid_t req_pid){$/;"	f	file:
 map_kernel_assist	src/kernel/drivers/memory-manager/mm.c	/^static void map_kernel_assist(pid_t req_pid){$/;"	f	file:
@@ -608,7 +570,6 @@ memset	src/lib/string.c	/^void memset(void *dest, uint8_t data, size_t size) {$/
 memsz	boot/boot.h	/^	unsigned int memsz;$/;"	m	struct:ProgramHeader
 memsz	include/x86/io.h	/^	unsigned int memsz;$/;"	m	struct:ProgramHeader
 minute	include/time.h	/^	int hour, minute, second;$/;"	m	struct:Time
-mkdir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t mkdir(char *dir){$/;"	f
 mmd	src/kernel/drivers/memory-manager/mm.c	/^static void mmd(void){$/;"	f	file:
 monitor_coprocessor	include/x86/cpu.h	/^		uint32_t monitor_coprocessor : 1;$/;"	m	struct:CR0::__anon1
 month	include/time.h	/^	int year, month, day;$/;"	m	struct:Time
@@ -645,7 +606,6 @@ out_byte	boot/boot.h	/^out_byte(short port, char data) {$/;"	f
 out_byte	include/x86/io.h	/^out_byte(uint16_t port, uint8_t data) {$/;"	f
 out_long	include/x86/io.h	/^out_long(uint16_t port, uint32_t data) {$/;"	f
 pa_to_va	include/memory.h	21;"	d
-pad	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	char pad[52];$/;"	m	struct:inode_entry	file:
 pad	src/kernel/drivers/file-manager/fm.c	/^	char pad[52];$/;"	m	struct:inode_entry	file:
 pad0	include/x86/cpu.h	/^		uint32_t pad0                : 10;$/;"	m	struct:CR0::__anon1
 pad0	include/x86/cpu.h	/^		uint32_t pad0                : 3;$/;"	m	struct:CR3::__anon2
@@ -694,7 +654,6 @@ present	include/x86/memory.h	/^	uint32_t present             : 1;$/;"	m	struct:S
 present	include/x86/memory.h	/^	uint32_t present          : 1;$/;"	m	struct:GateDescriptor
 prev	include/adt/list.h	/^	struct ListHead *prev, *next;$/;"	m	struct:ListHead	typeref:struct:ListHead::ListHead
 prev	include/x86/memory.h	/^	uint32_t prev;			\/\/ don't care$/;"	m	struct:TSS
-print_dir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^void print_dir(char *buf){$/;"	f
 print_ready	src/kernel/process/schedule.c	/^void print_ready(){$/;"	f
 printk	src/lib/printk.c	/^printk(const char *ctl, ...) {$/;"	f
 privilege_level	include/x86/memory.h	/^	uint32_t privilege_level     : 2;$/;"	m	struct:SegmentDescriptor
@@ -713,12 +672,10 @@ ram_write	src/kernel/drivers/file-manager/fm.c	/^void ram_write(int base, uint8_
 ramdisk_driver_thread	src/kernel/drivers/ramdisk/ramdisk.c	/^ramdisk_driver_thread(void){$/;"	f	file:
 read	src/kernel/drivers/file-manager/test/proc1.c	/^static int read(int fd, void *buf, int len){$/;"	f	file:
 read	src/kernel/drivers/ramdisk/ramdisk.c	/^static void read(Msg *msg){$/;"	f	file:
-read_block	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^void read_block(block_t index, void *data){$/;"	f
 read_block	src/kernel/drivers/file-manager/fm.c	/^void read_block(block_t index, void *data){$/;"	f
 read_byte	src/kernel/drivers/ide/cache.c	/^read_byte(uint32_t offset) {$/;"	f
 read_cr0	include/x86/cpu.h	/^read_cr0() {$/;"	f
 read_eflags	include/x86/cpu.h	/^read_eflags(void) {$/;"	f
-read_inode	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^void read_inode(inode_t index, inode_entry *data, int count){$/;"	f
 read_inode	src/kernel/drivers/file-manager/fm.c	/^void read_inode(inode_t index, inode_entry *data){$/;"	f
 read_line	src/kernel/drivers/file-manager/test/proc1.c	/^static void read_line(char *cmd){$/;"	f	file:
 read_request	src/kernel/drivers/tty/console.c	/^read_request(Msg *m) {$/;"	f
@@ -730,13 +687,10 @@ readseg	boot/main.c	/^readseg(unsigned char *pa, int count, int offset) {$/;"	f
 ready	src/kernel/process/util.c	/^ListHead ready, block, free;$/;"	v
 receive	src/kernel/process/util.c	/^void receive(pid_t src, Msg *m){$/;"	f
 reclaim	src/kernel/drivers/memory-manager/mm.c	/^static void reclaim(Msg *msg){$/;"	f	file:
-remove_file	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^int remove_file(inode_t file_index){$/;"	f
 removec	src/kernel/drivers/tty/console.c	/^removec(Console *c) {$/;"	f	file:
 req_pid	include/process.h	/^			pid_t req_pid;$/;"	m	struct:Message::__anon6::__anon7
 req_pid	src/kernel/drivers/process-manager/pm.c	/^	pid_t req_pid;$/;"	m	struct:Waiter	file:
 ret	include/process.h	/^		int ret;$/;"	m	union:Message::__anon5
-rmdir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^int rmdir(char *dir){$/;"	f
-root_dir	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^inode_t root_dir;$/;"	v
 root_dir	src/kernel/drivers/file-manager/fm.c	/^inode_t root_dir;$/;"	v
 routine	src/kernel/irq/irq_handle.c	/^	void (*routine)(void);$/;"	m	struct:IRQ_t	file:
 rstk	src/kernel/drivers/tty/tty.h	/^	Msg rstk[RSTK_SZ];$/;"	m	struct:Console
@@ -771,11 +725,9 @@ shoff	include/x86/io.h	/^	unsigned int   shoff;$/;"	m	struct:ELFHeader
 shstrndx	boot/boot.h	/^	unsigned short shstrndx;$/;"	m	struct:ELFHeader
 shstrndx	include/x86/io.h	/^	unsigned short shstrndx;$/;"	m	struct:ELFHeader
 simple	src/kernel/drivers/file-manager/test/proc1.c	/^static void simple(){$/;"	f	file:
-size	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	size_t size;$/;"	m	struct:inode_entry	file:
 size	src/kernel/drivers/file-manager/fm.c	/^	size_t size;$/;"	m	struct:inode_entry	file:
 size	src/kernel/drivers/tty/tty.h	/^	int size, pos;$/;"	m	struct:Console
 size_t	include/types.h	/^typedef          int   size_t;$/;"	t
-size_t	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^typedef unsigned int size_t;$/;"	t	file:
 sleep	src/kernel/process/util.c	/^void sleep(ListHead *block, PCB *pcb){$/;"	f
 soft_use	include/x86/memory.h	/^	uint32_t soft_use            : 1;$/;"	m	struct:SegmentDescriptor
 src	include/process.h	/^	pid_t src, dest;$/;"	m	struct:Message
@@ -797,9 +749,11 @@ sys_exec	src/kernel/process/syscall.c	/^static void sys_exec(TrapFrame *tf, Msg 
 sys_exit	src/kernel/process/syscall.c	/^static void sys_exit(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_fork	src/kernel/process/syscall.c	/^static void sys_fork(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_gets	src/kernel/process/syscall.c	/^static void sys_gets(TrapFrame *tf, Msg *msg){$/;"	f	file:
+sys_listdir	src/kernel/process/syscall.c	/^static void sys_listdir(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_lsdir	src/kernel/drivers/file-manager/fm.c	/^static void sys_lsdir(Msg *msg){$/;"	f	file:
 sys_lseek	src/kernel/process/syscall.c	/^static void sys_lseek(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_make_file	src/kernel/drivers/file-manager/fm.c	/^static void sys_make_file(Msg *msg){$/;"	f	file:
+sys_makefile	src/kernel/process/syscall.c	/^static void sys_makefile(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_open	src/kernel/process/syscall.c	/^static void sys_open(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_puts	src/kernel/process/syscall.c	/^static void sys_puts(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_read	src/kernel/process/syscall.c	/^static void sys_read(TrapFrame *tf, Msg *msg){$/;"	f	file:
@@ -833,7 +787,6 @@ type	include/x86/io.h	/^	unsigned int type;$/;"	m	struct:ProgramHeader
 type	include/x86/io.h	/^	unsigned short type;$/;"	m	struct:ELFHeader
 type	include/x86/memory.h	/^	uint32_t type                : 4;$/;"	m	struct:SegmentDescriptor
 type	include/x86/memory.h	/^	uint32_t type             : 4;$/;"	m	struct:GateDescriptor
-type	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^	int type;$/;"	m	struct:inode_entry	file:
 type	src/kernel/drivers/file-manager/fm.c	/^	int type;$/;"	m	struct:inode_entry	file:
 uint16_t	include/types.h	/^typedef unsigned short uint16_t;$/;"	t
 uint32_t	include/types.h	/^typedef unsigned int   uint32_t;$/;"	t
@@ -872,14 +825,12 @@ welcome	src/kernel/main.c	/^welcome(void) {$/;"	f
 wh	src/kernel/drivers/tty/tty.h	/^	int w, h, wh;$/;"	m	struct:Console
 write	src/kernel/drivers/file-manager/test/proc1.c	/^static int write(int fd, void *buf, int len){$/;"	f	file:
 write	src/kernel/drivers/ramdisk/ramdisk.c	/^static void write(Msg *msg){$/;"	f	file:
-write_block	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^void write_block(block_t index, void *data){$/;"	f
 write_block	src/kernel/drivers/file-manager/fm.c	/^void write_block(block_t index, void *data){$/;"	f
 write_byte	src/kernel/drivers/ide/cache.c	/^write_byte(uint32_t offset, uint8_t data) {$/;"	f
 write_cr0	include/x86/cpu.h	/^write_cr0(CR0 *cr0) {$/;"	f
 write_cr3	include/x86/cpu.h	/^write_cr3(CR3 *cr3) {$/;"	f
 write_gdtr	include/x86/cpu.h	/^write_gdtr(void *addr, uint32_t size) {$/;"	f
 write_idtr	include/x86/cpu.h	/^write_idtr(void *addr, uint32_t size) {$/;"	f
-write_inode	src/kernel/drivers/file-manager/file_system/file_formatter.c	/^void write_inode(inode_t index, inode_entry *data, int count){$/;"	f
 write_inode	src/kernel/drivers/file-manager/fm.c	/^void write_inode(inode_t index, inode_entry *data){$/;"	f
 write_protect	include/x86/cpu.h	/^		uint32_t write_protect       : 1; $/;"	m	struct:CR0::__anon1
 write_tr	include/x86/cpu.h	/^write_tr(uint16_t selector) {$/;"	f

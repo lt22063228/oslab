@@ -186,15 +186,15 @@ static void create_process(int file_idx){
 	pcb->cr3 = (CR3*)msg.ret;
 	
 	/* create the stdio */
-	int i;
-	for(i = 0; i < 3; i ++){
-		msg.src = current->pid;
-		msg.req_pid = pcb->pid;
-		msg.type = FILE_OPEN;
-		msg.dev_id = 1;
-		send(FM, &msg);
-		receive(FM, &msg);
-	}
+	// int i;
+	// for(i = 0; i < 3; i ++){
+	// 	msg.src = current->pid;
+	// 	msg.req_pid = pcb->pid;
+	// 	msg.type = FILE_OPEN;
+	// 	msg.dev_id = 1;
+	// 	send(FM, &msg);
+	// 	receive(FM, &msg);
+	// }
 	/* map the kernel address */
 	map_kernel(req_pid);
 
@@ -225,7 +225,11 @@ PCB* new_pcb(void){
 static void load_header(void* header, int file_idx){
 	Msg msg;
 	msg.src = current->pid;
+
 	msg.req_pid = current->pid; 
+	if(file_idx == 0) msg.req_pid = 10;
+
+
 	msg.type = FILE_READ;
 	msg.buf = header;
 	msg.len = 512;
@@ -270,6 +274,8 @@ static void load_segment(pid_t req_pid, struct ELFHeader *elf, int file_idx){
 		msg.type = FILE_READ;
 		msg.dest = FM;
 		msg.req_pid = req_pid;
+
+
 		msg.dev_id = file_idx;
 		msg.buf = (void*)ph->vaddr ; /* file-manager recognize virtual address */
 		msg.offset = ph->off;

@@ -21,7 +21,7 @@ getty(void) {
 			buf[i] = '\0';
 		}
 		INTR;
-		dev_read( name, current->pid, buf, 0, 255 );	
+		// dev_read( name, current->pid, buf, 0, 255 );	
 		INTR;
 		char c;
 		for( i=0; (c = buf[i] ) != '\0'; i++){
@@ -33,7 +33,7 @@ getty(void) {
 		INTR;
 		/* it is just changing the data stored in the corresponding tty
 		 * the real pixel update happen periodically */
-		dev_write( name, current->pid, buf, 0, 255);
+		// dev_write( name, current->pid, buf, 0, 255);
 		INTR;
 	}
 }

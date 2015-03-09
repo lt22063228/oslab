@@ -72,8 +72,7 @@ void init_mm(void) {
 
 	/* page frame setting */
 	list_init(&pf_free);
-	#define SPACE_OF_KERNEL 90
-	void *pa = (void*)(SPACE_OF_KERNEL << 20);
+	void *pa = (void*)(40 << 20);
 	for(i = 0; i < NR_PFRAME; i++ ){
 		pfs[i].frame = 	pa;	//frame is physical address .
 		list_init(&pfs[i].list);

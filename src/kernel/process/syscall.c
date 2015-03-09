@@ -105,6 +105,7 @@ void do_syscall(TrapFrame *tf) {
 }
 static void sys_makefile(TrapFrame *tf, Msg *msg){
 	char *path = (char*)tf->ebx;
+	// int file_type = (int)tf->ecx;
 	msg->src = current->pid;
 	msg->req_pid = current->pid;
 	msg->buf = path;
@@ -123,21 +124,21 @@ static void sys_makefile(TrapFrame *tf, Msg *msg){
 // 		source += (strlen(source) + 1);
 // 	}
 // }
+static char str_buf[2048] = {0};
 static void sys_listdir(TrapFrame *tf, Msg *msg){
-	char buf[2048] = {0};
 	char *path = "/";
 	msg->src = current->pid;
 	msg->req_pid = current->pid;
-	msg->buf = (void*)buf;
+	msg->type = LIST_DIR;
+	msg->buf = (void*)str_buf;
 	msg->offset = (off_t)path;
 
 	send(FM, msg);
 	receive(FM, msg);
-
 	int start = 0, i;
-	for(i = 0; i < 2048 && *(buf + i) != '\000'; i++){
-		if(*(buf + i) == '\n'){
-			dev_write("tty1", current->pid, buf, start, i - start + 1);
+	for(i = 0; i < 2048 && *(str_buf + i) != '\000'; i++){
+		if(*(str_buf + i) == '\n'){
+			dev_write("tty1", current->pid, str_buf, start, i - start + 1);
 			start = i + 1;
 		}
 	}

@@ -4,6 +4,7 @@
 #define NR_SYSTEM_FDE 32
 extern pid_t PM;
 pid_t FM;
+inode_t root_dir;
 
 /* file-system */
 
@@ -13,7 +14,7 @@ pid_t FM;
 
 #define INODE_BITMAP_BASE 0
 #define BLOCK_BITMAP_BASE (NR_INODE * 1)
-#define INODE_BASE (BLOCK_BITMAP_BASE + NR_INODE * 1)
+#define INODE_BASE (BLOCK_BITMAP_BASE + NR_BLOCK * 1)
 #define BLOCK_BASE (INODE_BASE + NR_INODE * 128)
 #define SIZE_OF_IMAGE (BLOCK_BASE + NR_BLOCK * SIZE_OF_BLOCK)
 #define INDEX_SIZE sizeof(int)
@@ -42,6 +43,8 @@ typedef struct inode_entry{
 } inode_entry;
 
 inode_t root_dir;
+
+static char blk[SIZE_OF_BLOCK];
 
 void ram_read(int base, uint8_t *buf, size_t ele_size, int count);
 void ram_write(int base, uint8_t *buf, size_t ele_size, int count);
@@ -89,15 +92,18 @@ void init_fm(void) {
 
 }
 
+static pid_t request_pid;
 static void
 fmd( void ){
 
 	ram_read(INODE_BITMAP_BASE, inode_bitmap, sizeof(char), (BLOCK_BITMAP_BASE - INODE_BITMAP_BASE));
 	ram_read(BLOCK_BITMAP_BASE, block_bitmap, sizeof(char), (INODE_BASE - BLOCK_BITMAP_BASE));
-	
+	root_dir = ROOT_INODE;
+
 	Msg msg;
 	while(1){
 		receive(ANY, &msg);
+		request_pid = msg.req_pid;
 		switch( msg.type ){
 			case FILE_READ:
 				file_read(&msg);
@@ -114,7 +120,6 @@ fmd( void ){
 			case FILE_LSEEK:
 				file_lseek(&msg);
 				break;
-
 			case MAKE_FILE:
 				sys_make_file(&msg);
 				break;
@@ -349,7 +354,6 @@ block_t index_block(int seq_num, inode_t parent_dir, block_t new_file){
 	inode_entry inode;
 	read_inode(parent_dir, &inode);
 	block_t *index = inode.index;	
-	char block[SIZE_OF_BLOCK];	
 	block_t res = -1;
 	int offset;
 	if(seq_num >= 0 && seq_num < ONE_INDEX_BASE){
@@ -360,47 +364,46 @@ block_t index_block(int seq_num, inode_t parent_dir, block_t new_file){
 			res = *(index + seq_num);
 	}else if(seq_num < TWO_INDEX_BASE){
 		seq_num -= TWO_INDEX_BASE;
-		read_block(index[12], block);
+		read_block(index[12], blk);
 		if(new_file != -1){
-			*((block_t *)block + seq_num * INDEX_SIZE) = new_file;
-			write_block(index[12], block);
+			*((block_t *)blk + seq_num * INDEX_SIZE) = new_file;
+			write_block(index[12], blk);
 		}else
-			res = *((block_t *)block + seq_num * INDEX_SIZE);
+			res = *((block_t *)blk + seq_num * INDEX_SIZE);
 	}else if(seq_num < THREE_INDEX_BASE){
 		seq_num -= TWO_INDEX_BASE;
 		offset = seq_num / NR_INDEX;
-		read_block(index[13], block);
-		res = *((block_t *)block + offset * INDEX_SIZE);
+		read_block(index[13], blk);
+		res = *((block_t *)blk + offset * INDEX_SIZE);
 		seq_num -= offset * (NR_INDEX); 
-		read_block(res, block);
+		read_block(res, blk);
 		if(new_file != -1){
-			*((block_t *)block + offset * INDEX_SIZE) = new_file;
-			write_block(index[12], block);
+			*((block_t *)blk + offset * INDEX_SIZE) = new_file;
+			write_block(index[12], blk);
 		}else
-			res = *((block_t *)block + offset * INDEX_SIZE);
+			res = *((block_t *)blk + offset * INDEX_SIZE);
 	}else{
 		seq_num -= THREE_INDEX_BASE;
 		offset = seq_num / (NR_INDEX * NR_INDEX);
-		read_block(index[14], block);
-		res = *((block_t *)block + offset * INDEX_SIZE);
+		read_block(index[14], blk);
+		res = *((block_t *)blk + offset * INDEX_SIZE);
 		seq_num -= offset * (NR_INDEX * NR_INDEX);
 		offset = seq_num / NR_INDEX;
-		read_block(res, block);
-		res = *((block_t *)block + offset * INDEX_SIZE);
+		read_block(res, blk);
+		res = *((block_t *)blk + offset * INDEX_SIZE);
 		seq_num -= offset * NR_INDEX;
-		read_block(res, block);
+		read_block(res, blk);
 		if(new_file != -1){
-			*((block_t *)block + offset * INDEX_SIZE) = new_file;
-			write_block(index[12], block);
+			*((block_t *)blk + offset * INDEX_SIZE) = new_file;
+			write_block(index[12], blk);
 		}else
-			res = *((block_t *)block + offset * INDEX_SIZE);
+			res = *((block_t *)blk + offset * INDEX_SIZE);
 	}
 	if(new_file == -1) return res;
 	else return 1;
 }
 
 inode_t make_file(char *name, inode_t parent_dir, int file_type){
-	char block[SIZE_OF_BLOCK];	
 	inode_t inode_index = get_free_inode(inode_bitmap);
 	inode_entry inode;
 	inode.size = 0;
@@ -414,9 +417,8 @@ inode_t make_file(char *name, inode_t parent_dir, int file_type){
 		strcpy(dirs[1].filename, "..");
 		dirs[1].inode = parent_dir;
 		inode.index[0] = get_free_block(block_bitmap);
-		char block[SIZE_OF_BLOCK];
-		memcpy(block, dirs, inode.size);
-		write_block(inode.index[0], block);
+		memcpy(blk, dirs, inode.size);
+		write_block(inode.index[0], blk);
 	}
 
 	write_inode(inode_index, &inode);
@@ -427,7 +429,7 @@ inode_t make_file(char *name, inode_t parent_dir, int file_type){
 	int len = cur_dir.size;
 
 	if(len % SIZE_OF_BLOCK == 0){
-		/* add a new block for the parent directory */
+		/* add a new blk for the parent directory */
 		block_t index = get_free_block(block_bitmap);
 		index_block(len / SIZE_OF_BLOCK, parent_dir, index);
 	}
@@ -447,9 +449,9 @@ inode_t make_file(char *name, inode_t parent_dir, int file_type){
 	/* looking for the index */
 	block_t block_index = index_block(seq_num, parent_dir, -1);
 	int offset = len - SIZE_OF_BLOCK * seq_num;
-	read_block(block_index, block);
-	memcpy(block + offset, &dir_item, sizeof(dir_item));
-	write_block(block_index, block);
+	read_block(block_index, blk);
+	memcpy(blk + offset, &dir_item, sizeof(dir_item));
+	write_block(block_index, blk);
 
 	return inode_index;
 }
@@ -466,11 +468,10 @@ int lsdir(char *dir, char *buf, inode_t current_dir){
 	int unit_num = SIZE_OF_BLOCK / sizeof(dir_entry);
 	int i;
 	for(i = 0; i < num; i++){
-		char block[SIZE_OF_BLOCK];
 		block_t ind = index_block(i, dir_index, -1);
-		read_block(ind, block);
+		read_block(ind, blk);
 		int end = len >= SIZE_OF_BLOCK ? unit_num : len / sizeof(dir_entry); 
-		dir_entry *p_dir_item = (dir_entry*)block;
+		dir_entry *p_dir_item = (dir_entry*)blk;
 		dir_entry dir_item;
 		int j;
 		for(j = 0; j < end; j++){
@@ -516,16 +517,15 @@ int check_file_type(inode_t file){
 }
 inode_t find_file(char *name, inode_t dest){
 	inode_entry dir;
-	char block[SIZE_OF_BLOCK];
 	read_inode(dest, &dir);
 	int num = dir.size / SIZE_OF_BLOCK + 1;
 	int len = dir.size;
 	int i;
 	for(i = 0; i < num; i++){
 		block_t ind = index_block(i, dest, -1);
-		read_block(ind, block);
+		read_block(ind, blk);
 		int end = len < SIZE_OF_BLOCK ?  len / sizeof(dir_entry) : SIZE_OF_BLOCK / sizeof(dir_entry); 
-		dir_entry *dir_e = (dir_entry*)block;
+		dir_entry *dir_e = (dir_entry*)blk;
 		int j;
 		for(j = 0; j < end; j++){
 			if(strcmp((dir_e + j)->filename, name) == 0){
