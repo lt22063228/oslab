@@ -59,6 +59,11 @@ int lsdir(char *dir, char *buf, inode_t current_dir);
 inode_t get_file(char *path, inode_t parent_dir);
 int check_file_type(inode_t file);
 inode_t find_file(char *name, inode_t dest);
+void get_path_and_name(char *dir, char *path, char *name);
+inode_t mkdir(char *dir);
+inode_t chdir(char *dir, pid_t req_pid);
+int remove_file(inode_t file_index);
+int rmdir(char *dir, int idx);
 
 /* end-of-file-system */
 
@@ -73,6 +78,9 @@ static void file_write(Msg *msg);
 static void file_lseek(Msg *msg);
 static void sys_make_file(Msg *msg);
 static void sys_lsdir(Msg *msg);
+static void sys_mkdir(Msg *msg);
+static void sys_chdir(Msg *msg);
+static void sys_rmdir(Msg *msg);
 
 /* file system */
 typedef struct system_FDE{
@@ -93,6 +101,7 @@ void init_fm(void) {
 }
 
 static pid_t request_pid;
+static inode_t cur_directory;
 static void
 fmd( void ){
 
@@ -104,6 +113,8 @@ fmd( void ){
 	while(1){
 		receive(ANY, &msg);
 		request_pid = msg.req_pid;
+		PCB *pcb = fetch_pcb(request_pid);
+		cur_directory = pcb->current_dir;
 		switch( msg.type ){
 			case FILE_READ:
 				file_read(&msg);
@@ -126,13 +137,46 @@ fmd( void ){
 			case LIST_DIR:
 				sys_lsdir(&msg);
 				break;
+			case MKDIR:
+				sys_mkdir(&msg);
+				break;
+			case CHDIR:
+				sys_chdir(&msg);
+				break;
+			case RMDIR:
+				sys_rmdir(&msg);
+				break;
 			default:
 				assert(0);
 				break;
 		}
 	}
 }
+static void sys_rmdir(Msg *msg){
+	char *name = msg->buf;
+	msg->ret = rmdir(name, 0);
 
+	pid_t dest = msg->src;
+	msg->src = current->pid;
+	send(dest, msg);
+}
+static void sys_chdir(Msg *msg){
+	char *name = msg->buf;
+	msg->ret = chdir(name, msg->req_pid);
+
+	pid_t dest = msg->src;
+	msg->src = current->pid;
+	send(dest, msg);
+}
+static void sys_mkdir(Msg *msg){
+
+	char *name = msg->buf;
+	msg->ret = mkdir(name);	
+
+	pid_t dest = msg->src;
+	msg->src = current->pid;
+	send(dest, msg);
+}
 static void sys_make_file(Msg *msg){
 
 	pid_t req_pid = msg->req_pid;
@@ -157,7 +201,6 @@ static void sys_lsdir(Msg *msg){
 	inode_t current_dir = pcb->current_dir;
 
 	lsdir(path, buf, current_dir);
-
 	msg->buf = buf;
 	pid_t dest = msg->src;
 	msg->src = current->pid;
@@ -411,6 +454,7 @@ inode_t make_file(char *name, inode_t parent_dir, int file_type){
 
 	/* if new file is a directory, add . and .. entry */
 	if(file_type == FILE_DIR){
+		inode.size = 2 * sizeof(dir_entry);
 		dir_entry dirs[2];
 		strcpy(dirs[0].filename, ".");
 		dirs[0].inode = inode_index;
@@ -487,7 +531,7 @@ int lsdir(char *dir, char *buf, inode_t current_dir){
 }
 
 inode_t get_file(char *path, inode_t parent_dir){
-	/* the tail of path must not be '/' */
+
 	inode_t dest = parent_dir;
 	char name[32];
 
@@ -495,6 +539,13 @@ inode_t get_file(char *path, inode_t parent_dir){
 		dest = root_dir;
 		path ++;
 	}
+	int len = strlen(path);
+
+	/* remove the trailing '\' */
+	if(*(path + len - 1) == '/'){
+		*(path + len - 1) = '\0';
+	}
+
 	while(*path != '\0'){
 		if(check_file_type(dest) != FILE_DIR) return -1;
 		int i;
@@ -535,4 +586,121 @@ inode_t find_file(char *name, inode_t dest){
 		len -= SIZE_OF_BLOCK;
 	}
 	return -1;
+}
+
+inode_t mkdir(char *dir){
+	inode_t parent;
+	char name[32];
+	char path[64];
+	get_path_and_name(dir, path, name);
+	parent = get_file(path, cur_directory);
+	if(check_file_type(parent) == FILE_DIR)
+		return make_file(name, parent, FILE_DIR);
+	else
+		return -1;
+}
+
+void get_path_and_name(char *dir, char *path, char *name){
+	int i, j = 0;
+	for(i = 0; *(dir + i) != '\0'; i++)
+		if(*(dir + i) == '/') j = i+1;
+	// strncpy(path, dir, j + 1);
+	memcpy(path, dir, j);
+	path[j] = '\0';
+	strcpy(name, dir+j);
+}
+
+inode_t chdir(char *dir, pid_t req_pid){
+
+	PCB *pcb = fetch_pcb(req_pid);
+
+	inode_t res = get_file(dir, pcb->current_dir);
+	if(check_file_type(res) == FILE_DIR){
+		pcb->current_dir = res;
+		return res;
+	}else{
+		return -1;
+	}
+}
+
+static char str_buf[2048] = {0};
+
+int rmdir(char *dir, int idx){
+	inode_t dest = get_file(dir, cur_directory);
+	char name[32];
+	char path[64];
+	get_path_and_name(dir, path, name);
+	if(check_file_type(dest) == FILE_DIR){
+
+		char child_path[64];
+		lsdir(dir, str_buf + idx, cur_directory);
+		char *source = str_buf + idx * 256;
+		char *end = str_buf + idx * 256 + 256;
+		// if(source >= (str_buf + 2048) || end >= (str_buf + 2048))
+		// 	printk("\n\n\nfm.c:640 ..........................\n\n\n");
+		int path_len = strlen(path);
+
+		while(*source != '\0' && source < end){
+
+			strcpy(child_path, path);
+			*(child_path + path_len) = '/';
+			strcpy(child_path + path_len + 1, source);
+			source += strlen(source) + 1;
+
+			rmdir(child_path, idx + 1);
+		}
+
+		memset(str_buf + idx, 0, 256);
+
+	}else if(check_file_type(dest) == FILE_PLAIN){
+		remove_file(dest);	
+	}else{
+		return -1;
+	}
+
+	/* update the entry of the parent directory */
+	inode_t parent_index = get_file(path, cur_directory);
+	inode_entry parent;
+	read_inode(parent_index, &parent);
+	int len = parent.size;
+	parent.size -= sizeof(dir_entry);
+	write_inode(parent_index, &parent);
+	int block_num = len / SIZE_OF_BLOCK + 1;
+
+	int i;
+	for(i = 0; i < block_num; i ++){
+		block_t block_index =  index_block(i, parent_index, -1);
+		read_block(block_index, blk);
+		dir_entry *dir_e = (dir_entry*)blk;
+		int num_entry = (len < SIZE_OF_BLOCK ? len / sizeof(dir_entry) : (SIZE_OF_BLOCK / sizeof(dir_entry)));
+		int found = 0;
+		int j;
+		for(j = 0; j < num_entry; j++){
+			if(strcmp((dir_e + j)->filename, name) == 0){
+				found = 1;
+				break;
+			}	
+		}
+		if(found == 1){
+			int temp_len = blk + SIZE_OF_BLOCK - (char*)(dir_e + j + 1);
+			memcpy(dir_e + j, dir_e + j + 1, temp_len);
+			write_block(block_index, blk);
+			break;
+		}
+	}
+
+	return 1;
+}
+int remove_file(inode_t file_index){
+	inode_entry file;
+	read_inode(file_index, &file);
+	int num = file.size / SIZE_OF_BLOCK;
+	num = file.size % SIZE_OF_BLOCK == 0 ? num : (num + 1);	
+	int i;
+	for(i = 0; i < num; i++){
+		block_t b_index = index_block(i, file_index, -1);
+		block_bitmap[b_index] = 0;
+	}
+	inode_bitmap[file_index] = 0;
+	return 1;
 }

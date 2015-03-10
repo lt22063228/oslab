@@ -82,32 +82,38 @@ int main(){
 
 	
 
-	// FILE *fp = fopen("mydisk.img", "wb");
-	// fwrite(data, sizeof(char), SIZE_OF_IMAGE, fp);
-	// fclose(fp);
+	FILE *fp = fopen("mydisk.img", "wb");
+	fwrite(data, sizeof(char), SIZE_OF_IMAGE, fp);
+	fclose(fp);
 
-	// fp = fopen("mydisk.img", "rb");
-	// fread(inode_bitmap, sizeof(char), (BLOCK_BITMAP_BASE - INODE_BITMAP_BASE), fp);	
-	// fread(block_bitmap, sizeof(char), (INODE_BASE - BLOCK_BITMAP_BASE), fp);
-	// fclose(fp);
+	fp = fopen("mydisk.img", "rb");
+	fread(inode_bitmap, sizeof(char), (BLOCK_BITMAP_BASE - INODE_BITMAP_BASE), fp);	
+	fread(block_bitmap, sizeof(char), (INODE_BASE - BLOCK_BITMAP_BASE), fp);
+	fclose(fp);
 
-	// root_dir = make_root();
-	// current_dir = root_dir;
+	root_dir = make_root();
+	current_dir = root_dir;
 	// mkdir("/test_dir");
-	// make_file("test_file", current_dir);
+	make_file("test_file", current_dir);
 
-
-
-	FILE *fp = fopen("mydisk.img", "r+b");
+	fp = fopen("mydisk.img", "r+b");
 	fwrite(inode_bitmap, sizeof(char), (BLOCK_BITMAP_BASE - INODE_BITMAP_BASE), fp);	
 	fwrite(block_bitmap, sizeof(char), (INODE_BASE - BLOCK_BITMAP_BASE), fp);
 	fclose(fp);
 
-	current_dir = 2;
-	root_dir = 2;
-	char buf[1024] = {0};
-	lsdir("/", buf);
-	print_dir(buf);
+
+
+	// FILE *fp = fopen("mydisk.img", "r+b");
+	// fread(inode_bitmap, sizeof(char), (BLOCK_BITMAP_BASE - INODE_BITMAP_BASE), fp);	
+	// fread(block_bitmap, sizeof(char), (INODE_BASE - BLOCK_BITMAP_BASE), fp);
+	// fclose(fp);
+
+	// current_dir = 2;
+	// root_dir = 2;
+	// char buf[1024] = {0};
+	// mkdir("shit");
+	// lsdir("/", buf);
+	// print_dir(buf);
 
 
 
@@ -220,12 +226,12 @@ inode_t find_file(char *name, inode_t dest){
 	return -1;
 }
 void get_path_and_name(char *dir, char *path, char *name){
-	int i, j;
+	int i, j = 0;
 	for(i = 0; *(dir + i) != '\0'; i++)
-		if(*(dir + i) == '/')	j = i;
-	strncpy(path, dir, j + 1);
-	path[j+2] = '\0';
-	strcpy(name, dir + j + 1);
+		if(*(dir + i) == '/')	j = i + 1;
+	strncpy(path, dir, j);
+	path[j] = '\0';
+	strcpy(name, dir + j);
 }
 inode_t mkdir(char *dir){
 	/* must not end with '/' */

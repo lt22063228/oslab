@@ -14,6 +14,9 @@
 #define SYS_echo 16
 #define SYS_makefile 17
 #define SYS_listdir 18
+#define SYS_mkdir	19
+#define SYS_chdir	20
+#define SYS_rmdir	21
 int syscall(int id,...);
 int __attribute__((__noinline__))
 syscall(int id, ...) {
@@ -36,6 +39,9 @@ static void simple();
 
 static void list_dir();
 static void make_file(char *name);
+static void mkdir(char *name);
+static void chdir(char *name);
+static void rm(char *name);
 static int read(int fd, void *buf, int len);
 static int write(int fd, void *buf, int len);
 static int open(int filename);
@@ -82,7 +88,7 @@ static void test_cat(){
 		x ++;
 	}
 }
-#define NR_CMD 10
+#define NR_CMD 13
 #define CMD_ERROR -1
 #define CMD_FORK 0
 #define CMD_CAT 1
@@ -94,9 +100,12 @@ static void test_cat(){
 #define CMD_ECHO 7
 #define CMD_MAKEFILE 8
 #define CMD_LISTDIR 9
-char builtin[NR_CMD][16] = {"exec","cat","open","close","read","write","lseek","echo", "make_file", "list" };
+#define CMD_MKDIR	10
+#define CMD_CHDIR	11
+#define CMD_RM		12
+char builtin[NR_CMD][16] = {"exec","cat","open","close","read","write","lseek","echo", "make_file", "list", "mkdir", "cd", "rm"};
 // 0 for no parameter, 1 for integer, 2 for char array
-char arg_type[NR_CMD][8] = {"100", "100", "100", "100", "121", "121",  "111",  "200",  "200",      "200"};
+char arg_type[NR_CMD][8] = {"100", "100", "100", "100", "121", "121",  "111",  "200",  "200",    	  "200", "200",	  "200", "200"};
 static int parse(char *cmd, void *arg){
 	int i;
 	for(i = 0; i < NR_CMD; i++){
@@ -178,15 +187,32 @@ static void shell(){
 			case CMD_LISTDIR:
 				list_dir();
 				break;
+			case CMD_MKDIR:
+				mkdir((char*)arg);
+				break;
+			case CMD_CHDIR:
+				chdir((char*)arg);
+				break;
+			case CMD_RM:
+				rm((char*)arg);
+				break;
 			default:
 				echo("default switch in proc1.c\n");
 				break;
 		}
 	}
 }
-
+static void rm(char *name){
+	syscall(SYS_rmdir, name);
+}
+static void chdir(char *name){
+	syscall(SYS_chdir, name);
+}
 static void list_dir(){
 	syscall(SYS_listdir);
+}
+static void mkdir(char *name){
+	syscall(SYS_mkdir, name);
 }
 static void make_file(char *name){
 	syscall(SYS_makefile, name);

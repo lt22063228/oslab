@@ -20,6 +20,9 @@
 #define FILE_LSEEK 14
 #define MAKE_FILE 15
 #define LIST_DIR 16
+#define MKDIR 17
+#define CHDIR 18
+#define RMDIR 19
 #define USER_STACK_OFFSET (0xbffff000)
 
 #define TYPE_REG 0

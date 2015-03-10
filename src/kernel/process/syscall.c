@@ -1,6 +1,6 @@
 #include "kernel.h"
 #include "hal.h"
-#define SYS_puts 3
+#define SYS_puts 	3
 #define SYS_fork 4
 #define SYS_exec 5
 #define SYS_exit 6
@@ -16,6 +16,9 @@
 #define SYS_echo 16
 #define SYS_makefile 17
 #define SYS_listdir 18
+#define SYS_mkdir	19
+#define SYS_chdir	20
+#define SYS_rmdir	21
 extern pid_t PM;
 extern pid_t FM;
 
@@ -34,6 +37,9 @@ static void sys_lseek(TrapFrame *tf, Msg *msg);
 static void sys_echo(TrapFrame *tf, Msg *msg);
 static void sys_makefile(TrapFrame *tf, Msg *msg);
 static void sys_listdir(TrapFrame *tf, Msg *msg);
+static void sys_mkdir(TrapFrame *tf, Msg *msg);
+static void sys_chdir(TrapFrame *tf, Msg *msg);
+static void sys_rmdir(TrapFrame *tf, Msg *msg);
 
 static Msg msg;
 void do_syscall(TrapFrame *tf) {
@@ -98,10 +104,49 @@ void do_syscall(TrapFrame *tf) {
 		case SYS_listdir:
 			sys_listdir(tf, &msg);
 			break;
+		case SYS_mkdir:
+			sys_mkdir(tf, &msg);
+			break;
+		case SYS_chdir:
+			sys_chdir(tf, &msg);
+			break;
+		case SYS_rmdir:
+			sys_rmdir(tf, &msg);
+			break;
 		default:
 			/* kernel thread use system call to self-trap */
 			break;
 	}
+}
+static void sys_rmdir(TrapFrame *tf, Msg *msg){
+	char *path = (char*)tf->ebx;
+	msg->src = current->pid;
+	msg->req_pid = current->pid;
+	msg->buf = path;	
+	msg->type = RMDIR;
+
+	send(FM, msg);
+	receive(FM, msg);
+}
+static void sys_chdir(TrapFrame *tf, Msg *msg){
+	char *path = (char*)tf->ebx;
+	msg->src = current->pid;
+	msg->req_pid = current->pid;
+	msg->buf = path;	
+	msg->type = CHDIR;
+
+	send(FM, msg);
+	receive(FM, msg);
+}
+static void sys_mkdir(TrapFrame *tf, Msg *msg){
+	char *path = (char*)tf->ebx;
+	msg->src = current->pid;
+	msg->req_pid = current->pid;
+	msg->buf = path;	
+	msg->type = MKDIR;
+
+	send(FM, msg);
+	receive(FM, msg);
 }
 static void sys_makefile(TrapFrame *tf, Msg *msg){
 	char *path = (char*)tf->ebx;
@@ -126,7 +171,7 @@ static void sys_makefile(TrapFrame *tf, Msg *msg){
 // }
 static char str_buf[2048] = {0};
 static void sys_listdir(TrapFrame *tf, Msg *msg){
-	char *path = "/";
+	char *path = "./";
 	msg->src = current->pid;
 	msg->req_pid = current->pid;
 	msg->type = LIST_DIR;
@@ -139,6 +184,7 @@ static void sys_listdir(TrapFrame *tf, Msg *msg){
 	for(i = 0; i < 2048 && *(str_buf + i) != '\000'; i++){
 		if(*(str_buf + i) == '\n'){
 			dev_write("tty1", current->pid, str_buf, start, i - start + 1);
+			memset(str_buf+start, 0, i - start + 1);
 			start = i + 1;
 		}
 	}
