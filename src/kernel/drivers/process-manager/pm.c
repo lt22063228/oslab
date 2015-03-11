@@ -180,21 +180,26 @@ static void create_process(int file_idx){
 	msg.src = current->pid;
 	msg.req_pid = pcb->pid;	
 	msg.type = NEW_PCB;
-	send( MM, &msg);
-	receive( MM, &msg );
+	send(MM, &msg);
+	receive(MM, &msg);
 	/* the only one which is physical address */
 	pcb->cr3 = (CR3*)msg.ret;
 	
 	/* create the stdio */
-	// int i;
-	// for(i = 0; i < 3; i ++){
-	// 	msg.src = current->pid;
-	// 	msg.req_pid = pcb->pid;
-	// 	msg.type = FILE_OPEN;
-	// 	msg.dev_id = 1;
-	// 	send(FM, &msg);
-	// 	receive(FM, &msg);
-	// }
+	int i;
+	for(i = 0; i < 3; i ++){
+
+		msg.src = current->pid;
+		msg.req_pid = pcb->pid;
+		msg.type = FILE_OPEN;
+		msg.dev_id = 1;
+		msg.dest = 888;
+
+		send(FM, &msg);
+		receive(FM, &msg);
+
+	}
+	
 	/* map the kernel address */
 	map_kernel(req_pid);
 
@@ -235,6 +240,11 @@ static void load_header(void* header, int file_idx){
 	msg.len = 512;
 	msg.dev_id = file_idx;
 	msg.offset = 0;
+
+	/* 999 means to read origin file */
+	msg.dest = 999;
+	/* ----------------------------- */
+
 	send( FM, &msg);
 	receive( FM, &msg);
 }
@@ -272,7 +282,9 @@ static void load_segment(pid_t req_pid, struct ELFHeader *elf, int file_idx){
 		/* first of all, load the segment. */	
 		msg.src = current->pid;
 		msg.type = FILE_READ;
-		msg.dest = FM;
+
+		msg.dest = 999;
+
 		msg.req_pid = req_pid;
 
 

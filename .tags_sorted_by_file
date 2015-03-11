@@ -84,10 +84,10 @@ Device	include/hal.h	/^typedef struct Device {$/;"	s
 EXEC	include/hal.h	14;"	d
 EXIT	include/hal.h	15;"	d
 FILE_CLOSE	include/hal.h	18;"	d
-FILE_DIR	include/hal.h	33;"	d
+FILE_DIR	include/hal.h	34;"	d
 FILE_LSEEK	include/hal.h	20;"	d
 FILE_OPEN	include/hal.h	17;"	d
-FILE_PLAIN	include/hal.h	32;"	d
+FILE_PLAIN	include/hal.h	33;"	d
 FILE_READ	include/hal.h	9;"	d
 FILE_WRITE	include/hal.h	19;"	d
 FORK	include/hal.h	13;"	d
@@ -95,16 +95,17 @@ LIST_DIR	include/hal.h	22;"	d
 MAKE_FILE	include/hal.h	21;"	d
 MAP_KERNEL	include/hal.h	12;"	d
 MKDIR	include/hal.h	23;"	d
-MSG_HARD_INTR	include/hal.h	39;"	d
+MSG_HARD_INTR	include/hal.h	40;"	d
 NEW_PAGE	include/hal.h	10;"	d
 NEW_PCB	include/hal.h	11;"	d
-ROOT_INODE	include/hal.h	30;"	d
-STDERR_FILENO	include/hal.h	37;"	d
-STDIN_FILENO	include/hal.h	35;"	d
-STDOUT_FILENO	include/hal.h	36;"	d
-TYPE_DEV	include/hal.h	28;"	d
-TYPE_REG	include/hal.h	27;"	d
-USER_STACK_OFFSET	include/hal.h	25;"	d
+RMDIR	include/hal.h	25;"	d
+ROOT_INODE	include/hal.h	31;"	d
+STDERR_FILENO	include/hal.h	38;"	d
+STDIN_FILENO	include/hal.h	36;"	d
+STDOUT_FILENO	include/hal.h	37;"	d
+TYPE_DEV	include/hal.h	29;"	d
+TYPE_REG	include/hal.h	28;"	d
+USER_STACK_OFFSET	include/hal.h	26;"	d
 WAITPID	include/hal.h	16;"	d
 __HAL_H__	include/hal.h	2;"	d
 dev_id	include/hal.h	/^	int dev_id;$/;"	m	struct:Device
@@ -385,7 +386,7 @@ TWO_INDEX_BASE	src/kernel/drivers/file-manager/fm.c	23;"	d	file:
 blk	src/kernel/drivers/file-manager/fm.c	/^static char blk[SIZE_OF_BLOCK];$/;"	v	file:
 block_bitmap	src/kernel/drivers/file-manager/fm.c	/^uint8_t block_bitmap[NR_BLOCK];$/;"	v
 block_t	src/kernel/drivers/file-manager/fm.c	/^typedef int block_t;$/;"	t	file:
-chdir	src/kernel/drivers/file-manager/fm.c	/^inode_t chdir(char *dir){$/;"	f
+chdir	src/kernel/drivers/file-manager/fm.c	/^inode_t chdir(char *dir, pid_t req_pid){$/;"	f
 check_file_type	src/kernel/drivers/file-manager/fm.c	/^int check_file_type(inode_t file){$/;"	f
 count	src/kernel/drivers/file-manager/fm.c	/^	int count;$/;"	m	struct:system_FDE	file:
 cur_directory	src/kernel/drivers/file-manager/fm.c	/^static inode_t cur_directory;$/;"	v	file:
@@ -428,33 +429,38 @@ ram_read	src/kernel/drivers/file-manager/fm.c	/^void ram_read(int base, uint8_t 
 ram_write	src/kernel/drivers/file-manager/fm.c	/^void ram_write(int base, uint8_t *buf, size_t ele_size, int count){$/;"	f
 read_block	src/kernel/drivers/file-manager/fm.c	/^void read_block(block_t index, void *data){$/;"	f
 read_inode	src/kernel/drivers/file-manager/fm.c	/^void read_inode(inode_t index, inode_entry *data){$/;"	f
+remove_file	src/kernel/drivers/file-manager/fm.c	/^int remove_file(inode_t file_index){$/;"	f
 request_pid	src/kernel/drivers/file-manager/fm.c	/^static pid_t request_pid;$/;"	v	file:
+rmdir	src/kernel/drivers/file-manager/fm.c	/^int rmdir(char *dir, int idx){$/;"	f
 root_dir	src/kernel/drivers/file-manager/fm.c	/^inode_t root_dir;$/;"	v
 size	src/kernel/drivers/file-manager/fm.c	/^	size_t size;$/;"	m	struct:inode_entry	file:
+str_buf	src/kernel/drivers/file-manager/fm.c	/^static char str_buf[2048] = {0};$/;"	v	file:
 sys_chdir	src/kernel/drivers/file-manager/fm.c	/^static void sys_chdir(Msg *msg){$/;"	f	file:
 sys_lsdir	src/kernel/drivers/file-manager/fm.c	/^static void sys_lsdir(Msg *msg){$/;"	f	file:
 sys_make_file	src/kernel/drivers/file-manager/fm.c	/^static void sys_make_file(Msg *msg){$/;"	f	file:
 sys_mkdir	src/kernel/drivers/file-manager/fm.c	/^static void sys_mkdir(Msg *msg){$/;"	f	file:
+sys_rmdir	src/kernel/drivers/file-manager/fm.c	/^static void sys_rmdir(Msg *msg){$/;"	f	file:
 system_FDE	src/kernel/drivers/file-manager/fm.c	/^typedef struct system_FDE{$/;"	s	file:
 system_FDE	src/kernel/drivers/file-manager/fm.c	/^} system_FDE;$/;"	t	typeref:struct:system_FDE	file:
 system_fdes	src/kernel/drivers/file-manager/fm.c	/^system_FDE system_fdes[NR_SYSTEM_FDE];$/;"	v
 type	src/kernel/drivers/file-manager/fm.c	/^	int type;$/;"	m	struct:inode_entry	file:
 write_block	src/kernel/drivers/file-manager/fm.c	/^void write_block(block_t index, void *data){$/;"	f
 write_inode	src/kernel/drivers/file-manager/fm.c	/^void write_inode(inode_t index, inode_entry *data){$/;"	f
-CMD_CAT	src/kernel/drivers/file-manager/test/proc1.c	92;"	d	file:
-CMD_CHDIR	src/kernel/drivers/file-manager/test/proc1.c	102;"	d	file:
-CMD_CLOSE	src/kernel/drivers/file-manager/test/proc1.c	94;"	d	file:
-CMD_ECHO	src/kernel/drivers/file-manager/test/proc1.c	98;"	d	file:
-CMD_ERROR	src/kernel/drivers/file-manager/test/proc1.c	90;"	d	file:
-CMD_FORK	src/kernel/drivers/file-manager/test/proc1.c	91;"	d	file:
-CMD_LISTDIR	src/kernel/drivers/file-manager/test/proc1.c	100;"	d	file:
-CMD_LSEEK	src/kernel/drivers/file-manager/test/proc1.c	97;"	d	file:
-CMD_MAKEFILE	src/kernel/drivers/file-manager/test/proc1.c	99;"	d	file:
-CMD_MKDIR	src/kernel/drivers/file-manager/test/proc1.c	101;"	d	file:
-CMD_OPEN	src/kernel/drivers/file-manager/test/proc1.c	93;"	d	file:
-CMD_READ	src/kernel/drivers/file-manager/test/proc1.c	95;"	d	file:
-CMD_WRITE	src/kernel/drivers/file-manager/test/proc1.c	96;"	d	file:
-NR_CMD	src/kernel/drivers/file-manager/test/proc1.c	89;"	d	file:
+CMD_CAT	src/kernel/drivers/file-manager/test/proc1.c	94;"	d	file:
+CMD_CHDIR	src/kernel/drivers/file-manager/test/proc1.c	104;"	d	file:
+CMD_CLOSE	src/kernel/drivers/file-manager/test/proc1.c	96;"	d	file:
+CMD_ECHO	src/kernel/drivers/file-manager/test/proc1.c	100;"	d	file:
+CMD_ERROR	src/kernel/drivers/file-manager/test/proc1.c	92;"	d	file:
+CMD_FORK	src/kernel/drivers/file-manager/test/proc1.c	93;"	d	file:
+CMD_LISTDIR	src/kernel/drivers/file-manager/test/proc1.c	102;"	d	file:
+CMD_LSEEK	src/kernel/drivers/file-manager/test/proc1.c	99;"	d	file:
+CMD_MAKEFILE	src/kernel/drivers/file-manager/test/proc1.c	101;"	d	file:
+CMD_MKDIR	src/kernel/drivers/file-manager/test/proc1.c	103;"	d	file:
+CMD_OPEN	src/kernel/drivers/file-manager/test/proc1.c	95;"	d	file:
+CMD_READ	src/kernel/drivers/file-manager/test/proc1.c	97;"	d	file:
+CMD_RM	src/kernel/drivers/file-manager/test/proc1.c	105;"	d	file:
+CMD_WRITE	src/kernel/drivers/file-manager/test/proc1.c	98;"	d	file:
+NR_CMD	src/kernel/drivers/file-manager/test/proc1.c	91;"	d	file:
 SYS_cat	src/kernel/drivers/file-manager/test/proc1.c	8;"	d	file:
 SYS_chdir	src/kernel/drivers/file-manager/test/proc1.c	18;"	d	file:
 SYS_close	src/kernel/drivers/file-manager/test/proc1.c	12;"	d	file:
@@ -471,10 +477,11 @@ SYS_mkdir	src/kernel/drivers/file-manager/test/proc1.c	17;"	d	file:
 SYS_open	src/kernel/drivers/file-manager/test/proc1.c	9;"	d	file:
 SYS_puts	src/kernel/drivers/file-manager/test/proc1.c	1;"	d	file:
 SYS_read	src/kernel/drivers/file-manager/test/proc1.c	10;"	d	file:
+SYS_rmdir	src/kernel/drivers/file-manager/test/proc1.c	19;"	d	file:
 SYS_waitpid	src/kernel/drivers/file-manager/test/proc1.c	6;"	d	file:
 SYS_write	src/kernel/drivers/file-manager/test/proc1.c	11;"	d	file:
-arg_type	src/kernel/drivers/file-manager/test/proc1.c	/^char arg_type[NR_CMD][8] = {"100", "100", "100", "100", "121", "121",  "111",  "200",  "200",    	  "200", "200",	  "200"	};$/;"	v
-builtin	src/kernel/drivers/file-manager/test/proc1.c	/^char builtin[NR_CMD][16] = {"exec","cat","open","close","read","write","lseek","echo", "make_file", "list", "mkdir", "cd"};$/;"	v
+arg_type	src/kernel/drivers/file-manager/test/proc1.c	/^char arg_type[NR_CMD][8] = {"100", "100", "200", "100", "121", "121",  "111",  "200",  "200",    	  "200", "200",	  "200", "200"};$/;"	v
+builtin	src/kernel/drivers/file-manager/test/proc1.c	/^char builtin[NR_CMD][16] = {"exec","cat","open","close","read","write","lseek","echo", "make_file", "list", "mkdir", "cd", "rm"};$/;"	v
 cat	src/kernel/drivers/file-manager/test/proc1.c	/^static void cat(int filename){$/;"	f	file:
 chdir	src/kernel/drivers/file-manager/test/proc1.c	/^static void chdir(char *name){$/;"	f	file:
 close	src/kernel/drivers/file-manager/test/proc1.c	/^static int close(int fd){$/;"	f	file:
@@ -486,10 +493,11 @@ lseek	src/kernel/drivers/file-manager/test/proc1.c	/^static int lseek(int fd, in
 main	src/kernel/drivers/file-manager/test/proc1.c	/^int main(char *args){$/;"	f
 make_file	src/kernel/drivers/file-manager/test/proc1.c	/^static void make_file(char *name){$/;"	f	file:
 mkdir	src/kernel/drivers/file-manager/test/proc1.c	/^static void mkdir(char *name){$/;"	f	file:
-open	src/kernel/drivers/file-manager/test/proc1.c	/^static int open(int filename){$/;"	f	file:
+open	src/kernel/drivers/file-manager/test/proc1.c	/^static int open(char *filename){$/;"	f	file:
 parse	src/kernel/drivers/file-manager/test/proc1.c	/^static int parse(char *cmd, void *arg){$/;"	f	file:
 read	src/kernel/drivers/file-manager/test/proc1.c	/^static int read(int fd, void *buf, int len){$/;"	f	file:
 read_line	src/kernel/drivers/file-manager/test/proc1.c	/^static void read_line(char *cmd){$/;"	f	file:
+rm	src/kernel/drivers/file-manager/test/proc1.c	/^static void rm(char *name){$/;"	f	file:
 shell	src/kernel/drivers/file-manager/test/proc1.c	/^static void shell(){$/;"	f	file:
 simple	src/kernel/drivers/file-manager/test/proc1.c	/^static void simple(){$/;"	f	file:
 syscall	src/kernel/drivers/file-manager/test/proc1.c	/^syscall(int id, ...) {$/;"	f
@@ -791,6 +799,7 @@ SYS_mkdir	src/kernel/process/syscall.c	19;"	d	file:
 SYS_open	src/kernel/process/syscall.c	11;"	d	file:
 SYS_puts	src/kernel/process/syscall.c	3;"	d	file:
 SYS_read	src/kernel/process/syscall.c	12;"	d	file:
+SYS_rmdir	src/kernel/process/syscall.c	21;"	d	file:
 SYS_waitpid	src/kernel/process/syscall.c	8;"	d	file:
 SYS_write	src/kernel/process/syscall.c	13;"	d	file:
 do_syscall	src/kernel/process/syscall.c	/^void do_syscall(TrapFrame *tf) {$/;"	f
@@ -811,6 +820,7 @@ sys_mkdir	src/kernel/process/syscall.c	/^static void sys_mkdir(TrapFrame *tf, Ms
 sys_open	src/kernel/process/syscall.c	/^static void sys_open(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_puts	src/kernel/process/syscall.c	/^static void sys_puts(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_read	src/kernel/process/syscall.c	/^static void sys_read(TrapFrame *tf, Msg *msg){$/;"	f	file:
+sys_rmdir	src/kernel/process/syscall.c	/^static void sys_rmdir(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_waitpid	src/kernel/process/syscall.c	/^static void sys_waitpid(TrapFrame *tf, Msg *msg){$/;"	f	file:
 sys_write	src/kernel/process/syscall.c	/^static void sys_write(TrapFrame *tf, Msg *msg){$/;"	f	file:
 GDT_ENTRY	src/kernel/process/util.c	2;"	d	file:

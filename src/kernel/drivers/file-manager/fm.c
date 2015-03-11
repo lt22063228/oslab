@@ -214,6 +214,13 @@ static void file_lseek(Msg *msg){
 	PCB *pcb = fetch_pcb(req_pid);
 	process_FDE *p_fde = pcb->fdes + fd;
 	system_FDE *s_fde = system_fdes + p_fde->index; 
+
+	inode_entry inode_e;
+	read_inode(s_fde->file_inode, &inode_e);
+	if(inode_e.size < offset){
+		printk("\n\nseeking overflow\n\n");
+	}
+
 	s_fde->offset = offset;
 	pid_t dest = msg->src;
 	msg->src = current->pid;
@@ -233,40 +240,129 @@ static void file_close(Msg *msg){
 	send(dest, msg);
 }
 static void file_write(Msg *msg){
+
+	/* dev_id as fd, it is ok because the real dev_id is stored in s_fde */
 	int fd = msg->dev_id;
+
 	pid_t req_pid = msg->req_pid;
 	PCB *pcb = fetch_pcb(req_pid);
 	process_FDE *p_fde = pcb->fdes + fd;
 	system_FDE *s_fde = system_fdes + p_fde->index; 
+
 	off_t offset = s_fde->offset;
 	int dev_id = s_fde->dev_id;
+	int dev_type = s_fde->dev_type;
+	inode_t file_inode = s_fde->file_inode;
+
 	uint8_t *buf = msg->buf;
 	size_t len = msg->len;
-	int dev_type = s_fde->dev_type;
-	do_write(dev_type, dev_id, req_pid, buf, offset, len);
+
+	if(dev_type == TYPE_REG){
+
+		inode_entry inode_e;
+		read_inode(file_inode, &inode_e);
+
+		int delta_len = 0;
+		if(offset + len > inode_e.size){
+			printk("\n\nwriting overflow!\n\n");
+			inode_e.size = offset + len;
+			delta_len = offset + len - inode_e.size + (inode_e.size % SIZE_OF_BLOCK);
+			len -= delta_len;
+		}
+
+		int seq_num = offset / SIZE_OF_BLOCK;
+		offset = offset - seq_num * SIZE_OF_BLOCK;
+
+		while(len != 0){
+			block_t blk_idx = index_block(seq_num, file_inode, -1);
+			read_block(blk_idx, blk);
+			int write_size = (len < SIZE_OF_BLOCK ? len : SIZE_OF_BLOCK) - offset;
+			memcpy(blk + offset, buf, write_size);
+			offset = 0;
+			len -= write_size;
+			buf += write_size;
+			seq_num ++;
+		}
+		write_inode(file_inode, &inode_e);
+
+		while(delta_len != 0){
+			block_t new_blk = get_free_block(block_bitmap);
+			index_block(seq_num, file_inode, new_blk);
+			int write_size = (delta_len < SIZE_OF_BLOCK ? delta_len : SIZE_OF_BLOCK);
+			memcpy(blk, buf, write_size);
+			write_block(new_blk, blk);
+			delta_len -= write_size;
+			buf += write_size;
+			seq_num ++;
+		}
+
+	}else{
+		do_write(dev_type, dev_id, req_pid, buf, offset, len);
+	}
+
 	s_fde->offset += len;
 	msg->ret = len;
 	msg->dest = msg->src;
 	msg->src = FM;
 	send(msg->dest, msg);
 }
+
 static void file_read(Msg *msg){
+
+	/* using msg->dest to distinguish between the file_system & origin file */
+	int file_system = msg->dest == 999 ? 0 : 1;
+	if(file_system == 1)
+		printk("fm.c:315\n");
+	/* dev_id as fd */
 	int fd = msg->dev_id;
+
 	pid_t req_pid = msg->req_pid;
 	PCB *pcb = fetch_pcb(req_pid);
 	process_FDE *p_fde = pcb->fdes + fd;
 	system_FDE *s_fde = system_fdes + p_fde->index; 
+
 	off_t offset = s_fde->offset;
 	int dev_id = s_fde->dev_id;
 	int dev_type = s_fde->dev_type;
-	if(msg->src == PM){
+	inode_t file_inode = s_fde->file_inode;
+
+	uint8_t *buf = msg->buf;
+	size_t len = msg->len;
+
+	// if(msg->src == PM){
+	if(file_system == 0){
 		dev_id = msg->dev_id;
 		offset = msg->offset;
 		dev_type = TYPE_REG;
+		do_read(dev_type, dev_id, req_pid, buf, offset, len);
+	}else if(dev_type == TYPE_REG){
+		/* dev_id is the id of ramdisk, namely, file_system */
+		/* in reading file_system, you don't specify offset */
+		/* input : offset, len, buf, inode */
+		inode_entry inode_e;
+		read_inode(file_inode, &inode_e);
+		if(offset + len > inode_e.size){
+			printk("\n\nreading overflow!\n\n");
+		}
+
+		int seq_num = offset / SIZE_OF_BLOCK;
+		offset = offset - seq_num * SIZE_OF_BLOCK;
+
+		while(len != 0){
+			block_t blk_idx = index_block(seq_num, file_inode, -1);
+			read_block(blk_idx, blk);
+			int read_size = (len < SIZE_OF_BLOCK ? len : SIZE_OF_BLOCK) - offset;
+			memcpy(buf, blk + offset, read_size);
+			offset = 0;
+			len -= read_size;
+			buf += read_size;
+			seq_num ++;
+		}
+
+	}else{
+		do_read(dev_type, dev_id, req_pid, buf, offset, len);
 	}
-	uint8_t *buf = msg->buf;
-	size_t len = msg->len;
-	do_read(dev_type, dev_id, req_pid, buf, offset, len);
+
 	s_fde->offset += len;
 	msg->ret = len;
 	msg->dest = msg->src;
@@ -278,7 +374,12 @@ static void file_open(Msg *msg){
 	int req_pid = msg->req_pid;
 	PCB *pcb = fetch_pcb(req_pid);
 	int dev_id = msg->dev_id;
-	inode_t file_inode = msg->offset;
+	// inode_t file_inode = msg->offset;
+	char *file_name = msg->buf;
+	inode_t file_inode = -1;
+	if(msg->dest != 888)
+		file_inode = get_file(file_name, pcb->current_dir);
+
 	int i, index;
 	for(i = 0; i < NR_SYSTEM_FDE; i++){
 		system_FDE *fde = system_fdes + i;
@@ -289,7 +390,7 @@ static void file_open(Msg *msg){
 			fde->dev_id = dev_id;
 			fde->file_inode = file_inode;
 			index = i;
-			if(msg->src == PM){
+			if(msg->dest == 888){ /* again, use dest field to distinguish between divece file and regular file. */
 				fde->dev_type = TYPE_DEV;
 			}else{
 				fde->dev_type = TYPE_REG;

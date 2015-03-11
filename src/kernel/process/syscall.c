@@ -238,7 +238,8 @@ static void sys_open(TrapFrame *tf, Msg *msg){
 	msg->src = current->pid;
 	msg->type = FILE_OPEN;
 	msg->req_pid = current->pid;
-	msg->dev_id = (int)tf->ebx;
+	// msg->dev_id = (int)tf->ebx;
+	msg->buf = (char*)tf->ebx;
 	send(FM, msg);
 	receive(FM, msg);
 	tf->eax = msg->ret;

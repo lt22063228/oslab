@@ -44,7 +44,7 @@ static void chdir(char *name);
 static void rm(char *name);
 static int read(int fd, void *buf, int len);
 static int write(int fd, void *buf, int len);
-static int open(int filename);
+static int open(char *filename);
 static int close(int fd);
 static int lseek(int fd, int offset, int whence);
 static void echo(void *buf);
@@ -105,7 +105,7 @@ static void test_cat(){
 #define CMD_RM		12
 char builtin[NR_CMD][16] = {"exec","cat","open","close","read","write","lseek","echo", "make_file", "list", "mkdir", "cd", "rm"};
 // 0 for no parameter, 1 for integer, 2 for char array
-char arg_type[NR_CMD][8] = {"100", "100", "100", "100", "121", "121",  "111",  "200",  "200",    	  "200", "200",	  "200", "200"};
+char arg_type[NR_CMD][8] = {"100", "100", "200", "100", "121", "121",  "111",  "200",  "200",    	  "200", "200",	  "200", "200"};
 static int parse(char *cmd, void *arg){
 	int i;
 	for(i = 0; i < NR_CMD; i++){
@@ -150,11 +150,13 @@ static void shell(){
 	char cmd[64];
 	char arg[64];
 	char wr_buf[64] = {"writing to file success!\n"};
+	char file_name[10] = {"test_file"};
 	char buf[64];
 	int num;
-	int fd = open(1);
+	int fd = open(file_name);
 	write(fd, wr_buf, 64);
-	read(0, buf, 64);
+	lseek(fd, 0, 0);
+	read(fd, buf, 64);
 	write(1, buf, 64);
 	lseek(fd, 0, 0);
 	close(fd);
@@ -233,23 +235,18 @@ static void cat(int filename){
 	syscall(SYS_cat, filename);
 }
 static int read(int fd, void *buf, int len){
-	return 0;
 	return syscall(SYS_read, fd, buf, len);
 }
 static int write(int fd, void *buf, int len){
-	return 0;
 	return syscall(SYS_write, fd, buf, len);
 }
-static int open(int filename){
-	return 0;
+static int open(char *filename){
 	return syscall(SYS_open, filename);
 }
 static int close(int fd){
-	return 0;
 	return syscall(SYS_close, fd);
 }
 static int lseek(int fd, int offset, int whence){
-	return 0;
 	return syscall(SYS_lseek, fd, whence);
 }
 static void echo(void *buf){
