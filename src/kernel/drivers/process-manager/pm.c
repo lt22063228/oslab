@@ -14,9 +14,9 @@ uint8_t header[512];
 static void create_process(int file_idx);
 static PCB* new_pcb(void);
 static void pmd(void);
-static void load_header(void* header, int file_idx);
+static void load_header(void* header, int file_idx, int fd);
 static void map_kernel(pid_t req_pid);
-static void load_segment(pid_t req_pid, struct ELFHeader *elf, int file_idx);
+static void load_segment(pid_t req_pid, struct ELFHeader *elf, int file_idx, int fd);
 static void fork(Msg *msg);
 static void exec(Msg *msg);
 static void exit(Msg *msg);
@@ -75,7 +75,19 @@ static void exec(Msg *msg){
 	pid_t req_pid = msg->src;
 	// static char args[256] = {0};
 	PCB *pcb = fetch_pcb(req_pid);
-	int file_idx = msg->dev_id;	
+	// int file_idx = msg->dev_id;	
+	/* get the inode */
+	char *buf = msg->buf;
+
+	msg->src = current->pid;
+	msg->type = FILE_OPEN;
+	msg->req_pid = req_pid;
+	msg->buf = buf;
+	msg->dev_id = 0; /* in reading file_system, dev_id is not important right now. */
+
+	send(FM, msg);
+	receive(FM, msg);
+	int fd = msg->ret;
 
 	/* copy arguments into kernel */
 	// void *addr = msg->buf;
@@ -105,10 +117,10 @@ static void exec(Msg *msg){
 
 	/*get top 512 bytes from file-0, including ELF HEADER and PROGRAM HEADER */
 	struct ELFHeader *elf = (struct ELFHeader *)header;
-	load_header(header, file_idx);	
+	load_header(header, 0, fd);	
 
 	/*load each program segment*/
-	load_segment(req_pid, elf, file_idx);	
+	load_segment(req_pid, elf, 0, fd);	
 
 	/* initialize the PCB, kernel stack, put the user process into ready queue */
 	((TrapFrame*)pcb->tf)->eip = (uint32_t)((struct ELFHeader*)elf)->entry;
@@ -121,6 +133,7 @@ static void fork(Msg *msg){
 	msg->dest = 100;
 	PCB *parent = fetch_pcb(msg->src);
 	PCB *child = new_pcb();
+	child->current_dir = parent->current_dir;
 
 	/*update pointer field pointing to kernel stack, ie, tf & ebp*/
 	/*calculate offset */
@@ -199,18 +212,34 @@ static void create_process(int file_idx){
 		receive(FM, &msg);
 
 	}
-	
+	msg.dest = 0;
+
 	/* map the kernel address */
 	map_kernel(req_pid);
 
 	allocate_stack(req_pid);	
 
+
+	/* get the shell inode_t */
+	msg.src = current->pid;
+	msg.req_pid = pcb->pid;
+	msg.type = FILE_OPEN;
+	msg.dest = 0;
+	msg.dev_id = 0;
+	char name[10] = {"/bin/sh"};
+	msg.buf = name;
+	send(FM, &msg);
+	receive(FM, &msg);
+	inode_t sh = msg.ret;
+
+
+
 	/*get top 512 bytes from file-0, including ELF HEADER and PROGRAM HEADER */
 	struct ELFHeader *elf = (struct ELFHeader *)header;
-	load_header(header, file_idx);	
+	load_header(header, file_idx, sh);	
 		
 	/*load each program segment*/
-	load_segment(req_pid, elf, file_idx);	
+	load_segment(req_pid, elf, file_idx, sh);	
 
 	/* initialize the PCB, kernel stack, put the user process into ready queue */
 	((TrapFrame*)pcb->tf)->eip = (uint32_t)((struct ELFHeader*)elf)->entry;
@@ -227,22 +256,36 @@ PCB* new_pcb(void){
 	return pcb;
 }
 
-static void load_header(void* header, int file_idx){
+static void load_header(void* header, int file_idx, int fd){
 	Msg msg;
+	pid_t req_pid = current->pid;
+	if(file_idx == 0) req_pid = 10;
+
+
 	msg.src = current->pid;
+	msg.req_pid = req_pid;
+	msg.dev_id = fd;
+	msg.type = FILE_LSEEK;
+	msg.offset = 0;
+	send(FM, &msg);
+	receive(FM, &msg);
 
-	msg.req_pid = current->pid; 
-	if(file_idx == 0) msg.req_pid = 10;
 
 
+	msg.src = current->pid;
+	msg.req_pid = req_pid; 
 	msg.type = FILE_READ;
 	msg.buf = header;
 	msg.len = 512;
-	msg.dev_id = file_idx;
-	msg.offset = 0;
+	msg.dev_id = fd;
+	msg.offset = 0; // make no difference.
+
 
 	/* 999 means to read origin file */
-	msg.dest = 999;
+	if(fd == -1){
+		msg.dev_id = file_idx;
+		msg.dest = 999;
+	}
 	/* ----------------------------- */
 
 	send( FM, &msg);
@@ -259,7 +302,7 @@ static void map_kernel(pid_t req_pid){
 	receive( MM, &msg);
 }
 
-static void load_segment(pid_t req_pid, struct ELFHeader *elf, int file_idx){
+static void load_segment(pid_t req_pid, struct ELFHeader *elf, int file_idx, int fd){
 	Msg msg;
 	struct ProgramHeader *ph, *eph;
 	ph = (struct ProgramHeader *)((char*)elf + elf->phoff);
@@ -269,6 +312,7 @@ static void load_segment(pid_t req_pid, struct ELFHeader *elf, int file_idx){
 		/* the program headers are already got from previous load of 512 bytes */
 		/* allocate pages starting from ph->vaddr with size ph->memsz */
 		/* what we get is now----------------- va */
+
 		msg.src = current->pid;
 		msg.type = NEW_PAGE;
 		msg.dest = MM;
@@ -281,17 +325,28 @@ static void load_segment(pid_t req_pid, struct ELFHeader *elf, int file_idx){
 		/* read ph->filesz bytes starting from offset ph->off from file "0" into va */
 		/* first of all, load the segment. */	
 		msg.src = current->pid;
-		msg.type = FILE_READ;
-
-		msg.dest = 999;
-
 		msg.req_pid = req_pid;
+		msg.dev_id = fd;
+		msg.type = FILE_LSEEK;
+		msg.offset = ph->off;
+		send(FM, &msg);
+		receive(FM, &msg);
 
 
-		msg.dev_id = file_idx;
+
+		msg.src = current->pid;
+		msg.type = FILE_READ;
+		msg.req_pid = req_pid;
+		msg.dev_id = fd;
 		msg.buf = (void*)ph->vaddr ; /* file-manager recognize virtual address */
 		msg.offset = ph->off;
 		msg.len = ph->filesz;
+
+		if(fd == -1){
+			msg.dest = 999;
+			msg.dev_id = file_idx;
+		}
+
 		send( FM, &msg );
 		receive( FM, &msg );
 
@@ -306,6 +361,21 @@ static void exit(Msg *msg){
 	/* output: none */
 	pid_t req_pid = msg->req_pid;	
 	PCB *pcb = fetch_pcb(req_pid);
+
+	int i;
+	for(i = 0; i < NR_PROCESS_FDE; i++){
+		process_FDE *p_fde = pcb->fdes + i;
+		if(p_fde->is_used == 1){
+
+			/* decrease the count */
+			msg->req_pid = req_pid;
+			msg->src = current->pid;
+			msg->dev_id = p_fde->index;
+			msg->type = FILE_CLOSE;
+			send(FM, msg);
+			receive(FM, msg);
+		}	
+	} 
 
 	/* reclaim resource */
 	/* no dynamic memory allocated */

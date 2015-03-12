@@ -105,7 +105,7 @@ static void test_cat(){
 #define CMD_RM		12
 char builtin[NR_CMD][16] = {"exec","cat","open","close","read","write","lseek","echo", "make_file", "list", "mkdir", "cd", "rm"};
 // 0 for no parameter, 1 for integer, 2 for char array
-char arg_type[NR_CMD][8] = {"100", "100", "200", "100", "121", "121",  "111",  "200",  "200",    	  "200", "200",	  "200", "200"};
+char arg_type[NR_CMD][8] = {"200", "100", "200", "100", "121", "121",  "111",  "200",  "200",    	  "200", "200",	  "200", "200"};
 static int parse(char *cmd, void *arg){
 	int i;
 	for(i = 0; i < NR_CMD; i++){

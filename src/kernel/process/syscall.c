@@ -266,13 +266,13 @@ static void sys_exec(TrapFrame *tf, Msg *msg){
 	msg->src = current->pid;
 	msg->type = EXEC;		
 	/* filename, # in ramdisk */
-	msg->dev_id = tf->ebx;
+	// msg->dev_id = tf->ebx;
 	if(msg->dev_id > 4 || msg->dev_id < 0){
 		printk("the filename must be an INTEGER!!!!!!!!!!!!!!\n");
 		assert(0);
 	}
 	/* argument address, virtual address w.r.t src proc */
-	msg->buf = (void*)tf->ecx;
+	msg->buf = (void*)tf->ebx;
 	send(PM, msg);
 	// receive(PM, &msg);
 	sleep(&block, current);

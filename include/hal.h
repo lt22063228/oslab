@@ -23,6 +23,8 @@
 #define MKDIR 17
 #define CHDIR 18
 #define RMDIR 19
+#define FILE_DECOUNT 20
+
 #define USER_STACK_OFFSET (0xbffff000)
 
 #define TYPE_REG 0

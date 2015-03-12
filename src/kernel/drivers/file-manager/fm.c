@@ -265,8 +265,8 @@ static void file_write(Msg *msg){
 		int delta_len = 0;
 		if(offset + len > inode_e.size){
 			printk("\n\nwriting overflow!\n\n");
-			inode_e.size = offset + len;
 			delta_len = offset + len - inode_e.size + (inode_e.size % SIZE_OF_BLOCK);
+			inode_e.size = offset + len;
 			len -= delta_len;
 		}
 
@@ -278,6 +278,7 @@ static void file_write(Msg *msg){
 			read_block(blk_idx, blk);
 			int write_size = (len < SIZE_OF_BLOCK ? len : SIZE_OF_BLOCK) - offset;
 			memcpy(blk + offset, buf, write_size);
+			write_block(blk_idx, blk);
 			offset = 0;
 			len -= write_size;
 			buf += write_size;
@@ -351,8 +352,8 @@ static void file_read(Msg *msg){
 		while(len != 0){
 			block_t blk_idx = index_block(seq_num, file_inode, -1);
 			read_block(blk_idx, blk);
-			int read_size = (len < SIZE_OF_BLOCK ? len : SIZE_OF_BLOCK) - offset;
-			memcpy(buf, blk + offset, read_size);
+			int read_size = (len < SIZE_OF_BLOCK ? len : (SIZE_OF_BLOCK - offset));
+			copy_from_kernel_mine(pcb, buf, blk + offset, read_size);
 			offset = 0;
 			len -= read_size;
 			buf += read_size;
@@ -655,6 +656,7 @@ inode_t get_file(char *path, inode_t parent_dir){
 			path ++;
 		}
 		*(name + i) = '\0';
+		path ++;
 		dest = find_file(name, dest);
 		if(dest == -1) return -1;
 	}
